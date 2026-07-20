@@ -1,0 +1,24 @@
+{
+  "name": "LiAfrik Books",
+  "short_name": "LiAfrik",
+  "description": "Gestion comptable et commerciale pensée pour l'Afrique",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F2A3D",
+  "theme_color": "#10B981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230F2A3D'/%3E%3Cpath d='M60 60h72v12H60zm0 28h72v12H60zm0 28h48v12H60z' fill='%2310B981'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230F2A3D'/%3E%3Cpath d='M160 160h192v32H160zm0 74h192v32H160zm0 74h128v32H160z' fill='%2310B981'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
