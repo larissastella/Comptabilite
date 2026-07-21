@@ -56,24 +56,32 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (loading || tenantLoading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
 
-  // Super admins and internal staff can access the app without a tenant
   const isPlatformUser = isSuperAdmin || staffInfo.isStaff;
   if (!tenant && !isPlatformUser) return <Navigate to="/onboarding" replace />;
   if (!tenant && isPlatformUser) {
-    // Platform users go to super-admin or staff dashboard
     const path = window.location.pathname;
     if (path === '/app' || path === '/app/dashboard') {
       return <Navigate to="/app/super-admin" replace />;
     }
   }
 
-  // Super admins bypass plan locking entirely
   if (isPlanLocked && !isSuperAdmin) {
     const path = window.location.pathname;
     if (path !== '/app/billing') {
       return <PlanSelectionGate />;
     }
   }
+
+  return <>{children}</>;
+}
+
+function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading, isSuperAdmin } = useAuth();
+  const { loading: tenantLoading } = useTenant();
+
+  if (loading || tenantLoading) return <Spinner />;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!isSuperAdmin) return <Navigate to="/app/dashboard" replace />;
 
   return <>{children}</>;
 }
@@ -154,7 +162,7 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="users" element={<UsersRoles />} />
           <Route path="billing" element={<Billing />} />
-          <Route path="super-admin" element={<SuperAdmin />} />
+          <Route path="super-admin" element={<SuperAdminRoute><SuperAdmin /></SuperAdminRoute>} />
         </Route>
 
         <Route path="*" element={<NotFoundPage />} />

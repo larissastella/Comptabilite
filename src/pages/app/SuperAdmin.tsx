@@ -3,12 +3,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Shield, Users, Building2, Eye, UserCheck, Plus, Trash2, AlertTriangle,
   Globe, TrendingUp, Award, UserCog, BarChart3, MapPin, CreditCard, X,
+  DollarSign, Activity, Filter,
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line,
+} from 'recharts';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Tenant, SuperAdmin as SuperAdminRecord, InternalStaffRole, InternalStaffUser, PlatformStats, StaffPerformance } from '../../types';
-import { format } from 'date-fns';
+import { format, subMonths, startOfMonth, eachDayOfInterval, subDays } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router-dom';
@@ -30,6 +35,18 @@ const COUNTRY_NAMES: Record<string, string> = {
   GA: 'Gabon', CG: 'Congo', CD: 'RD Congo', MA: 'Maroc', TN: 'Tunisie',
   ZA: 'Afrique du Sud', EG: 'Égypte', RW: 'Rwanda', UG: 'Ouganda', TD: 'Tchad',
   CF: 'Centrafrique', GQ: 'Guinée Équatoriale', DJ: 'Djibouti', KM: 'Comores',
+};
+
+function isSameMonthSafe(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth();
+}
+
+const chartTooltipStyle = {
+  backgroundColor: 'rgba(15, 42, 61, 0.95)',
+  border: 'none',
+  borderRadius: '8px',
+  fontSize: '12px',
+  color: '#fff',
 };
 
 export default function SuperAdmin() {
@@ -128,6 +145,42 @@ export default function SuperAdmin() {
       return result.performance as StaffPerformance[];
     },
     enabled: isSuperAdmin && tab === 'performance',
+  });
+
+  // Tenant growth over last 6 months
+  const { data: growthData } = useQuery({
+    queryKey: ['sa-growth', tenants],
+    queryFn: async () => {
+      const months = Array.from({ length: 6 }, (_, i) => {
+        const d = subMonths(new Date(), 5 - i);
+        return { start: startOfMonth(d), label: format(d, 'MMM', { locale: fr }) };
+      });
+      return months.map(m => {
+        const count = tenants.filter(t => new Date(t.created_at) < new Date(m.start.getFullYear(), m.start.getMonth() + 1, 0)).length;
+        const newThisMonth = tenants.filter(t => isSameMonthSafe(new Date(t.created_at), m.start)).length;
+        return { name: m.label, Total: count, 'Nouveaux': newThisMonth };
+      });
+    },
+    enabled: isSuperAdmin && tab === 'overview' && tenants.length > 0,
+  });
+
+  // 30-day activity trend
+  const { data: activityData } = useQuery({
+    queryKey: ['sa-activity-30d'],
+    queryFn: async () => {
+      const days = eachDayOfInterval({ start: subDays(new Date(), 29), end: new Date() });
+      const { data: logs } = await supabase
+        .from('audit_logs')
+        .select('created_at')
+        .gte('created_at', subDays(new Date(), 29).toISOString());
+      const logByDate: Record<string, number> = {};
+      (logs || []).forEach(l => {
+        const d = format(new Date(l.created_at), 'yyyy-MM-dd');
+        logByDate[d] = (logByDate[d] || 0) + 1;
+      });
+      return days.map(d => ({ name: format(d, 'dd/MM'), Activité: logByDate[format(d, 'yyyy-MM-dd')] || 0 }));
+    },
+    enabled: isSuperAdmin && tab === 'overview',
   });
 
   // ---- Mutations ----
@@ -291,6 +344,63 @@ export default function SuperAdmin() {
       {tab === 'overview' && platformStats && (
         <div className="space-y-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Plateforme LiAfrik Books — Vue globale</h2>
+
+          {/* Growth trend + activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Tenant growth area chart */}
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Croissance des tenants (6 mois)</h3>
+              </div>
+              {growthData && growthData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <AreaChart data={growthData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10B981" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#10B981" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="newGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.2} />
+                        <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={40} />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Legend wrapperStyle={{ fontSize: 12 }} />
+                    <Area type="monotone" dataKey="Total" stroke="#10B981" strokeWidth={2.5} fill="url(#totalGrad)" name="Total cumulé" />
+                    <Area type="monotone" dataKey="Nouveaux" stroke="#3B82F6" strokeWidth={2} fill="url(#newGrad)" name="Nouveaux / mois" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-40 flex items-center justify-center text-gray-400 text-sm">Aucune donnée</div>
+              )}
+            </div>
+
+            {/* 30-day activity line chart */}
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Activity className="w-5 h-5 text-blue-500" />
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Activité plateforme (30 jours)</h3>
+              </div>
+              {activityData && activityData.some(d => d.Activité > 0) ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <LineChart data={activityData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} interval={4} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={40} />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Line type="monotone" dataKey="Activité" stroke="#3B82F6" strokeWidth={2} dot={false} name="Actions journalisées" />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-40 flex items-center justify-center text-gray-400 text-sm">Aucune activité récente</div>
+              )}
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* By country */}
