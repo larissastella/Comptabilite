@@ -91,7 +91,6 @@ Deno.serve(async (req: Request) => {
       const { adminId } = body;
       if (!adminId) throw new Error("adminId required");
 
-      // Check safeguard: must keep at least 2
       const { count } = await serviceClient
         .from("super_admins")
         .select("*", { count: "exact", head: true });
@@ -136,23 +135,42 @@ Deno.serve(async (req: Request) => {
       const targetUser = users.users.find((u) => u.email === email);
       if (!targetUser) throw new Error("Utilisateur introuvable — l'utilisateur doit d'abord créer un compte");
 
-      const { error: insertError } = await serviceClient
+      const { data: roleData } = await serviceClient
+        .from("internal_staff_roles")
+        .select("name")
+        .eq("id", roleId)
+        .maybeSingle();
+
+      const { data: inserted, error: insertError } = await serviceClient
         .from("internal_staff_users")
-        .insert({ user_id: targetUser.id, email, role_id: roleId, invited_by: user.id });
+        .insert({ user_id: targetUser.id, email, role_id: roleId, invited_by: user.id })
+        .select("id, staff_code")
+        .single();
 
       if (insertError) {
         if (insertError.code === "23505") throw new Error("Cet utilisateur est déjà membre du staff");
         throw insertError;
       }
 
+      // Log code assignment
+      if (inserted.staff_code) {
+        await serviceClient.from("commercial_code_assignments").insert({
+          staff_user_id: inserted.id,
+          staff_code: inserted.staff_code,
+          assigned_by: user.id,
+          action: "generated",
+          notes: `Auto-generated for ${roleData?.name || 'staff'} role`,
+        });
+      }
+
       await serviceClient.from("audit_logs").insert({
         user_id: user.id,
         action: "add_staff",
         module: "staff",
-        after_data: { email, role_id: roleId, target_user_id: targetUser.id },
+        after_data: { email, role_id: roleId, target_user_id: targetUser.id, staff_code: inserted?.staff_code },
       });
 
-      return new Response(JSON.stringify({ success: true }), {
+      return new Response(JSON.stringify({ success: true, staff_code: inserted?.staff_code }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -244,7 +262,6 @@ Deno.serve(async (req: Request) => {
       const { roleId, permissions } = body;
       if (!roleId || !Array.isArray(permissions)) throw new Error("roleId and permissions array required");
 
-      // Delete existing and re-insert
       await serviceClient
         .from("internal_staff_role_permissions")
         .delete()
@@ -281,20 +298,16 @@ Deno.serve(async (req: Request) => {
     if (action === "platform-stats") {
       const { data: tenants } = await serviceClient
         .from("tenants")
-        .select("id, country, plan, subscription_status, created_at");
+        .select("id, country, plan, subscription_status, created_at, referred_by_staff_code");
 
       const { data: tenantUsers } = await serviceClient
         .from("tenant_users")
         .select("id");
 
-      const { data: subs } = await serviceClient
-        .from("stripe_subscriptions")
-        .select("customer_id, status, price_id")
-        .eq("status", "active");
-
       const allTenants = tenants || [];
       const activeTenants = allTenants.filter((t: Record<string, unknown>) => t.subscription_status === "active");
       const trialingTenants = allTenants.filter((t: Record<string, unknown>) => t.subscription_status === "trialing");
+      const churnedTenants = allTenants.filter((t: Record<string, unknown>) => ["canceled", "read_only"].includes(t.subscription_status as string));
 
       // By country
       const countryMap: Record<string, number> = {};
@@ -310,17 +323,39 @@ Deno.serve(async (req: Request) => {
         planMap[p] = (planMap[p] || 0) + 1;
       });
 
-      // MRR from Stripe subscriptions (simplified — would need price lookup in production)
-      const mrr = (subs || []).length * 19; // placeholder base
+      // Revenue by plan
+      const planPrices: Record<string, number> = { enterprise: 189, premium: 69, pro: 19, starter: 9 };
+      const revenueByPlan: Record<string, number> = {};
+      activeTenants.forEach((t: Record<string, unknown>) => {
+        const p = t.plan as string;
+        revenueByPlan[p] = (revenueByPlan[p] || 0) + (planPrices[p] || 0);
+      });
+
+      // MRR
+      const mrr = Object.values(revenueByPlan).reduce((s, v) => s + v, 0);
+
+      // Referral stats
+      const referredTenants = allTenants.filter((t: Record<string, unknown>) => t.referred_by_staff_code);
+      const referralConversion = referredTenants.filter((t: Record<string, unknown>) => t.subscription_status === "active").length;
+
+      // Churn rate
+      const churnRate = allTenants.length > 0
+        ? Math.round((churnedTenants.length / allTenants.length) * 100 * 100) / 100
+        : 0;
 
       return new Response(JSON.stringify({
         totalTenants: allTenants.length,
         activeTenants: activeTenants.length,
         trialingTenants: trialingTenants.length,
+        churnedTenants: churnedTenants.length,
         totalUsers: (tenantUsers || []).length,
         byCountry: Object.entries(countryMap).map(([country, count]) => ({ country, count })),
         byPlan: Object.entries(planMap).map(([plan, count]) => ({ plan, count })),
+        revenueByPlan: Object.entries(revenueByPlan).map(([plan, revenue]) => ({ plan, revenue })),
         mrr,
+        referralCount: referredTenants.length,
+        referralConversion,
+        churnRate,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -334,44 +369,12 @@ Deno.serve(async (req: Request) => {
 
       const { data: staffUsers } = await serviceClient
         .from("internal_staff_users")
-        .select("id, email, staff_code, role:internal_staff_roles(name)")
+        .select("id, email, staff_code, role:internal_staff_roles(name), total_referrals, total_conversions, total_revenue_usd, last_activity_at, is_active")
         .eq("is_active", true);
 
       const { data: tenants } = await serviceClient
         .from("tenants")
-        .select("id, referred_by_staff_code, subscription_status, created_at, plan");
-
-      const { data: subs } = await serviceClient
-        .from("stripe_subscriptions")
-        .select("customer_id, status")
-        .eq("status", "active");
-
-      const { data: stripeCustomers } = await serviceClient
-        .from("stripe_customers")
-        .select("user_id, customer_id");
-
-      // Build user_id -> tenant map
-      const { data: tenantUsers } = await serviceClient
-        .from("tenant_users")
-        .select("tenant_id, user_id, is_owner");
-
-      const userToTenant: Record<string, string> = {};
-      (tenantUsers || []).forEach((tu: Record<string, unknown>) => {
-        if (tu.is_owner) userToTenant[tu.user_id as string] = tu.tenant_id as string;
-      });
-
-      // customer_id -> user_id
-      const customerToUser: Record<string, string> = {};
-      (stripeCustomers || []).forEach((sc: Record<string, unknown>) => {
-        customerToUser[sc.customer_id as string] = sc.user_id as string;
-      });
-
-      // user_id -> has active sub
-      const usersWithActiveSub = new Set<string>();
-      (subs || []).forEach((s: Record<string, unknown>) => {
-        const uid = customerToUser[s.customer_id as string];
-        if (uid) usersWithActiveSub.add(uid);
-      });
+        .select("id, referred_by_staff_code, subscription_status, created_at, plan, name, country");
 
       const performance = (staffUsers || []).map((staff: Record<string, unknown>) => {
         const code = staff.staff_code as string;
@@ -379,13 +382,14 @@ Deno.serve(async (req: Request) => {
 
         if (!code) {
           return {
-            staff_code: code || '',
+            staff_code: '',
             email: staff.email,
             role_name: roleData?.name || '',
             tenants_count: 0,
             paid_count: 0,
             conversion_rate: 0,
             revenue: 0,
+            last_activity: staff.last_activity_at,
           };
         }
 
@@ -398,7 +402,6 @@ Deno.serve(async (req: Request) => {
           t.subscription_status === 'active'
         ).length;
 
-        // Revenue: count active subs for tenants referred by this staff
         let revenue = 0;
         referredTenants.forEach((t: Record<string, unknown>) => {
           if (t.subscription_status === 'active') {
@@ -415,13 +418,148 @@ Deno.serve(async (req: Request) => {
           paid_count: paidCount,
           conversion_rate: referredTenants.length > 0 ? (paidCount / referredTenants.length) * 100 : 0,
           revenue,
+          total_referrals: staff.total_referrals,
+          total_conversions: staff.total_conversions,
+          total_revenue_usd: staff.total_revenue_usd,
+          last_activity: staff.last_activity_at,
         };
       });
 
-      // Sort by revenue descending (leaderboard)
       performance.sort((a, b) => b.revenue - a.revenue);
 
       return new Response(JSON.stringify({ performance }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Referral events timeline ----
+    if (action === "referral-events") {
+      const { staffCode, limit } = body;
+      const maxLimit = Math.min(limit || 50, 200);
+
+      let query = serviceClient
+        .from("commercial_referral_events")
+        .select("*, tenants!commercial_referral_events_tenant_id_fkey(name, plan, subscription_status)")
+        .order("created_at", { ascending: false })
+        .limit(maxLimit);
+
+      if (staffCode) {
+        query = query.eq("staff_code", staffCode);
+      }
+
+      const { data: events, error } = await query;
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ events: events || [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Conversion funnel ----
+    if (action === "conversion-funnel") {
+      const { days } = body;
+      const pDays = days || 90;
+
+      const { data, error } = await serviceClient.rpc("get_conversion_funnel", { p_days: pDays });
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ funnel: data }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Churn rate ----
+    if (action === "churn-rate") {
+      const { days } = body;
+      const pDays = days || 90;
+
+      const { data, error } = await serviceClient.rpc("get_churn_rate", { p_days: pDays });
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ churnRate: data }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Referred tenants list ----
+    if (action === "referred-tenants") {
+      const { staffCode } = body;
+
+      let query = serviceClient
+        .from("tenants")
+        .select("id, name, country, plan, subscription_status, created_at, referred_by_staff_code, trial_ends_at")
+        .not("referred_by_staff_code", "is", null)
+        .order("created_at", { ascending: false });
+
+      if (staffCode) {
+        query = query.eq("referred_by_staff_code", staffCode);
+      }
+
+      const { data: referred, error } = await query;
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ tenants: referred || [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Code assignment history ----
+    if (action === "code-assignments") {
+      const { data: assignments, error } = await serviceClient
+        .from("commercial_code_assignments")
+        .select("*, staff:internal_staff_users(email, staff_code)")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) throw error;
+
+      return new Response(JSON.stringify({ assignments: assignments || [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- COMMERCIAL TRACKING: Generate manual code ----
+    if (action === "generate-code") {
+      const { staffUserId } = body;
+      if (!staffUserId) throw new Error("staffUserId required");
+
+      const { data: staff } = await serviceClient
+        .from("internal_staff_users")
+        .select("id, email, staff_code, role:internal_staff_roles(name)")
+        .eq("id", staffUserId)
+        .maybeSingle();
+
+      if (!staff) throw new Error("Membre du staff introuvable");
+
+      // Generate new code using the DB function
+      const { data: newCode, error: codeError } = await serviceClient.rpc("generate_staff_code");
+      if (codeError) throw codeError;
+
+      // Update staff user with new code
+      const { error: updateError } = await serviceClient
+        .from("internal_staff_users")
+        .update({ staff_code: newCode })
+        .eq("id", staffUserId);
+
+      if (updateError) throw updateError;
+
+      // Log assignment
+      await serviceClient.from("commercial_code_assignments").insert({
+        staff_user_id: staffUserId,
+        staff_code: newCode,
+        assigned_by: user.id,
+        action: "generated",
+        notes: `Manual generation for ${staff.email}`,
+      });
+
+      await serviceClient.from("audit_logs").insert({
+        user_id: user.id,
+        action: "generate_commercial_code",
+        module: "commercial",
+        after_data: { staff_user_id: staffUserId, staff_code: newCode, email: staff.email },
+      });
+
+      return new Response(JSON.stringify({ success: true, staff_code: newCode }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -440,7 +578,6 @@ Deno.serve(async (req: Request) => {
         .eq("tenant_id", tenantId)
         .gte("created_at", since);
 
-      // Get user emails
       const userIds = [...new Set((invoices || []).map((inv: Record<string, unknown>) => inv.created_by).filter(Boolean))];
       const { data: users } = await serviceClient.auth.admin.listUsers();
       const userEmailMap: Record<string, string> = {};

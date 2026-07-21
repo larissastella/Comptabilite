@@ -352,16 +352,46 @@ export interface StaffPerformance {
   paid_count: number;
   conversion_rate: number;
   revenue: number;
+  total_referrals?: number;
+  total_conversions?: number;
+  total_revenue_usd?: number;
+  last_activity?: string;
+}
+
+export interface ReferralEvent {
+  id: string;
+  staff_code: string;
+  tenant_id?: string;
+  event_type: 'code_entered' | 'signup' | 'trial_started' | 'trial_converted' | 'trial_expired' | 'churned';
+  event_data: Record<string, unknown>;
+  created_at: string;
+  tenants?: { name: string; plan: string; subscription_status: string } | null;
+}
+
+export interface CodeAssignment {
+  id: string;
+  staff_user_id: string;
+  staff_code: string;
+  assigned_by?: string;
+  action: string;
+  notes?: string;
+  created_at: string;
+  staff?: { email: string; staff_code: string } | null;
 }
 
 export interface PlatformStats {
   totalTenants: number;
   activeTenants: number;
   trialingTenants: number;
+  churnedTenants: number;
   totalUsers: number;
   byCountry: { country: string; count: number }[];
   byPlan: { plan: string; count: number }[];
+  revenueByPlan: { plan: string; revenue: number }[];
   mrr: number;
+  referralCount: number;
+  referralConversion: number;
+  churnRate: number;
 }
 
 export interface TeamMemberStats {

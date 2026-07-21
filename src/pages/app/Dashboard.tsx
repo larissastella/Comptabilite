@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   TrendingUp, TrendingDown, FileText, Users, Package, AlertTriangle,
-  ArrowUpRight, Clock, Award, Wallet, Receipt, PiggyBank,
+  ArrowUpRight, Clock, Award, Wallet, Receipt, PiggyBank, BarChart3,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
+  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend, RadialBarChart, RadialBar,
 } from 'recharts';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
@@ -233,6 +233,66 @@ export default function Dashboard() {
       });
 
       return Object.values(memberMap).sort((a, b) => b.total_revenue - a.total_revenue);
+    },
+    enabled: !!tenantId,
+  });
+
+  // Top customers by revenue
+  const { data: topCustomers } = useQuery({
+    queryKey: ['top-customers', tenantId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('sales_invoices')
+        .select('total, status, customers!inner(id, name)')
+        .eq('tenant_id', tenantId!)
+        .eq('status', 'paid');
+
+      const customerMap: Record<string, { name: string; revenue: number; count: number }> = {};
+      (data || []).forEach((inv: Record<string, unknown>) => {
+        const customer = inv.customers as { id: string; name: string } | null;
+        if (!customer) return;
+        if (!customerMap[customer.id]) {
+          customerMap[customer.id] = { name: customer.name, revenue: 0, count: 0 };
+        }
+        customerMap[customer.id].revenue += inv.total as number;
+        customerMap[customer.id].count += 1;
+      });
+
+      return Object.values(customerMap).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+    },
+    enabled: !!tenantId,
+  });
+
+  // AR aging breakdown
+  const { data: arAging } = useQuery({
+    queryKey: ['ar-aging', tenantId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('sales_invoices')
+        .select('balance_due, invoice_date, status')
+        .eq('tenant_id', tenantId!)
+        .in('status', ['sent', 'overdue']);
+
+      const now = new Date();
+      const buckets = { current: 0, d30: 0, d60: 0, d90: 0, d90plus: 0 };
+      (data || []).forEach((inv: Record<string, unknown>) => {
+        const balance = inv.balance_due as number;
+        if (!balance || balance <= 0) return;
+        const daysOutstanding = Math.floor((now.getTime() - new Date(inv.invoice_date as string).getTime()) / 86400000);
+        if (daysOutstanding <= 30) buckets.current += balance;
+        else if (daysOutstanding <= 60) buckets.d30 += balance;
+        else if (daysOutstanding <= 90) buckets.d60 += balance;
+        else if (daysOutstanding <= 120) buckets.d90 += balance;
+        else buckets.d90plus += balance;
+      });
+
+      return [
+        { name: '0-30j', value: buckets.current, color: '#10B981' },
+        { name: '31-60j', value: buckets.d30, color: '#3B82F6' },
+        { name: '61-90j', value: buckets.d60, color: '#F59E0B' },
+        { name: '91-120j', value: buckets.d90, color: '#F97316' },
+        { name: '+120j', value: buckets.d90plus, color: '#EF4444' },
+      ].filter(b => b.value > 0);
     },
     enabled: !!tenantId,
   });
@@ -470,6 +530,72 @@ export default function Dashboard() {
                   </div>
                 </Link>
               ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Top customers + AR aging */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top customers bar chart */}
+        <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Award className="w-5 h-5 text-amber-500" />
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Top 5 clients (CA généré)</h2>
+          </div>
+          {topCustomers && topCustomers.length > 0 ? (
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={topCustomers.map(c => ({ name: c.name.length > 12 ? c.name.slice(0, 12) + '...' : c.name, CA: c.revenue, Factures: c.count }))} layout="vertical" margin={{ left: 10, right: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false}
+                  tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
+                <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={90} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => formatCurrency(v)} />
+                <Bar dataKey="CA" fill="#10B981" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-40 flex flex-col items-center justify-center text-gray-400">
+              <Award className="w-10 h-10 mb-2 opacity-30" />
+              <p className="text-sm">Aucun client payeur</p>
+            </div>
+          )}
+        </div>
+
+        {/* AR Aging breakdown */}
+        <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-4 sm:p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="w-5 h-5 text-red-500" />
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Créances échues (aging)</h2>
+          </div>
+          {arAging && arAging.length > 0 ? (
+            <div className="space-y-3">
+              {arAging.map(bucket => {
+                const total = arAging.reduce((s, b) => s + b.value, 0);
+                const pct = total > 0 ? (bucket.value / total) * 100 : 0;
+                return (
+                  <div key={bucket.name}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{bucket.name}</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(bucket.value)}</span>
+                    </div>
+                    <div className="w-full h-2.5 bg-gray-100 dark:bg-surface-3 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: bucket.color }} />
+                    </div>
+                  </div>
+                );
+              })}
+              <div className="pt-3 mt-2 border-t border-gray-100 dark:border-surface-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total créances</span>
+                  <span className="text-base font-bold text-gray-900 dark:text-white">{formatCurrency(arAging.reduce((s, b) => s + b.value, 0))}</span>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="h-40 flex flex-col items-center justify-center text-gray-400">
+              <Clock className="w-10 h-10 mb-2 opacity-30" />
+              <p className="text-sm">Aucune créance échue</p>
             </div>
           )}
         </div>

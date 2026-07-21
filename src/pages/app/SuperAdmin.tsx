@@ -3,22 +3,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Shield, Users, Building2, Eye, UserCheck, Plus, Trash2, AlertTriangle,
   Globe, TrendingUp, Award, UserCog, BarChart3, MapPin, CreditCard, X,
-  DollarSign, Activity, Filter,
+  DollarSign, Activity, Filter, Target, GitBranch, Search, RefreshCw,
+  Ticket, UserPlus, TrendingDown, Zap,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line,
+  RadialBarChart, RadialBar, FunnelChart, Funnel, LabelList,
 } from 'recharts';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import { Tenant, SuperAdmin as SuperAdminRecord, InternalStaffRole, InternalStaffUser, PlatformStats, StaffPerformance } from '../../types';
-import { format, subMonths, startOfMonth, eachDayOfInterval, subDays } from 'date-fns';
+import {
+  Tenant, SuperAdmin as SuperAdminRecord, InternalStaffRole, InternalStaffUser,
+  PlatformStats, StaffPerformance, ReferralEvent, CodeAssignment,
+} from '../../types';
+import { format, subMonths, startOfMonth, eachDayOfInterval, subDays, isSameMonth } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router-dom';
 
-type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'performance' | 'logs';
+type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs';
 
 const ADMIN_MODULES = ['tenants', 'subscriptions', 'support', 'commercial', 'statistics', 'staff'];
 
@@ -35,6 +40,15 @@ const COUNTRY_NAMES: Record<string, string> = {
   GA: 'Gabon', CG: 'Congo', CD: 'RD Congo', MA: 'Maroc', TN: 'Tunisie',
   ZA: 'Afrique du Sud', EG: 'Égypte', RW: 'Rwanda', UG: 'Ouganda', TD: 'Tchad',
   CF: 'Centrafrique', GQ: 'Guinée Équatoriale', DJ: 'Djibouti', KM: 'Comores',
+};
+
+const EVENT_LABELS: Record<string, { label: string; color: string }> = {
+  code_entered: { label: 'Code saisi', color: '#94a3b8' },
+  signup: { label: 'Inscription', color: '#3b82f6' },
+  trial_started: { label: 'Essai démarré', color: '#f59e0b' },
+  trial_converted: { label: 'Essai converti', color: '#10B981' },
+  trial_expired: { label: 'Essai expiré', color: '#ef4444' },
+  churned: { label: 'Désabonnement', color: '#dc2626' },
 };
 
 function isSameMonthSafe(a: Date, b: Date): boolean {
@@ -63,6 +77,9 @@ export default function SuperAdmin() {
   const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
   const [permDraft, setPermDraft] = useState<Record<string, { can_view: boolean; can_create: boolean; can_edit: boolean; can_delete: boolean }>>({});
   const [performancePeriod, setPerformancePeriod] = useState<'month' | 'quarter' | 'year'>('month');
+  const [logFilter, setLogFilter] = useState('');
+  const [logModuleFilter, setLogModuleFilter] = useState('');
+  const [commercialStaffFilter, setCommercialStaffFilter] = useState('');
 
   if (!isSuperAdmin) return <Navigate to="/app/dashboard" replace />;
 
@@ -108,7 +125,7 @@ export default function SuperAdmin() {
       const { data } = await supabase.from('internal_staff_roles').select('*, internal_staff_role_permissions(*)').order('name');
       return (data || []) as InternalStaffRole[];
     },
-    enabled: isSuperAdmin && (tab === 'staff' || tab === 'performance'),
+    enabled: isSuperAdmin && (tab === 'staff' || tab === 'performance' || tab === 'commercial'),
   });
 
   const { data: staffUsers = [] } = useQuery({
@@ -117,13 +134,13 @@ export default function SuperAdmin() {
       const { data } = await supabase.from('internal_staff_users').select('*, role:internal_staff_roles(*)').order('created_at', { ascending: false });
       return (data || []) as InternalStaffUser[];
     },
-    enabled: isSuperAdmin && tab === 'staff',
+    enabled: isSuperAdmin && (tab === 'staff' || tab === 'commercial'),
   });
 
   const { data: auditLogs = [] } = useQuery({
     queryKey: ['sa-logs'],
     queryFn: async () => {
-      const { data } = await supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(100);
+      const { data } = await supabase.from('audit_logs').select('*').order('created_at', { ascending: false }).limit(200);
       return data || [];
     },
     enabled: isSuperAdmin && tab === 'logs',
@@ -158,7 +175,11 @@ export default function SuperAdmin() {
       return months.map(m => {
         const count = tenants.filter(t => new Date(t.created_at) < new Date(m.start.getFullYear(), m.start.getMonth() + 1, 0)).length;
         const newThisMonth = tenants.filter(t => isSameMonthSafe(new Date(t.created_at), m.start)).length;
-        return { name: m.label, Total: count, 'Nouveaux': newThisMonth };
+        const churnedThisMonth = tenants.filter(t =>
+          isSameMonthSafe(new Date(t.created_at), m.start) &&
+          ['canceled', 'read_only'].includes(t.subscription_status)
+        ).length;
+        return { name: m.label, Total: count, Nouveaux: newThisMonth, Churn: churnedThisMonth };
       });
     },
     enabled: isSuperAdmin && tab === 'overview' && tenants.length > 0,
@@ -183,6 +204,57 @@ export default function SuperAdmin() {
     enabled: isSuperAdmin && tab === 'overview',
   });
 
+  // ---- Commercial Tracking Queries ----
+  const { data: referralEvents = [] } = useQuery({
+    queryKey: ['sa-referral-events', commercialStaffFilter],
+    queryFn: async () => {
+      const result = await callAdminFunction('referral-events', {
+        staffCode: commercialStaffFilter || undefined,
+        limit: 100,
+      });
+      return result.events as ReferralEvent[];
+    },
+    enabled: isSuperAdmin && tab === 'commercial',
+  });
+
+  const { data: conversionFunnel } = useQuery({
+    queryKey: ['sa-conversion-funnel'],
+    queryFn: async () => {
+      const result = await callAdminFunction('conversion-funnel', { days: 90 });
+      return result.funnel as { code_entered: number; signup: number; trial_started: number; trial_converted: number; trial_expired: number; churned: number };
+    },
+    enabled: isSuperAdmin && tab === 'commercial',
+  });
+
+  const { data: churnRate } = useQuery({
+    queryKey: ['sa-churn-rate'],
+    queryFn: async () => {
+      const result = await callAdminFunction('churn-rate', { days: 90 });
+      return result.churnRate as number;
+    },
+    enabled: isSuperAdmin && tab === 'commercial',
+  });
+
+  const { data: referredTenants = [] } = useQuery({
+    queryKey: ['sa-referred-tenants', commercialStaffFilter],
+    queryFn: async () => {
+      const result = await callAdminFunction('referred-tenants', {
+        staffCode: commercialStaffFilter || undefined,
+      });
+      return result.tenants as Tenant[];
+    },
+    enabled: isSuperAdmin && tab === 'commercial',
+  });
+
+  const { data: codeAssignments = [] } = useQuery({
+    queryKey: ['sa-code-assignments'],
+    queryFn: async () => {
+      const result = await callAdminFunction('code-assignments');
+      return result.assignments as CodeAssignment[];
+    },
+    enabled: isSuperAdmin && tab === 'commercial',
+  });
+
   // ---- Mutations ----
   const addAdmin = useMutation({
     mutationFn: async () => {
@@ -204,7 +276,12 @@ export default function SuperAdmin() {
     mutationFn: async () => {
       await callAdminFunction('add-staff', { email: newStaffEmail, roleId: newStaffRoleId });
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['sa-staff-users'] }); toast.success('Membre du staff ajouté'); setShowAddStaff(false); setNewStaffEmail(''); setNewStaffRoleId(''); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sa-staff-users'] });
+      qc.invalidateQueries({ queryKey: ['sa-code-assignments'] });
+      toast.success('Membre du staff ajouté');
+      setShowAddStaff(false); setNewStaffEmail(''); setNewStaffRoleId('');
+    },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -221,6 +298,18 @@ export default function SuperAdmin() {
       await callAdminFunction('toggle-staff', { staffId, isActive });
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['sa-staff-users'] }); toast.success('Statut mis à jour'); },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const generateCode = useMutation({
+    mutationFn: async (staffUserId: string) => {
+      await callAdminFunction('generate-code', { staffUserId });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['sa-staff-users'] });
+      qc.invalidateQueries({ queryKey: ['sa-code-assignments'] });
+      toast.success('Code commercial généré');
+    },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -280,9 +369,29 @@ export default function SuperAdmin() {
     { key: 'tenants', label: 'Tenants', icon: Building2 },
     { key: 'admins', label: 'Super Admins', icon: Shield },
     { key: 'staff', label: 'Équipe interne', icon: UserCog },
+    { key: 'commercial', label: 'Commercial', icon: Target },
     { key: 'performance', label: 'Performance', icon: TrendingUp },
     { key: 'logs', label: 'Journaux', icon: BarChart3 },
   ];
+
+  // Filtered logs
+  const filteredLogs = (auditLogs as Array<Record<string, unknown>>).filter(log => {
+    const actionMatch = !logFilter || (log.action as string)?.toLowerCase().includes(logFilter.toLowerCase());
+    const moduleMatch = !logModuleFilter || log.module === logModuleFilter;
+    return actionMatch && moduleMatch;
+  });
+
+  // Funnel data
+  const funnelData = conversionFunnel ? [
+    { name: 'Code saisi', value: conversionFunnel.code_entered, fill: '#94a3b8' },
+    { name: 'Inscription', value: conversionFunnel.signup, fill: '#3b82f6' },
+    { name: 'Essai démarré', value: conversionFunnel.trial_started, fill: '#f59e0b' },
+    { name: 'Essai converti', value: conversionFunnel.trial_converted, fill: '#10B981' },
+  ].filter(d => d.value > 0) : [];
+
+  const funnelConversionRate = conversionFunnel && conversionFunnel.code_entered > 0
+    ? Math.round((conversionFunnel.trial_converted / conversionFunnel.code_entered) * 100)
+    : 0;
 
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0 space-y-6">
@@ -347,7 +456,6 @@ export default function SuperAdmin() {
 
           {/* Growth trend + activity */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Tenant growth area chart */}
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-5 h-5 text-emerald-500" />
@@ -380,7 +488,6 @@ export default function SuperAdmin() {
               )}
             </div>
 
-            {/* 30-day activity line chart */}
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <Activity className="w-5 h-5 text-blue-500" />
@@ -402,7 +509,31 @@ export default function SuperAdmin() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Revenue by plan + Country + Plan distribution */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Revenue by plan bar chart */}
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Revenus par forfait</h3>
+              </div>
+              {platformStats.revenueByPlan && platformStats.revenueByPlan.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={platformStats.revenueByPlan.map(r => ({ name: r.plan, Revenus: r.revenue }))}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={50} />
+                    <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => `$${v}/mois`} />
+                    <Bar dataKey="Revenus" radius={[4, 4, 0, 0]}>
+                      {platformStats.revenueByPlan.map(r => <Cell key={r.plan} fill={PLAN_COLORS[r.plan] || '#94a3b8'} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-40 flex items-center justify-center text-gray-400 text-sm">Aucun revenu</div>
+              )}
+            </div>
+
             {/* By country */}
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-4">
@@ -423,7 +554,7 @@ export default function SuperAdmin() {
               )}
             </div>
 
-            {/* By plan */}
+            {/* By plan pie */}
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-4">
                 <CreditCard className="w-5 h-5 text-emerald-500" />
@@ -435,7 +566,7 @@ export default function SuperAdmin() {
                     <Pie data={platformStats.byPlan.map(p => ({ name: p.plan, value: p.count }))} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70}>
                       {platformStats.byPlan.map(p => <Cell key={p.plan} fill={PLAN_COLORS[p.plan] || '#94a3b8'} />)}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
@@ -445,18 +576,35 @@ export default function SuperAdmin() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* KPI summary cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Utilisateurs totaux</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{platformStats.totalUsers}</p>
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="w-4 h-4 text-gray-400" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Utilisateurs</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.totalUsers}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
-              <p className="text-sm text-gray-500 dark:text-gray-400">Tenants actifs</p>
-              <p className="text-3xl font-bold text-emerald-600 mt-1">{platformStats.activeTenants}</p>
+              <div className="flex items-center gap-2 mb-2">
+                <UserCheck className="w-4 h-4 text-emerald-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tenants actifs</p>
+              </div>
+              <p className="text-3xl font-bold text-emerald-600">{platformStats.activeTenants}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
-              <p className="text-sm text-gray-500 dark:text-gray-400">MRR estimé</p>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{platformStats.mrr} <span className="text-base font-normal text-gray-400">USD/mois</span></p>
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="w-4 h-4 text-blue-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">MRR estimé</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.mrr} <span className="text-base font-normal text-gray-400">$/mois</span></p>
+            </div>
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="w-4 h-4 text-red-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Taux de churn</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.churnRate}%</p>
             </div>
           </div>
         </div>
@@ -483,7 +631,11 @@ export default function SuperAdmin() {
                     <td className="px-4 py-3.5 text-sm font-mono text-gray-600 dark:text-gray-300">{t.currency}</td>
                     <td className="px-4 py-3.5">{planBadge(t.plan)}</td>
                     <td className="px-4 py-3.5">{statusBadge(t.subscription_status)}</td>
-                    <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300">{(t as Record<string, unknown>).referred_by_staff_code as string || '—'}</td>
+                    <td className="px-4 py-3.5">
+                      {t.referred_by_staff_code ? (
+                        <span className="text-sm font-mono text-emerald-600 dark:text-emerald-400">{t.referred_by_staff_code}</span>
+                      ) : '—'}
+                    </td>
                     <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(t.created_at), 'dd/MM/yyyy')}</td>
                   </tr>
                 ))}
@@ -572,7 +724,6 @@ export default function SuperAdmin() {
       {/* ---- STAFF ---- */}
       {tab === 'staff' && (
         <div className="space-y-6">
-          {/* Staff users */}
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">Membres du staff interne</h3>
@@ -596,7 +747,28 @@ export default function SuperAdmin() {
                           {su.role?.name || '—'}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3.5 text-sm font-mono text-gray-600 dark:text-gray-300">{su.staff_code || '—'}</td>
+                      <td className="px-4 py-3.5">
+                        {su.staff_code ? (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-mono text-emerald-600 dark:text-emerald-400">{su.staff_code}</span>
+                            <button
+                              onClick={() => { if (confirm(`Générer un nouveau code pour ${su.email} ?`)) generateCode.mutate(su.id); }}
+                              className="text-gray-400 hover:text-emerald-600"
+                              title="Générer un nouveau code"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => generateCode.mutate(su.id)}
+                            disabled={generateCode.isPending}
+                            className="text-xs text-emerald-600 hover:underline"
+                          >
+                            Générer
+                          </button>
+                        )}
+                      </td>
                       <td className="px-4 py-3.5">
                         <button
                           onClick={() => toggleStaff.mutate({ staffId: su.id, isActive: !su.is_active })}
@@ -748,6 +920,200 @@ export default function SuperAdmin() {
         </div>
       )}
 
+      {/* ---- COMMERCIAL TRACKING ---- */}
+      {tab === 'commercial' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suivi Commercial & Tracking</h2>
+            <select
+              value={commercialStaffFilter}
+              onChange={e => setCommercialStaffFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="">Tous les commerciaux</option>
+              {staffUsers.filter(s => s.staff_code).map(s => (
+                <option key={s.id} value={s.staff_code}>{s.email} ({s.staff_code})</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Commercial KPIs */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Ticket className="w-4 h-4 text-blue-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Codes actifs</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{staffUsers.filter(s => s.staff_code && s.is_active).length}</p>
+            </div>
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <UserPlus className="w-4 h-4 text-emerald-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tenants référés</p>
+              </div>
+              <p className="text-3xl font-bold text-emerald-600">{referredTenants.length}</p>
+            </div>
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="w-4 h-4 text-amber-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Taux conversion</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{funnelConversionRate}%</p>
+            </div>
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingDown className="w-4 h-4 text-red-500" />
+                <p className="text-sm text-gray-500 dark:text-gray-400">Taux de churn</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{churnRate || 0}%</p>
+            </div>
+          </div>
+
+          {/* Conversion funnel + Churn radial */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Funnel bar chart */}
+            <div className="lg:col-span-2 bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <GitBranch className="w-5 h-5 text-blue-500" />
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Entonnoir de conversion (90 jours)</h3>
+              </div>
+              {funnelData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={funnelData} layout="vertical" margin={{ left: 20, right: 40 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" horizontal={false} />
+                    <XAxis type="number" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={120} />
+                    <Tooltip contentStyle={chartTooltipStyle} />
+                    <Bar dataKey="value" radius={[0, 6, 6, 0]}>
+                      {funnelData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                      <LabelList dataKey="value" position="right" style={{ fontSize: 12, fill: '#6B7280', fontWeight: 600 }} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-40 flex items-center justify-center text-gray-400 text-sm">Aucune donnée de conversion</div>
+              )}
+            </div>
+
+            {/* Churn radial */}
+            <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingDown className="w-5 h-5 text-red-500" />
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Taux de churn</h3>
+              </div>
+              <ResponsiveContainer width="100%" height={200}>
+                <RadialBarChart innerRadius="60%" outerRadius="100%" data={[{ name: 'Churn', value: churnRate || 0, fill: '#ef4444' }]} startAngle={90} endAngle={-270}>
+                  <RadialBar background dataKey="value" cornerRadius={10} />
+                  <LabelList position="center" formatter={() => `${churnRate || 0}%`} style={{ fontSize: 28, fontWeight: 700, fill: '#1f2937' }} />
+                </RadialBarChart>
+              </ResponsiveContainer>
+              <p className="text-xs text-gray-400 text-center mt-2">Sur 90 jours</p>
+            </div>
+          </div>
+
+          {/* Referred tenants table */}
+          <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-gray-100 dark:border-surface-3">
+              <Building2 className="w-5 h-5 text-emerald-500" />
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Tenants référés par les commerciaux</h3>
+            </div>
+            {referredTenants.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead><tr className="border-b border-gray-100 dark:border-surface-3 bg-gray-50 dark:bg-surface-2">
+                    {['Entreprise', 'Pays', 'Plan', 'Statut', 'Code', 'Créé le'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody className="divide-y divide-gray-50 dark:divide-surface-3">
+                    {referredTenants.map(t => (
+                      <tr key={t.id} className="hover:bg-gray-50 dark:hover:bg-surface-2">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{t.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">{COUNTRY_NAMES[t.country] || t.country}</td>
+                        <td className="px-4 py-3">{planBadge(t.plan)}</td>
+                        <td className="px-4 py-3">{statusBadge(t.subscription_status)}</td>
+                        <td className="px-4 py-3 text-sm font-mono text-emerald-600 dark:text-emerald-400">{t.referred_by_staff_code}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(t.created_at), 'dd/MM/yyyy')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-8">Aucun tenant référé</p>
+            )}
+          </div>
+
+          {/* Referral events timeline */}
+          <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Zap className="w-5 h-5 text-amber-500" />
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white">Chronologie des événements de parrainage</h3>
+            </div>
+            {referralEvents.length > 0 ? (
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {referralEvents.map(ev => {
+                  const eventInfo = EVENT_LABELS[ev.event_type] || { label: ev.event_type, color: '#94a3b8' };
+                  return (
+                    <div key={ev.id} className="flex items-start gap-3 py-2 border-b border-gray-50 dark:border-surface-3 last:border-0">
+                      <div className="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0" style={{ backgroundColor: eventInfo.color }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{eventInfo.label}</span>
+                          <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">{ev.staff_code}</span>
+                          {ev.tenants && (
+                            <span className="text-xs text-gray-500 dark:text-gray-400">→ {ev.tenants.name}</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-0.5">{format(new Date(ev.created_at), 'dd/MM/yyyy à HH:mm')}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-8">Aucun événement de parrainage</p>
+            )}
+          </div>
+
+          {/* Code assignment history */}
+          <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 overflow-hidden">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-gray-100 dark:border-surface-3">
+              <Ticket className="w-5 h-5 text-purple-500" />
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Historique d'assignation des codes</h3>
+            </div>
+            {codeAssignments.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead><tr className="border-b border-gray-100 dark:border-surface-3 bg-gray-50 dark:bg-surface-2">
+                    {['Code', 'Membre', 'Action', 'Notes', 'Date'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody className="divide-y divide-gray-50 dark:divide-surface-3">
+                    {codeAssignments.map(ca => (
+                      <tr key={ca.id} className="hover:bg-gray-50 dark:hover:bg-surface-2">
+                        <td className="px-4 py-3 text-sm font-mono text-emerald-600 dark:text-emerald-400">{ca.staff_code}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{ca.staff?.email || '—'}</td>
+                        <td className="px-4 py-3">
+                          <Badge variant={ca.action === 'generated' ? 'success' : ca.action === 'revoked' ? 'danger' : 'info'}>
+                            {ca.action}
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{ca.notes || '—'}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(ca.created_at), 'dd/MM/yyyy HH:mm')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 text-center py-8">Aucun historique d'assignation</p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ---- PERFORMANCE ---- */}
       {tab === 'performance' && (
         <div className="space-y-6">
@@ -779,14 +1145,14 @@ export default function SuperAdmin() {
                   </tr></thead>
                   <tbody className="divide-y divide-gray-50 dark:divide-surface-3">
                     {staffPerformance.map((sp, i) => (
-                      <tr key={sp.staff_code} className="hover:bg-gray-50 dark:hover:bg-surface-2">
+                      <tr key={sp.staff_code || sp.email} className="hover:bg-gray-50 dark:hover:bg-surface-2">
                         <td className="px-4 py-3.5">
                           <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : i === 1 ? 'bg-gray-200 text-gray-600 dark:bg-surface-3 dark:text-gray-300' : i === 2 ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300' : 'text-gray-400'}`}>
                             {i + 1}
                           </span>
                         </td>
                         <td className="px-4 py-3.5 text-sm font-medium text-gray-900 dark:text-white">{sp.email}</td>
-                        <td className="px-4 py-3.5 text-sm font-mono text-gray-600 dark:text-gray-300">{sp.staff_code}</td>
+                        <td className="px-4 py-3.5 text-sm font-mono text-gray-600 dark:text-gray-300">{sp.staff_code || '—'}</td>
                         <td className="px-4 py-3.5 text-sm text-gray-900 dark:text-white">{sp.tenants_count}</td>
                         <td className="px-4 py-3.5 text-sm text-gray-900 dark:text-white">{sp.paid_count}</td>
                         <td className="px-4 py-3.5">
@@ -801,20 +1167,41 @@ export default function SuperAdmin() {
                 </table>
               </div>
 
-              {/* Chart */}
-              <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Revenus générés par commercial</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={staffPerformance.map(sp => ({ name: sp.email.split('@')[0], Revenus: sp.revenue, Tenants: sp.tenants_count }))}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Bar dataKey="Revenus" fill="#10B981" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Tenants" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              {/* Charts row */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue bar chart */}
+                <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Revenus générés par commercial</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={staffPerformance.map(sp => ({ name: sp.email.split('@')[0], Revenus: sp.revenue, Tenants: sp.tenants_count }))}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={chartTooltipStyle} />
+                      <Legend wrapperStyle={{ fontSize: 12 }} />
+                      <Bar dataKey="Revenus" fill="#10B981" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Tenants" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Conversion rate radial */}
+                <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Taux de conversion par commercial</h4>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={staffPerformance.map(sp => ({ name: sp.email.split('@')[0], Conversion: sp.conversion_rate }))} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" horizontal={false} />
+                      <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} unit="%" />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={80} />
+                      <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => `${v.toFixed(0)}%`} />
+                      <Bar dataKey="Conversion" radius={[0, 4, 4, 0]}>
+                        {staffPerformance.map((sp, i) => (
+                          <Cell key={i} fill={sp.conversion_rate >= 50 ? '#10B981' : sp.conversion_rate >= 25 ? '#f59e0b' : '#ef4444'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </>
           ) : (
@@ -828,33 +1215,72 @@ export default function SuperAdmin() {
 
       {/* ---- LOGS ---- */}
       {tab === 'logs' && (
-        <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead><tr className="border-b border-gray-100 dark:border-surface-3 bg-gray-50 dark:bg-surface-2">
-                {['Action', 'Module', 'Utilisateur', 'Tenant', 'Date'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
-                ))}
-              </tr></thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-surface-3">
-                {(auditLogs as Array<{ id: string; action: string; module: string; user_id?: string; tenant_id?: string; created_at: string }>).map(log => (
-                  <tr key={log.id} className="hover:bg-gray-50 dark:hover:bg-surface-2">
-                    <td className="px-4 py-3.5">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        log.action.includes('delete') || log.action.includes('revoke') ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300' :
-                        log.action.includes('create') || log.action.includes('add') || log.action.includes('grant') ? 'bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300' :
-                        'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
-                      }`}>{log.action}</span>
-                    </td>
-                    <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">{log.module}</td>
-                    <td className="px-4 py-3.5 text-sm text-gray-400 font-mono">{log.user_id?.slice(0,8) || '—'}</td>
-                    <td className="px-4 py-3.5 text-sm text-gray-400 font-mono">{log.tenant_id?.slice(0,8) || '—'}</td>
-                    <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(log.created_at), 'dd/MM/yyyy HH:mm')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="space-y-4">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={logFilter}
+                onChange={e => setLogFilter(e.target.value)}
+                placeholder="Filtrer par action..."
+                className="w-full pl-9 pr-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+            <select
+              value={logModuleFilter}
+              onChange={e => setLogModuleFilter(e.target.value)}
+              className="px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
+              <option value="">Tous les modules</option>
+              <option value="super_admin">Super Admin</option>
+              <option value="staff">Staff</option>
+              <option value="commercial">Commercial</option>
+              <option value="tenants">Tenants</option>
+              <option value="subscriptions">Subscriptions</option>
+              <option value="support">Support</option>
+              <option value="statistics">Statistics</option>
+            </select>
           </div>
+
+          {/* Logs table */}
+          <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead><tr className="border-b border-gray-100 dark:border-surface-3 bg-gray-50 dark:bg-surface-2">
+                  {['Action', 'Module', 'Utilisateur', 'Tenant', 'Date'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                  ))}
+                </tr></thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-surface-3">
+                  {filteredLogs.map((log) => {
+                    const action = log.action as string;
+                    const module = log.module as string;
+                    return (
+                      <tr key={log.id as string} className="hover:bg-gray-50 dark:hover:bg-surface-2">
+                        <td className="px-4 py-3.5">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            action?.includes('delete') || action?.includes('revoke') ? 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300' :
+                            action?.includes('create') || action?.includes('add') || action?.includes('grant') ? 'bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-300' :
+                            'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300'
+                          }`}>{action}</span>
+                        </td>
+                        <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">{module}</td>
+                        <td className="px-4 py-3.5 text-sm text-gray-400 font-mono">{(log.user_id as string)?.slice(0,8) || '—'}</td>
+                        <td className="px-4 py-3.5 text-sm text-gray-400 font-mono">{(log.tenant_id as string)?.slice(0,8) || '—'}</td>
+                        <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(log.created_at as string), 'dd/MM/yyyy HH:mm')}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {filteredLogs.length === 0 && (
+              <p className="text-sm text-gray-400 text-center py-8">Aucun journal trouvé</p>
+            )}
+          </div>
+          <p className="text-xs text-gray-400">{filteredLogs.length} entrées affichées sur {auditLogs.length}</p>
         </div>
       )}
     </div>
