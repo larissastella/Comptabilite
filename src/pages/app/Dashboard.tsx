@@ -2,16 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   TrendingUp, TrendingDown, FileText, Users, Package, AlertTriangle,
-  ArrowUpRight, Clock, Award, Wallet, Receipt, PiggyBank, BarChart3,
+  ArrowUpRight, Clock, Award, Wallet, Receipt, PiggyBank,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend, RadialBarChart, RadialBar,
+  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, Legend,
 } from 'recharts';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { format, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, subDays, isSameMonth } from 'date-fns';
+import { format, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, subDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Link, Navigate } from 'react-router-dom';
 import Badge from '../../components/ui/Badge';
@@ -76,13 +76,6 @@ export default function Dashboard() {
   const { isSuperAdmin, staffInfo, user } = useAuth();
   const tenantId = tenant?.id;
   const [teamPeriod, setTeamPeriod] = useState<'month' | 'quarter' | 'year'>('month');
-
-  if (!tenant && (isSuperAdmin || staffInfo.isStaff)) {
-    return <Navigate to="/app/super-admin" replace />;
-  }
-  if (!tenantId) {
-    return <Navigate to="/onboarding" replace />;
-  }
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboard-stats', tenantId],
@@ -305,6 +298,13 @@ export default function Dashboard() {
     ? Math.round((momTrend / chartData[chartData.length - 2].CA) * 100)
     : 0;
 
+  if (!tenant && (isSuperAdmin || staffInfo.isStaff)) {
+    return <Navigate to="/app/super-admin" replace />;
+  }
+  if (!tenantId) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   if (isLoading) {
     return (
       <div className="p-6">
@@ -419,7 +419,7 @@ export default function Dashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={60}
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
-                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => formatCurrency(v)} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Area type="monotone" dataKey="CA" stroke="#10B981" strokeWidth={2.5} fill="url(#caGradient)" name="Chiffre d'affaires" />
                 <Area type="monotone" dataKey="Marge" stroke="#3B82F6" strokeWidth={2} fill="url(#marginGradient)" name="Marge brute" />
@@ -485,7 +485,7 @@ export default function Dashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} interval={4} />
                 <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={60}
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
-                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => formatCurrency(v)} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 <Line type="monotone" dataKey="Entrees" stroke="#10B981" strokeWidth={2} dot={false} name="Entrées" />
                 <Line type="monotone" dataKey="Sorties" stroke="#F97316" strokeWidth={2} dot={false} name="Sorties" />
@@ -550,7 +550,7 @@ export default function Dashboard() {
                 <XAxis type="number" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false}
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={90} />
-                <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => formatCurrency(v)} />
+                <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
                 <Bar dataKey="CA" fill="#10B981" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -660,7 +660,7 @@ export default function Dashboard() {
                   <XAxis type="number" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false}
                     tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={70} />
-                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number, name: string) => name === 'CA généré' ? formatCurrency(v) : v} />
+                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v, name) => name === 'CA généré' ? formatCurrency(Number(v)) : v} />
                   <Bar dataKey="CA généré" fill="#10B981" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
