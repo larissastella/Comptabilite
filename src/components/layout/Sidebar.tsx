@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, BookOpen, Package, Warehouse, FileText,
   ShoppingCart, ArrowLeftRight, BookMarked, BarChart3, CreditCard,
   Smartphone, Bot, FileSpreadsheet, Settings, Users, Shield,
-  LogOut, X, ChevronDown, ChevronRight, Globe, Lock,
+  LogOut, X, ChevronDown, ChevronRight, Globe, Lock, Landmark, Boxes, Receipt,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -69,6 +69,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             { key: 'purchase-invoices', label: t('nav.purchaseInvoices'), icon: ShoppingCart, to: '/app/purchase-invoices', module: 'purchase_invoices' },
             { key: 'transactions', label: t('nav.transactions'), icon: ArrowLeftRight, to: '/app/transactions', module: 'transactions' },
             { key: 'ledger', label: t('nav.ledger'), icon: BookMarked, to: '/app/ledger', module: 'ledger' },
+            { key: 'credit-notes', label: 'Notes de crédit', icon: Receipt, to: '/app/credit-notes', module: 'credit_notes' },
             { key: 'reports', label: t('nav.reports'), icon: BarChart3, to: '/app/reports', module: 'reports' },
           ],
         },
@@ -76,6 +77,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           label: t('nav.premium'),
           items: [
             { key: 'banking', label: t('nav.banking'), icon: CreditCard, to: '/app/banking', module: 'banking' },
+            { key: 'bank-reconciliation', label: 'Rapprochement bancaire', icon: Landmark, to: '/app/bank-reconciliation', module: 'bank_reconciliation' },
+            { key: 'fixed-assets', label: 'Immobilisations', icon: Boxes, to: '/app/fixed-assets', module: 'fixed_assets' },
             { key: 'whatsapp', label: t('nav.whatsapp'), icon: Smartphone, to: '/app/whatsapp', module: 'whatsapp' },
             { key: 'ai-cashflow', label: t('nav.aiCashflow'), icon: Bot, to: '/app/ai-cashflow', module: 'ai_cashflow' },
             { key: 'ohada', label: t('nav.ohada'), icon: FileSpreadsheet, to: '/app/ohada', module: 'ohada' },
