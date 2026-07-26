@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  Shield, Users, Building2, Eye, UserCheck, Plus, Trash2, AlertTriangle,
+  Shield, Users, Building2, UserCheck, Plus, Trash2, AlertTriangle,
   Globe, TrendingUp, Award, UserCog, BarChart3, MapPin, CreditCard, X,
-  DollarSign, Activity, Filter, Target, GitBranch, Search, RefreshCw,
+  DollarSign, Activity, Target, GitBranch, Search, RefreshCw,
   Ticket, UserPlus, TrendingDown, Zap,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line,
-  RadialBarChart, RadialBar, FunnelChart, Funnel, LabelList,
+  RadialBarChart, RadialBar, LabelList,
 } from 'recharts';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,7 +17,7 @@ import {
   Tenant, SuperAdmin as SuperAdminRecord, InternalStaffRole, InternalStaffUser,
   PlatformStats, StaffPerformance, ReferralEvent, CodeAssignment,
 } from '../../types';
-import { format, subMonths, startOfMonth, eachDayOfInterval, subDays, isSameMonth } from 'date-fns';
+import { format, subMonths, startOfMonth, eachDayOfInterval, subDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
@@ -81,7 +81,7 @@ export default function SuperAdmin() {
   const [logModuleFilter, setLogModuleFilter] = useState('');
   const [commercialStaffFilter, setCommercialStaffFilter] = useState('');
 
-  if (!isSuperAdmin) return <Navigate to="/app/dashboard" replace />;
+
 
   const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-manage`;
 
@@ -393,6 +393,8 @@ export default function SuperAdmin() {
     ? Math.round((conversionFunnel.trial_converted / conversionFunnel.code_entered) * 100)
     : 0;
 
+  if (!isSuperAdmin) return <Navigate to="/app/dashboard" replace />;
+
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0 space-y-6">
       {/* Header */}
@@ -523,7 +525,7 @@ export default function SuperAdmin() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" />
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={50} />
-                    <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => `$${v}/mois`} />
+                    <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `$${Number(v)}/mois`} />
                     <Bar dataKey="Revenus" radius={[4, 4, 0, 0]}>
                       {platformStats.revenueByPlan.map(r => <Cell key={r.plan} fill={PLAN_COLORS[r.plan] || '#94a3b8'} />)}
                     </Bar>
@@ -1193,7 +1195,7 @@ export default function SuperAdmin() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:opacity-20" horizontal={false} />
                       <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} unit="%" />
                       <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={80} />
-                      <Tooltip contentStyle={chartTooltipStyle} formatter={(v: number) => `${v.toFixed(0)}%`} />
+                      <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${Number(v).toFixed(0)}%`} />
                       <Bar dataKey="Conversion" radius={[0, 4, 4, 0]}>
                         {staffPerformance.map((sp, i) => (
                           <Cell key={i} fill={sp.conversion_rate >= 50 ? '#10B981' : sp.conversion_rate >= 25 ? '#f59e0b' : '#ef4444'} />
