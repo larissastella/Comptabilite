@@ -8,6 +8,7 @@ import { AuditLog } from '../../types';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import ImageUploader from '../../components/ui/ImageUploader';
+import TwoFactorSettings from '../../components/ui/TwoFactorSettings';
 
 type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'language';
 
@@ -252,9 +253,12 @@ export default function Settings() {
             )}
 
             {activeTab === 'security' && (
-              <div className="space-y-6">
-                <h2 className="text-base font-semibold text-gray-900 mb-4">{t('settings.auditLogs')}</h2>
-                {auditLogs.length === 0 ? (
+              <div className="space-y-8">
+                <TwoFactorSettings />
+
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 mb-4">{t('settings.auditLogs')}</h2>
+                  {auditLogs.length === 0 ? (
                   <div className="text-center py-10 text-gray-400">
                     <Shield className="w-10 h-10 mx-auto mb-3 opacity-50" />
                     <p className="text-sm">Aucun journal d'audit disponible</p>
@@ -282,6 +286,7 @@ export default function Settings() {
                     ))}
                   </div>
                 )}
+                </div>
               </div>
             )}
 
