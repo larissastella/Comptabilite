@@ -7,6 +7,7 @@ import SignupPage from './pages/auth/SignupPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import AcceptInvitePage, { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
 import OnboardingPage from './pages/onboarding/OnboardingPage';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/app/Dashboard';
@@ -21,6 +22,9 @@ import PurchaseInvoices from './pages/app/PurchaseInvoices';
 import Transactions from './pages/app/Transactions';
 import Reports from './pages/app/Reports';
 import Ledger from './pages/app/Ledger';
+import BankReconciliation from './pages/app/BankReconciliation';
+import CreditNotes from './pages/app/CreditNotes';
+import FixedAssets from './pages/app/FixedAssets';
 import Settings from './pages/app/Settings';
 import UsersRoles from './pages/app/UsersRoles';
 import Billing from './pages/app/Billing';
@@ -105,6 +109,9 @@ function OnboardingRoute() {
   if (!user) return <Navigate to="/login" replace />;
   if (tenant || isSuperAdmin || staffInfo.isStaff) return <Navigate to="/app/dashboard" replace />;
 
+  const pendingInvite = localStorage.getItem(INVITE_STORAGE_KEY);
+  if (pendingInvite) return <Navigate to={`/invite/${pendingInvite}`} replace />;
+
   return <OnboardingPage />;
 }
 
@@ -138,6 +145,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        <Route path="/invite/:token" element={<AcceptInvitePage />} />
         <Route path="/onboarding" element={<OnboardingRoute />} />
 
         <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
@@ -154,6 +162,9 @@ export default function App() {
           <Route path="transactions" element={<Transactions />} />
           <Route path="reports" element={<Reports />} />
           <Route path="ledger" element={<Ledger />} />
+          <Route path="credit-notes" element={<CreditNotes />} />
+          <Route path="bank-reconciliation" element={<PremiumGate module="bank_reconciliation"><BankReconciliation /></PremiumGate>} />
+          <Route path="fixed-assets" element={<PremiumGate module="fixed_assets"><FixedAssets /></PremiumGate>} />
           <Route path="companies" element={<PremiumPlaceholder icon="🏢" title="Multi-société" desc="Gérez plusieurs sociétés depuis un seul compte. Disponible en forfait Entreprise." />} />
           <Route path="banking" element={<PremiumGate module="banking"><Banking /></PremiumGate>} />
           <Route path="whatsapp" element={<PremiumGate module="whatsapp"><WhatsApp /></PremiumGate>} />
