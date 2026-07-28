@@ -454,7 +454,7 @@ export default function SuperAdmin() {
       {/* ---- OVERVIEW ---- */}
       {tab === 'overview' && platformStats && (
         <div className="space-y-6">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Plateforme LiAfrik Books — Vue globale</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Plateforme LiBooks — Vue globale</h2>
 
           {/* Growth trend + activity */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

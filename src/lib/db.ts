@@ -44,14 +44,14 @@ export interface CachedStockLevel {
   cached_at: number;
 }
 
-class LiAfrikDB extends Dexie {
+class LiBooksDB extends Dexie {
   offlineActions!: Table<OfflineAction, number>;
   cachedProducts!: Table<CachedProduct, string>;
   cachedCustomers!: Table<CachedCustomer, string>;
   cachedStockLevels!: Table<CachedStockLevel, [string, string]>;
 
   constructor() {
-    super('LiAfrikBooks');
+    super('LiBooksDB');
     this.version(1).stores({
       offlineActions: '++id, offlineId, table, operation, tenantId, createdAt',
       cachedProducts: 'id, tenant_id, sku, name, is_active',
@@ -61,7 +61,7 @@ class LiAfrikDB extends Dexie {
   }
 }
 
-export const localDb = new LiAfrikDB();
+export const localDb = new LiBooksDB();
 
 export async function queueOfflineAction(
   action: Omit<OfflineAction, 'id' | 'retries' | 'createdAt'>

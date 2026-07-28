@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -33,7 +33,7 @@ export default function AboutPage() {
             La comptabilité africaine, réinventée.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            LiAfrik Books est né d'un constat simple : les entrepreneurs africains méritent des outils
+            LiBooks est né d'un constat simple : les entrepreneurs africains méritent des outils
             numériques aussi performants que ceux utilisés partout ailleurs dans le monde — pensés pour
             leurs réalités, leurs contraintes et leurs ambitions.
           </p>
@@ -50,7 +50,7 @@ export default function AboutPage() {
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
             Rendre la comptabilité accessible à toutes les entreprises africaines, de la micro-entreprise
             au grand groupe. Nous croyons que la gestion financière ne devrait pas être un obstacle à la
-            croissance — c'est un levier. LiAfrik Books combine facturation SYSCOHADA, gestion de stock
+            croissance — c'est un levier. LiBooks combine facturation SYSCOHADA, gestion de stock
             multi-magasin, point de vente offline-first et reporting OHADA dans une seule plateforme,
             accessible depuis un smartphone.
           </p>
@@ -92,7 +92,7 @@ export default function AboutPage() {
           </div>
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-1 dark:to-surface-2 rounded-2xl p-6 border border-gray-100 dark:border-surface-3">
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              LiAfrik Books est édité par <strong className="text-gray-900 dark:text-white">LIYAH GROUP</strong>,
+              LiBooks est édité par <strong className="text-gray-900 dark:text-white">LIYAH GROUP</strong>,
               un groupe technologique à la double présence <strong className="text-gray-900 dark:text-white">Dubaï (EAU)</strong> et
               <strong className="text-gray-900 dark:text-white"> Yaoundé (Cameroun)</strong>. Cette double ancrage
               n'est pas un hasard — c'est notre identité.
@@ -105,7 +105,7 @@ export default function AboutPage() {
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               Ce pont entre l'innovation internationale et l'ancrage africain se reflète dans chaque ligne de
-              code de LiAfrik Books. Nous sommes fiers de construire un produit africain de classe
+              code de LiBooks. Nous sommes fiers de construire un produit africain de classe
               internationale — et encore plus fiers qu'il serve les entrepreneurs de notre continent.
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function AboutPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiAfrik Books est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
           </p>
           <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
         </div>

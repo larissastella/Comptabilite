@@ -40,7 +40,7 @@ export function ReportPdfDocument({ tenantName, title, period, kpis, columns, ro
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.logo}>{tenantName}</Text>
-          <Text style={styles.subtitle}>LiAfrik Books — Rapport comptable</Text>
+          <Text style={styles.subtitle}>LiBooks — Rapport comptable</Text>
         </View>
 
         <Text style={styles.title}>{title}</Text>
@@ -101,7 +101,7 @@ export function ReportPdfDocument({ tenantName, title, period, kpis, columns, ro
         {/* Footer */}
         <View style={styles.footer}>
           <Text>Genéré le {new Date().toLocaleDateString('fr-FR')}</Text>
-          <Text>LiAfrik Books — Page 1</Text>
+          <Text>LiBooks — Page 1</Text>
         </View>
       </Page>
     </Document>

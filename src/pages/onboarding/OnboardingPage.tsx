@@ -326,7 +326,7 @@ export default function OnboardingPage() {
       <header className="bg-[#0F2A3D] px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <BookOpen className="w-7 h-7 text-[#10B981] flex-shrink-0" />
-          <span className="text-white font-bold">LiAfrik <span className="text-[#10B981]">Books</span></span>
+          <span className="text-white font-bold">Li<span className="text-[#10B981]">Books</span></span>
         </Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">
@@ -403,7 +403,7 @@ export default function OnboardingPage() {
                     value={data.staffCode}
                     onChange={e => set('staffCode', e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
-                    placeholder="Si vous avez été référé par un commercial LiAfrik Books"
+                    placeholder="Si vous avez été référé par un commercial LiBooks"
                   />
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Laissez vide si vous n'avez pas de code.</p>
                 </div>

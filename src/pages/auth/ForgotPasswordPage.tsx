@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
           <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+          <span className="text-2xl font-bold text-white">Li<span className="text-[#10B981]">Books</span></span>
         </Link>
 
         <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">

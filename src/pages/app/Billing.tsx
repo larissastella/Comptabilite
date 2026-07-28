@@ -71,7 +71,7 @@ export default function Billing() {
 
         {isTrialing && trialDaysLeft <= 3 && (
           <div className="mt-4 p-3 bg-amber-100 rounded-xl">
-            <p className="text-sm text-amber-800 font-medium">⚠ Votre essai expire bientôt. Souscrivez pour continuer à utiliser LiAfrik Books.</p>
+            <p className="text-sm text-amber-800 font-medium">⚠ Votre essai expire bientôt. Souscrivez pour continuer à utiliser LiBooks.</p>
           </div>
         )}
       </div>

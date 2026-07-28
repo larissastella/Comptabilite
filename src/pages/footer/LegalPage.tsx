@@ -9,7 +9,7 @@ export default function LegalPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -28,7 +28,7 @@ export default function LegalPage() {
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-8 text-gray-600 dark:text-gray-400">
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Éditeur de la plateforme</h2>
-            <p>La plateforme LiAfrik Books est éditée par :</p>
+            <p>La plateforme LiBooks est éditée par :</p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
               <li><strong className="text-gray-900 dark:text-white">LIYAH GROUP</strong></li>
               <li>Dubaï, Émirats Arabes Unis</li>
@@ -54,13 +54,13 @@ export default function LegalPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">4. Propriété intellectuelle</h2>
             <p>
-              L'ensemble des contenus présents sur la plateforme LiAfrik Books (textes, logos, graphismes,
+              L'ensemble des contenus présents sur la plateforme LiBooks (textes, logos, graphismes,
               logiciels, interfaces, plan comptable SYSCOHADA intégré) est la propriété exclusive de LIYAH GROUP,
               sauf mention contraire. Toute reproduction, représentation, modification ou exploitation,
               totale ou partielle, sans autorisation écrite préalable est interdite.
             </p>
             <p className="mt-2">
-              Les noms commerciaux, marques et logos LIYAH GROUP et LiAfrik Books sont protégés.
+              Les noms commerciaux, marques et logos LIYAH GROUP et LiBooks sont protégés.
             </p>
           </section>
 
@@ -100,7 +100,7 @@ export default function LegalPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiAfrik Books est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
           </p>
           <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
         </div>

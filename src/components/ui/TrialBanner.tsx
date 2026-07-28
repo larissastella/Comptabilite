@@ -14,7 +14,7 @@ export default function TrialBanner() {
           <div className="flex items-center gap-2 text-sm text-red-800 dark:text-red-300">
             <AlertTriangle className="w-4 h-4 flex-shrink-0" />
             <span>
-              <strong>Essai expiré.</strong> Choisissez un forfait pour continuer à utiliser LiAfrik Books.
+              <strong>Essai expiré.</strong> Choisissez un forfait pour continuer à utiliser LiBooks.
             </span>
           </div>
           <Link

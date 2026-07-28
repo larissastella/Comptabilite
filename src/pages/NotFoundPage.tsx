@@ -11,7 +11,7 @@ export default function NotFoundPage() {
         <div className="flex items-center justify-center gap-2 mb-8">
           <BookOpen className="w-8 h-8 text-[#10B981]" />
           <div className="flex items-baseline gap-0.5">
-            <span className="text-slate-800 dark:text-white font-bold text-xl leading-none">LiAfrik</span>
+            <span className="text-slate-800 dark:text-white font-bold text-xl leading-none">LiBooks</span>
             <span className="text-[#10B981] font-bold text-xl leading-none"> Books</span>
           </div>
         </div>

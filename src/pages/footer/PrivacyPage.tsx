@@ -9,7 +9,7 @@ export default function PrivacyPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Responsable du traitement</h2>
             <p>
               LIYAH GROUP (Dubaï, EAU & Yaoundé, Cameroun) est responsable du traitement des données
-              personnelles collectées sur la plateforme LiAfrik Books. Pour toute question :
+              personnelles collectées sur la plateforme LiBooks. Pour toute question :
               <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline"> info@liafrik.com</a>.
             </p>
           </section>
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">3. Finalités du traitement</h2>
             <p>Les données sont traitées pour :</p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
-              <li>Fournir le service de comptabilité et de facturation LiAfrik Books.</li>
+              <li>Fournir le service de comptabilité et de facturation LiBooks.</li>
               <li>Permettre la gestion multi-utilisateurs et le contrôle d'accès par tenant.</li>
               <li>Générer les documents comptables (factures, rapports, PDF).</li>
               <li>Assurer le support technique et la maintenance.</li>
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">7. Conformité RGPD (Union Européenne)</h2>
             <p>
-              Pour nos clients européens, LiAfrik Books se conforme au Règlement Général sur la Protection
+              Pour nos clients européens, LiBooks se conforme au Règlement Général sur la Protection
               des Données (RGPD — Règlement UE 2016/679). Vous disposez des droits suivants :
             </p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
@@ -110,7 +110,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">8. Législations africaines de protection des données</h2>
             <p>
-              LiAfrik Books respecte également les lois de protection des données en vigueur dans les pays
+              LiBooks respecte également les lois de protection des données en vigueur dans les pays
               africains où le service est disponible, notamment :
             </p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
               <li><strong className="text-gray-900 dark:text-white">Afrique du Sud</strong> : Protection of Personal Information Act (POPIA).</li>
             </ul>
             <p className="mt-2">
-              Pour les pays non listés, LiAfrik Books applique des standards de protection équivalents.
+              Pour les pays non listés, LiBooks applique des standards de protection équivalents.
             </p>
           </section>
 
@@ -138,7 +138,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">10. Cookies</h2>
             <p>
-              LiAfrik Books utilise uniquement des cookies essentiels au fonctionnement (session d'authentification,
+              LiBooks utilise uniquement des cookies essentiels au fonctionnement (session d'authentification,
               préférence de langue et de thème). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.
             </p>
           </section>
@@ -156,7 +156,7 @@ export default function PrivacyPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiAfrik Books est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
           </p>
           <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
         </div>

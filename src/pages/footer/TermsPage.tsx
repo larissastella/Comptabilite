@@ -9,7 +9,7 @@ export default function TermsPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -30,7 +30,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Objet</h2>
             <p>
               Les présentes Conditions Générales d'Utilisation (CGU) et Conditions Générales de Vente (CGV)
-              régissent l'utilisation de la plateforme LiAfrik Books, éditée par LIYAH GROUP (Dubaï, EAU &
+              régissent l'utilisation de la plateforme LiBooks, éditée par LIYAH GROUP (Dubaï, EAU &
               Yaoundé, Cameroun). En créant un compte, vous acceptez sans réserve les présentes conditions.
             </p>
           </section>
@@ -38,7 +38,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">2. Définitions</h2>
             <ul className="space-y-1 list-disc list-inside">
-              <li><strong className="text-gray-900 dark:text-white">Plateforme</strong> : l'application LiAfrik Books accessible via le web.</li>
+              <li><strong className="text-gray-900 dark:text-white">Plateforme</strong> : l'application LiBooks accessible via le web.</li>
               <li><strong className="text-gray-900 dark:text-white">Utilisateur</strong> : toute personne physique ou morale ayant créé un compte.</li>
               <li><strong className="text-gray-900 dark:text-white">Forfait</strong> : l'abonnement souscrit (Starter, Pro, Premium, Entreprise).</li>
               <li><strong className="text-gray-900 dark:text-white">Essai gratuit</strong> : période d'essai de 7 jours sans carte bancaire.</li>
@@ -56,7 +56,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">4. Forfaits et tarifs</h2>
-            <p>LiAfrik Books propose 4 forfaits d'abonnement :</p>
+            <p>LiBooks propose 4 forfaits d'abonnement :</p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
               <li><strong className="text-gray-900 dark:text-white">Starter</strong> — 9 $/mois : facturation, stock de base, 2 utilisateurs.</li>
               <li><strong className="text-gray-900 dark:text-white">Pro</strong> — 19 $/mois : banque & Mobile Money, WhatsApp, multi-magasin, 5 utilisateurs.</li>
@@ -104,7 +104,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">8. Responsabilités de l'utilisateur</h2>
             <ul className="space-y-1 list-disc list-inside">
               <li>L'utilisateur s'engage à saisir des données comptables exactes et conformes à la législation applicable.</li>
-              <li>L'utilisateur est responsable de la sauvegarde de ses données (LiAfrik Books fournit un export complet).</li>
+              <li>L'utilisateur est responsable de la sauvegarde de ses données (LiBooks fournit un export complet).</li>
               <li>L'utilisateur s'interdit de tenter de compromettre la sécurité de la plateforme.</li>
               <li>L'utilisation à des fins illégales (blanchiment, fraude fiscale) entraîne la suspension immédiate du compte.</li>
             </ul>
@@ -167,7 +167,7 @@ export default function TermsPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiAfrik Books est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
           </p>
           <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
         </div>

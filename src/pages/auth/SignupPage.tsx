@@ -71,7 +71,7 @@ export default function SignupPage() {
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 text-white">
         <Link to="/" className="flex items-center gap-2.5">
           <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold">LiAfrik <span className="text-[#10B981]">Books</span></span>
+          <span className="text-2xl font-bold">Li<span className="text-[#10B981]">Books</span></span>
         </Link>
 
         <div>
@@ -96,7 +96,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <p className="text-slate-400 text-sm">© 2026 LiAfrik Books. Tous droits réservés.</p>
+        <p className="text-slate-400 text-sm">© 2026 LiBooks. Tous droits réservés.</p>
       </div>
 
       {/* Right panel */}
@@ -112,7 +112,7 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden justify-center">
             <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">LiAfrik <span className="text-[#10B981]">Books</span></span>
+            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
           </Link>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">

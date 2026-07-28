@@ -35,14 +35,14 @@ const PLANS = [
 ];
 
 const TESTIMONIALS = [
-  { name: 'Aïssatou Diallo', role: 'Comptable, Dakar', text: 'LiAfrik Books a transformé notre gestion. En 3 mois, nous avons divisé par 4 le temps de clôture mensuelle.', avatar: 'AD', color: 'bg-orange-500' },
+  { name: 'Aïssatou Diallo', role: 'Comptable, Dakar', text: 'LiBooks a transformé notre gestion. En 3 mois, nous avons divisé par 4 le temps de clôture mensuelle.', avatar: 'AD', color: 'bg-orange-500' },
   { name: 'Jean-Pierre Mbarga', role: 'Directeur, Yaoundé', text: 'Enfin un outil qui parle notre langue comptable. SYSCOHADA est natif, plus besoin de tableurs.', avatar: 'JM', color: 'bg-green-500' },
   { name: 'Fatou Ndiaye', role: 'Gérante, Abidjan', text: 'Le mode offline est un game-changer. Je facture même sans connexion, ça se synchronise tout seul.', avatar: 'FN', color: 'bg-blue-500' },
   { name: 'Kwame Mensah', role: 'CFO, Accra', text: 'L\'IA de trésorerie nous a alertés d\'un risque de rupture 3 semaines avant qu\'il arrive. Inestimable.', avatar: 'KM', color: 'bg-purple-500' },
 ];
 
 const FAQS = [
-  { q: 'LiAfrik Books fonctionne-t-il hors connexion ?', a: 'Oui. L\'application est une PWA (Progressive Web App) avec mode offline-first. Vous pouvez créer factures, mouvements de stock et transactions sans connexion. Les données se synchronisent automatiquement dès le retour du réseau, avec déduplication par clés d\'idempotence.' },
+  { q: 'LiBooks fonctionne-t-il hors connexion ?', a: 'Oui. L\'application est une PWA (Progressive Web App) avec mode offline-first. Vous pouvez créer factures, mouvements de stock et transactions sans connexion. Les données se synchronisent automatiquement dès le retour du réseau, avec déduplication par clés d\'idempotence.' },
   { q: 'Le plan comptable SYSCOHADA est-il inclus ?', a: 'Oui. Pour tous les pays OHADA (Cameroun, Sénégal, Côte d\'Ivoire, etc.), le plan SYSCOHADA révisé est pré-configuré automatiquement à la création du compte, avec plus de 40 comptes des classes 1 à 7.' },
   { q: 'Puis-je utiliser mon Mobile Money pour encaisser ?', a: 'Le module Banque & Mobile Money (forfait Pro et supérieur) intègre Orange Money, MTN MoMo, Wave et Moov Money. Les encaissements apparaissent automatiquement dans vos transactions.' },
   { q: 'Comment fonctionne la facturation ?', a: 'Vous bénéficiez d\'un essai gratuit de 7 jours sans carte bancaire. Ensuite, vous choisissez un forfait (Starter, Pro, Premium, Entreprise). Le paiement se fait via Stripe, en mensuel ou annuel (-20%). Vous pouvez changer de forfait à tout moment avec proration.' },
@@ -106,7 +106,7 @@ export default function LandingPage() {
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#10B981]`} />
             <span className={`text-lg font-bold tracking-tight ${scrolled ? 'text-[#0F2A3D] dark:text-white' : 'text-white'}`}>
-              LiAfrik <span className={scrolled ? 'text-[#3B82F6]' : 'text-[#10B981]'}>Books</span>
+              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#10B981]'}>Books</span>
             </span>
           </Link>
 
@@ -447,7 +447,7 @@ export default function LandingPage() {
                 Témoignages
               </span>
               <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-                Ils gèrent leur entreprise avec LiAfrik
+                Ils gèrent leur entreprise avec LiBooks
               </h2>
             </div>
           </Reveal>
@@ -535,7 +535,7 @@ export default function LandingPage() {
             <div>
               <Link to="/" className="flex items-center gap-2 mb-4">
                 <BookOpen className="w-7 h-7 text-[#10B981]" />
-                <span className="text-lg font-bold">LiAfrik <span className="text-[#10B981]">Books</span></span>
+                <span className="text-lg font-bold">Li<span className="text-[#10B981]">Books</span></span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
                 {t('landing.footerTagline')}
@@ -583,7 +583,7 @@ export default function LandingPage() {
           <div className="py-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-gray-300 font-medium">
-                LiAfrik Books est développé par <span className="text-white font-bold">LIYAH GROUP</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
+                LiBooks est développé par <span className="text-white font-bold">LIYAH GROUP</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
               </p>
               <p className="text-xs text-gray-500">
                 Un pont entre l'innovation internationale et l'ancrage africain.
