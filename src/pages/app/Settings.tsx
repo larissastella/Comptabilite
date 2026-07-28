@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Settings as SettingsIcon, Building2, Scale, CreditCard, Shield, Globe, ChevronRight, Save } from 'lucide-react';
+import { Settings as SettingsIcon, Building2, Scale, CreditCard, Shield, Globe, ChevronRight, Save, Key, Copy, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { AuditLog } from '../../types';
@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import ImageUploader from '../../components/ui/ImageUploader';
 import TwoFactorSettings from '../../components/ui/TwoFactorSettings';
 
-type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'language';
+type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'language' | 'api';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -102,6 +102,7 @@ export default function Settings() {
     { key: 'taxes', label: t('settings.taxes'), icon: SettingsIcon },
     { key: 'security', label: t('settings.security'), icon: Shield },
     { key: 'language', label: t('settings.language'), icon: Globe },
+    ...(tenant?.plan === 'enterprise' ? [{ key: 'api' as const, label: 'API', icon: Key }] : []),
   ];
 
   return (
@@ -310,9 +311,122 @@ export default function Settings() {
                 <p className="text-xs text-gray-400">La langue s'applique à toute l'interface, aux emails et aux PDF générés.</p>
               </div>
             )}
+            {activeTab === 'api' && <ApiKeysPanel tenantId={tenant!.id} />}
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ApiKeysPanel({ tenantId }: { tenantId: string }) {
+  const qc = useQueryClient();
+  const [showCreate, setShowCreate] = useState(false);
+  const [keyName, setKeyName] = useState('');
+  const [scope, setScope] = useState<'read' | 'write'>('read');
+  const [newKey, setNewKey] = useState<string | null>(null);
+
+  const { data: keys = [] } = useQuery({
+    queryKey: ['api-keys', tenantId],
+    queryFn: async () => {
+      const { data } = await supabase.from('api_keys').select('*').eq('tenant_id', tenantId).order('created_at', { ascending: false });
+      return data || [];
+    },
+  });
+
+  const createKey = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc('create_api_key', {
+        p_tenant_id: tenantId, p_name: keyName, p_scopes: [scope],
+      });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (plaintext) => {
+      setNewKey(plaintext);
+      qc.invalidateQueries({ queryKey: ['api-keys'] });
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const revokeKey = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('api_keys').update({ revoked_at: new Date().toISOString() }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['api-keys'] }); toast.success('Clé révoquée'); },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-semibold text-gray-900">Clés API</h2>
+        <button onClick={() => { setShowCreate(true); setNewKey(null); setKeyName(''); }} className="flex items-center gap-2 px-4 py-2 bg-[#0057D9] text-white text-sm font-semibold rounded-xl hover:bg-[#003F9E]">
+          <Plus className="w-4 h-4" /> Nouvelle clé
+        </button>
+      </div>
+      <p className="text-xs text-gray-400 mb-4">
+        Intègre LiBooks à tes propres systèmes. Documentation : <code className="bg-gray-100 px-1.5 py-0.5 rounded">GET/POST https://[ton-projet].supabase.co/functions/v1/public-api/...</code> avec <code className="bg-gray-100 px-1.5 py-0.5 rounded">Authorization: Bearer &lt;clé&gt;</code>.
+      </p>
+
+      {keys.length === 0 ? (
+        <div className="text-center py-10 text-gray-400">
+          <Key className="w-10 h-10 mx-auto mb-3 opacity-50" />
+          <p className="text-sm">Aucune clé API créée</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {keys.map((k: Record<string, unknown>) => (
+            <div key={k.id as string} className="bg-white rounded-xl border border-gray-100 p-3.5 flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">{k.name as string} {k.revoked_at ? <span className="text-xs text-red-500">(révoquée)</span> : null}</p>
+                <p className="text-xs text-gray-400 font-mono">{k.key_prefix as string}••••••••••••••••</p>
+              </div>
+              {!k.revoked_at && (
+                <button onClick={() => revokeKey.mutate(k.id as string)} className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            {newKey ? (
+              <>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Clé créée</h3>
+                <p className="text-sm text-gray-500 mb-4">Copie-la maintenant — elle ne sera plus jamais affichée en entier.</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <input readOnly value={newKey} className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-xs font-mono text-gray-600 bg-gray-50" />
+                  <button onClick={() => { navigator.clipboard.writeText(newKey); toast.success('Copiée'); }} className="p-2.5 bg-[#0057D9] text-white rounded-lg hover:bg-[#003F9E]"><Copy className="w-4 h-4" /></button>
+                </div>
+                <button onClick={() => setShowCreate(false)} className="w-full px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-200">Fermer</button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Nouvelle clé API</h3>
+                <div className="space-y-4">
+                  <input value={keyName} onChange={e => setKeyName(e.target.value)} placeholder="Nom (ex: Intégration comptable)" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />
+                  <select value={scope} onChange={e => setScope(e.target.value as 'read' | 'write')} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                    <option value="read">Lecture seule</option>
+                    <option value="write">Lecture + écriture</option>
+                  </select>
+                  <div className="flex gap-3">
+                    <button onClick={() => setShowCreate(false)} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm">Annuler</button>
+                    <button onClick={() => createKey.mutate()} disabled={!keyName || createKey.isPending} className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                      {createKey.isPending ? 'Création...' : 'Créer'}
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

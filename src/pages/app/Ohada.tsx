@@ -15,6 +15,19 @@ export default function Ohada() {
   const [tab, setTab] = useState<OhadaTab>('reports');
   const [ocrUploading, setOcrUploading] = useState(false);
   const [ocrUploaded, setOcrUploaded] = useState<{ name: string; url: string } | null>(null);
+  const [ocrExtracting, setOcrExtracting] = useState(false);
+  interface OcrExtractedData {
+    vendor_name: string | null;
+    invoice_number: string | null;
+    date: string | null;
+    subtotal: number | null;
+    vat_amount: number | null;
+    total: number | null;
+    currency: string | null;
+    line_items: { description: string; quantity: number | null; unit_price: number | null }[];
+    confidence: 'high' | 'medium' | 'low';
+  }
+  const [ocrExtracted, setOcrExtracted] = useState<OcrExtractedData | null>(null);
   const ocrInputRef = useRef<HTMLInputElement>(null);
 
   // Real data: transactions for balance
@@ -79,6 +92,7 @@ export default function Ohada() {
     const err = validateDocumentFile(file);
     if (err) { toast.error(err); return; }
     setOcrUploading(true);
+    setOcrExtracted(null);
     try {
       const { url } = await uploadOcrDocument(tenant!.id, file);
       setOcrUploaded({ name: file.name, url });
@@ -88,11 +102,26 @@ export default function Ohada() {
         module: 'ohada',
         after_data: { filename: file.name, url },
       });
-      toast.success('Document téléversé. L\'extraction OCR sera disponible après activation du service Premium.');
+
+      setOcrExtracting(true);
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ocr-extract`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({ document_url: url, tenant_id: tenant!.id, media_type: file.type }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Échec de l'extraction");
+      setOcrExtracted(json.extracted);
+      toast.success('Document analysé automatiquement');
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : 'Échec du téléversement');
     } finally {
       setOcrUploading(false);
+      setOcrExtracting(false);
     }
   }
 
@@ -327,9 +356,44 @@ export default function Ohada() {
               </>
             )}
           </div>
-          <p className="text-xs text-gray-400 mt-4">
-            Le service OCR sera connecté à votre abonnement Premium pour activer l'extraction automatique.
-          </p>
+
+          {ocrExtracting && (
+            <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" /> Analyse du document en cours...
+            </div>
+          )}
+
+          {ocrExtracted && (
+            <div className="mt-4 bg-white rounded-xl border border-gray-100 p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-gray-900">Données extraites</h3>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  ocrExtracted.confidence === 'high' ? 'bg-green-100 text-green-700' :
+                  ocrExtracted.confidence === 'medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  Confiance {ocrExtracted.confidence === 'high' ? 'élevée' : ocrExtracted.confidence === 'medium' ? 'moyenne' : 'faible'}
+                </span>
+              </div>
+              <dl className="grid grid-cols-2 gap-3 text-sm">
+                <div><dt className="text-gray-400 text-xs">Fournisseur</dt><dd className="text-gray-900 font-medium">{ocrExtracted.vendor_name || '—'}</dd></div>
+                <div><dt className="text-gray-400 text-xs">N° facture</dt><dd className="text-gray-900 font-medium">{ocrExtracted.invoice_number || '—'}</dd></div>
+                <div><dt className="text-gray-400 text-xs">Date</dt><dd className="text-gray-900 font-medium">{ocrExtracted.date || '—'}</dd></div>
+                <div><dt className="text-gray-400 text-xs">Devise</dt><dd className="text-gray-900 font-medium">{ocrExtracted.currency || '—'}</dd></div>
+                <div><dt className="text-gray-400 text-xs">Sous-total</dt><dd className="text-gray-900 font-medium">{ocrExtracted.subtotal ?? '—'}</dd></div>
+                <div><dt className="text-gray-400 text-xs">TVA</dt><dd className="text-gray-900 font-medium">{ocrExtracted.vat_amount ?? '—'}</dd></div>
+                <div className="col-span-2"><dt className="text-gray-400 text-xs">Total</dt><dd className="text-gray-900 font-bold text-base">{ocrExtracted.total ?? '—'}</dd></div>
+              </dl>
+              {ocrExtracted.line_items?.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs text-gray-400 mb-2">Lignes détectées</p>
+                  {ocrExtracted.line_items.map((li, i) => (
+                    <p key={i} className="text-xs text-gray-600 py-0.5">{li.description} {li.quantity ? `× ${li.quantity}` : ''} {li.unit_price ? `@ ${li.unit_price}` : ''}</p>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-gray-400 mt-3">Vérifie ces données avant de créer la facture d'achat — l'IA peut se tromper.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
