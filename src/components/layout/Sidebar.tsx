@@ -157,7 +157,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         ) : isPlatformUser ? (
           <div className="px-5 py-3 border-b border-white/10">
             <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Plateforme</p>
-            <p className="text-white text-sm font-medium truncate">LIYAH GROUP</p>
+            <p className="text-white text-sm font-medium truncate">LiAfrik</p>
             <span className="inline-flex items-center mt-1 px-2 py-0.5 rounded text-xs font-medium bg-emerald-500/20 text-emerald-300">
               {isSuperAdmin ? 'Super Admin' : staffInfo.roleName || 'Staff'}
             </span>

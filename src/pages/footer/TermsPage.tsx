@@ -30,7 +30,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Objet</h2>
             <p>
               Les présentes Conditions Générales d'Utilisation (CGU) et Conditions Générales de Vente (CGV)
-              régissent l'utilisation de la plateforme LiBooks, éditée par LIYAH GROUP (Dubaï, EAU &
+              régissent l'utilisation de la plateforme LiBooks, éditée par LiAfrik (Dubaï, EAU &
               Yaoundé, Cameroun). En créant un compte, vous acceptez sans réserve les présentes conditions.
             </p>
           </section>
@@ -49,7 +49,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">3. Compte utilisateur</h2>
             <p>
               La création de compte nécessite une adresse email valide et un mot de passe. L'utilisateur est
-              responsable de la confidentialité de ses identifiants. LIYAH GROUP se réserve le droit de
+              responsable de la confidentialité de ses identifiants. LiAfrik se réserve le droit de
               suspendre un compte en cas d'usage frauduleux ou contraire aux présentes conditions.
             </p>
           </section>
@@ -111,11 +111,11 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">9. Responsabilités de LIYAH GROUP</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">9. Responsabilités de LiAfrik</h2>
             <p>
-              LIYAH GROUP s'engage à fournir un service disponible à 99,9 % (hors maintenance planifiée).
+              LiAfrik s'engage à fournir un service disponible à 99,9 % (hors maintenance planifiée).
               En cas de panne, le support est joignable à <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>.
-              LIYAH GROUP ne saurait être tenu responsable des décisions comptables ou fiscales prises sur
+              LiAfrik ne saurait être tenu responsable des décisions comptables ou fiscales prises sur
               la base des informations fournies par la plateforme. Celles-ci sont fournies à titre indicatif.
             </p>
           </section>
@@ -124,7 +124,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">10. Propriété intellectuelle</h2>
             <p>
               La plateforme, son code, son design et le plan comptable SYSCOHADA intégré sont la propriété
-              de LIYAH GROUP. Les données saisies par l'utilisateur restent sa propriété exclusive.
+              de LiAfrik. Les données saisies par l'utilisateur restent sa propriété exclusive.
               L'utilisateur conserve un droit d'export permanent de ses données.
             </p>
           </section>
@@ -140,7 +140,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">12. Modification des conditions</h2>
             <p>
-              LIYAH GROUP se réserve le droit de modifier les présentes conditions. Les utilisateurs seront
+              LiAfrik se réserve le droit de modifier les présentes conditions. Les utilisateurs seront
               notifiés par email au moins 30 jours avant l'entrée en vigueur des modifications substantielles.
             </p>
           </section>
@@ -167,9 +167,9 @@ export default function TermsPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

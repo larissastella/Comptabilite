@@ -134,9 +134,9 @@ export default function ContactPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

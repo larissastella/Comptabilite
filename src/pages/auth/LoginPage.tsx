@@ -171,7 +171,7 @@ export default function LoginPage() {
             </p>
 
             <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
-              Un produit <span className="font-semibold text-gray-500 dark:text-gray-400">LIYAH GROUP</span> — Dubaï & Yaoundé
+              Un produit <span className="font-semibold text-gray-500 dark:text-gray-400">LiAfrik</span> — Dubaï & Yaoundé
             </p>
           </div>
         </div>

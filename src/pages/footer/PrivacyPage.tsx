@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Responsable du traitement</h2>
             <p>
-              LIYAH GROUP (Dubaï, EAU & Yaoundé, Cameroun) est responsable du traitement des données
+              LiAfrik (Dubaï, EAU & Yaoundé, Cameroun) est responsable du traitement des données
               personnelles collectées sur la plateforme LiBooks. Pour toute question :
               <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline"> info@liafrik.com</a>.
             </p>
@@ -129,7 +129,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">9. Transferts de données hors UE/CEE</h2>
             <p>
               Les données peuvent être traitées depuis Dubaï (EAU) dans le cadre du développement et de la
-              maintenance de la plateforme. LIYAH GROUP garantit un niveau de protection adéquat conformément
+              maintenance de la plateforme. LiAfrik garantit un niveau de protection adéquat conformément
               aux garanties appropriées prévues par le RGPD (clauses contractuelles types, mesures techniques
               et organisationnelles).
             </p>
@@ -156,9 +156,9 @@ export default function PrivacyPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

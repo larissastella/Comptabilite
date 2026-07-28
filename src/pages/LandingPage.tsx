@@ -101,12 +101,12 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0 transition-colors">
       {/* ===== NAVBAR ===== */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3' : 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3 md:bg-transparent md:shadow-none md:py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />
-            <span className={`text-lg font-bold tracking-tight ${scrolled ? 'text-[#0F2A3D] dark:text-white' : 'text-white'}`}>
-              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9]'}>Books</span>
+            <span className={`text-lg font-bold tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
+              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}>Books</span>
             </span>
           </Link>
 
@@ -149,7 +149,7 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <button onClick={() => setMobileMenu(!mobileMenu)} className={`md:hidden p-2 ${scrolled ? 'text-gray-900 dark:text-white' : 'text-white'}`}>
+          <button onClick={() => setMobileMenu(!mobileMenu)} className={`md:hidden p-2 text-gray-900 dark:text-white`}>
             {mobileMenu ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
@@ -181,7 +181,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen flex items-center overflow-hidden" style={{ background: NAVY }}>
+      <section className="relative min-h-[auto] py-28 md:min-h-screen md:py-0 flex items-center overflow-hidden" style={{ background: NAVY }}>
         {/* Animated gradient blobs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 blur-3xl animate-pulse" style={{ background: GREEN }} />
@@ -579,11 +579,11 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* LIYAH GROUP identity banner */}
+          {/* LiAfrik identity banner */}
           <div className="py-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-gray-300 font-medium">
-                LiBooks est développé par <span className="text-white font-bold">LIYAH GROUP</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
+                LiBooks est développé par <span className="text-white font-bold">LiAfrik</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
               </p>
               <p className="text-xs text-gray-500">
                 Un pont entre l'innovation internationale et l'ancrage africain.

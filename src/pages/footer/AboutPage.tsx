@@ -82,17 +82,17 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* LIYAH GROUP */}
+        {/* LiAfrik */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
               <Globe2 className="w-5 h-5 text-[#0057D9]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">LIYAH GROUP — l'éditeur</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">LiAfrik — l'éditeur</h2>
           </div>
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-1 dark:to-surface-2 rounded-2xl p-6 border border-gray-100 dark:border-surface-3">
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-              LiBooks est édité par <strong className="text-gray-900 dark:text-white">LIYAH GROUP</strong>,
+              LiBooks est édité par <strong className="text-gray-900 dark:text-white">LiAfrik</strong>,
               un groupe technologique à la double présence <strong className="text-gray-900 dark:text-white">Dubaï (EAU)</strong> et
               <strong className="text-gray-900 dark:text-white"> Yaoundé (Cameroun)</strong>. Cette double ancrage
               n'est pas un hasard — c'est notre identité.
@@ -144,9 +144,9 @@ export default function AboutPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LIYAH GROUP</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LIYAH GROUP. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>
