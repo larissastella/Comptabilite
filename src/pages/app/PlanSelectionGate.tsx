@@ -42,7 +42,7 @@ export default function PlanSelectionGate() {
               <div
                 key={plan.id}
                 className={`relative bg-white dark:bg-surface-1 rounded-2xl border-2 p-4 sm:p-5 transition-all ${
-                  isCurrent ? 'border-[#10B981] dark:border-[#10B981]' : plan.popular ? 'border-blue-300 dark:border-blue-700 shadow-md' : 'border-gray-200 dark:border-surface-3'
+                  isCurrent ? 'border-[#0057D9] dark:border-[#0057D9]' : plan.popular ? 'border-blue-300 dark:border-blue-700 shadow-md' : 'border-gray-200 dark:border-surface-3'
                 }`}
               >
                 {plan.popular && !isCurrent && (
@@ -51,7 +51,7 @@ export default function PlanSelectionGate() {
                   </span>
                 )}
                 {isCurrent && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs bg-[#10B981] text-white px-2.5 py-0.5 rounded-full">
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-xs bg-[#0057D9] text-white px-2.5 py-0.5 rounded-full">
                     Forfait actuel
                   </span>
                 )}
@@ -62,7 +62,7 @@ export default function PlanSelectionGate() {
                 <ul className="mt-3 space-y-1.5">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                      <CheckCircle className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-3.5 h-3.5 text-[#0057D9] flex-shrink-0 mt-0.5" />
                       {f}
                     </li>
                   ))}
@@ -72,7 +72,7 @@ export default function PlanSelectionGate() {
                   className={`block w-full mt-4 py-2 text-center text-sm font-semibold rounded-xl transition-colors ${
                     isCurrent
                       ? 'bg-gray-100 text-gray-500 cursor-default'
-                      : 'bg-[#10B981] hover:bg-[#0d9e6e] text-white'
+                      : 'bg-[#0057D9] hover:bg-[#003F9E] text-white'
                   }`}
                 >
                   {isCurrent ? 'Forfait actuel' : 'Choisir'}
@@ -85,7 +85,7 @@ export default function PlanSelectionGate() {
         <div className="text-center">
           <Link
             to="/app/billing"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors"
           >
             <Zap className="w-4 h-4" />
             {t('billing.upgrade', 'Souscrire maintenant')}

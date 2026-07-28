@@ -8,8 +8,8 @@ export default function PrivacyPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="flex items-center gap-3 mb-3">
-          <Shield className="w-8 h-8 text-[#10B981]" />
+          <Shield className="w-8 h-8 text-[#0057D9]" />
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">Politique de confidentialité</h1>
         </div>
         <p className="text-sm text-gray-400 mb-10">Dernière mise à jour : janvier 2026</p>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
             <p>
               LIYAH GROUP (Dubaï, EAU & Yaoundé, Cameroun) est responsable du traitement des données
               personnelles collectées sur la plateforme LiBooks. Pour toute question :
-              <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline"> info@liafrik.com</a>.
+              <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline"> info@liafrik.com</a>.
             </p>
           </section>
 
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
               <li><strong className="text-gray-900 dark:text-white">Droit d'opposition</strong> : vous opposer au traitement pour des raisons légitimes.</li>
             </ul>
             <p className="mt-2">
-              Pour exercer ces droits : <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline">info@liafrik.com</a>.
+              Pour exercer ces droits : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a>.
               Vous pouvez également déposer une plainte auprès de votre CNIL nationale.
             </p>
           </section>
@@ -146,8 +146,8 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">11. Contact</h2>
             <p>
-              Questions relatives à la protection des données : <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline">info@liafrik.com</a><br />
-              Support technique : <a href="mailto:support@liafrik.com" className="text-[#10B981] hover:underline">support@liafrik.com</a>
+              Questions relatives à la protection des données : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a><br />
+              Support technique : <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>
             </p>
           </section>
         </div>

@@ -45,14 +45,14 @@ export default function LoginPage() {
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 text-white">
         <Link to="/" className="flex items-center gap-2.5">
-          <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold">Li<span className="text-[#10B981]">Books</span></span>
+          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <span className="text-2xl font-bold">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
 
         <div>
           <h2 className="text-4xl font-bold mb-4 leading-tight">
             La comptabilité africaine,<br />
-            <span className="text-[#10B981]">réinventée.</span>
+            <span className="text-[#0057D9]">réinventée.</span>
           </h2>
           <p className="text-slate-300 text-lg leading-relaxed">
             Facturation, stock, POS — offline-first, mobile-first,
@@ -67,7 +67,7 @@ export default function LoginPage() {
               { label: 'Plan comptable OHADA', value: 'Inclus' },
             ].map(stat => (
               <div key={stat.label} className="bg-white/10 rounded-xl p-4">
-                <p className="text-2xl font-bold text-[#10B981]">{stat.value}</p>
+                <p className="text-2xl font-bold text-[#0057D9]">{stat.value}</p>
                 <p className="text-slate-300 text-sm">{stat.label}</p>
               </div>
             ))}
@@ -91,8 +91,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden justify-center">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
@@ -119,7 +119,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition"
                     placeholder="nom@entreprise.com"
                     required
                   />
@@ -134,7 +134,7 @@ export default function LoginPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition"
                     placeholder="••••••••"
                     required
                   />
@@ -149,7 +149,7 @@ export default function LoginPage() {
               </div>
 
               <div className="flex justify-end">
-                <Link to="/forgot-password" className="text-sm text-[#10B981] hover:underline">
+                <Link to="/forgot-password" className="text-sm text-[#0057D9] hover:underline">
                   {t('auth.forgotPassword')}
                 </Link>
               </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? 'Connexion...' : t('auth.login')}
               </button>
@@ -165,7 +165,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
               {t('auth.noAccount')}{' '}
-              <Link to="/signup" className="text-[#10B981] font-medium hover:underline">
+              <Link to="/signup" className="text-[#0057D9] font-medium hover:underline">
                 {t('auth.signup')}
               </Link>
             </p>

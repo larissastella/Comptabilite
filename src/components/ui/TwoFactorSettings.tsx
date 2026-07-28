@@ -125,7 +125,7 @@ export default function TwoFactorSettings() {
           <button
             onClick={() => startEnroll.mutate()}
             disabled={startEnroll.isPending}
-            className="flex items-center gap-1.5 px-4 py-2 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-xs font-semibold rounded-lg"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-xs font-semibold rounded-lg"
           >
             <Smartphone className="w-3.5 h-3.5" /> Activer
           </button>
@@ -153,7 +153,7 @@ export default function TwoFactorSettings() {
             <button
               onClick={() => verifyEnroll.mutate()}
               disabled={code.length !== 6 || verifyEnroll.isPending}
-              className="px-4 py-2 bg-[#10B981] hover:bg-[#0d9e6e] disabled:opacity-50 text-white text-sm font-semibold rounded-lg"
+              className="px-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-lg"
             >
               Valider
             </button>

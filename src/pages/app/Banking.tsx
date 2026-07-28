@@ -179,7 +179,7 @@ export default function Banking() {
         </div>
         <button
           onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors flex-shrink-0"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors flex-shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span className="hidden sm:inline">Ajouter un compte</span>
@@ -294,7 +294,7 @@ export default function Banking() {
                   value={form.label}
                   onChange={e => setForm(f => ({ ...f, label: e.target.value }))}
                   placeholder={form.kind === 'mobile_money' ? 'Ex: Orange Money Principal' : 'Ex: Compte courant BMCE'}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                 />
               </div>
 
@@ -305,7 +305,7 @@ export default function Banking() {
                     <select
                       value={form.momo_provider}
                       onChange={e => setForm(f => ({ ...f, momo_provider: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     >
                       {MOMO_PROVIDERS.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                     </select>
@@ -317,7 +317,7 @@ export default function Banking() {
                       value={form.momo_phone}
                       onChange={e => setForm(f => ({ ...f, momo_phone: e.target.value }))}
                       placeholder="+237 6XX XXX XXX"
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                   <div>
@@ -327,7 +327,7 @@ export default function Banking() {
                       value={form.holder}
                       onChange={e => setForm(f => ({ ...f, holder: e.target.value }))}
                       placeholder="Nom du titulaire"
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                 </>
@@ -340,7 +340,7 @@ export default function Banking() {
                       value={form.bank_name}
                       onChange={e => setForm(f => ({ ...f, bank_name: e.target.value }))}
                       placeholder="Ex: Afriland First Bank"
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                   <div>
@@ -350,7 +350,7 @@ export default function Banking() {
                       value={form.bank_rib}
                       onChange={e => setForm(f => ({ ...f, bank_rib: e.target.value }))}
                       placeholder="23 à 28 chiffres"
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                     <p className="text-xs text-gray-400 mt-1">RIB à 23 ou 24 positions (RIB marocain) ou IBAN complet</p>
                   </div>
@@ -361,7 +361,7 @@ export default function Banking() {
                       value={form.bank_swift}
                       onChange={e => setForm(f => ({ ...f, bank_swift: e.target.value }))}
                       placeholder="Ex: AFRICMCM"
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                   <div>
@@ -371,7 +371,7 @@ export default function Banking() {
                       value={form.bank_agency}
                       onChange={e => setForm(f => ({ ...f, bank_agency: e.target.value }))}
                       placeholder="Ex: Agence Centrale"
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                   <div>
@@ -381,7 +381,7 @@ export default function Banking() {
                       value={form.holder}
                       onChange={e => setForm(f => ({ ...f, holder: e.target.value }))}
                       placeholder="Nom du titulaire"
-                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     />
                   </div>
                 </>
@@ -393,7 +393,7 @@ export default function Banking() {
               <button
                 onClick={() => addAccount.mutate()}
                 disabled={addAccount.isPending}
-                className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60"
+                className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60"
               >
                 {addAccount.isPending ? 'Ajout...' : 'Ajouter'}
               </button>

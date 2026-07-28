@@ -30,7 +30,7 @@ const ADMIN_MODULES = ['tenants', 'subscriptions', 'support', 'commercial', 'sta
 const PLAN_COLORS: Record<string, string> = {
   starter: '#94a3b8',
   pro: '#3b82f6',
-  premium: '#10B981',
+  premium: '#0057D9',
   enterprise: '#8b5cf6',
 };
 
@@ -46,7 +46,7 @@ const EVENT_LABELS: Record<string, { label: string; color: string }> = {
   code_entered: { label: 'Code saisi', color: '#94a3b8' },
   signup: { label: 'Inscription', color: '#3b82f6' },
   trial_started: { label: 'Essai démarré', color: '#f59e0b' },
-  trial_converted: { label: 'Essai converti', color: '#10B981' },
+  trial_converted: { label: 'Essai converti', color: '#0057D9' },
   trial_expired: { label: 'Essai expiré', color: '#ef4444' },
   churned: { label: 'Désabonnement', color: '#dc2626' },
 };
@@ -386,7 +386,7 @@ export default function SuperAdmin() {
     { name: 'Code saisi', value: conversionFunnel.code_entered, fill: '#94a3b8' },
     { name: 'Inscription', value: conversionFunnel.signup, fill: '#3b82f6' },
     { name: 'Essai démarré', value: conversionFunnel.trial_started, fill: '#f59e0b' },
-    { name: 'Essai converti', value: conversionFunnel.trial_converted, fill: '#10B981' },
+    { name: 'Essai converti', value: conversionFunnel.trial_converted, fill: '#0057D9' },
   ].filter(d => d.value > 0) : [];
 
   const funnelConversionRate = conversionFunnel && conversionFunnel.code_entered > 0
@@ -468,8 +468,8 @@ export default function SuperAdmin() {
                   <AreaChart data={growthData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                       <linearGradient id="totalGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#10B981" stopOpacity={0.3} />
-                        <stop offset="100%" stopColor="#10B981" stopOpacity={0} />
+                        <stop offset="0%" stopColor="#0057D9" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#0057D9" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="newGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.2} />
@@ -481,7 +481,7 @@ export default function SuperAdmin() {
                     <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={40} />
                     <Tooltip contentStyle={chartTooltipStyle} />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Area type="monotone" dataKey="Total" stroke="#10B981" strokeWidth={2.5} fill="url(#totalGrad)" name="Total cumulé" />
+                    <Area type="monotone" dataKey="Total" stroke="#0057D9" strokeWidth={2.5} fill="url(#totalGrad)" name="Total cumulé" />
                     <Area type="monotone" dataKey="Nouveaux" stroke="#3B82F6" strokeWidth={2} fill="url(#newGrad)" name="Nouveaux / mois" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -1181,7 +1181,7 @@ export default function SuperAdmin() {
                       <YAxis tick={{ fontSize: 11, fill: '#9CA3AF' }} axisLine={false} tickLine={false} />
                       <Tooltip contentStyle={chartTooltipStyle} />
                       <Legend wrapperStyle={{ fontSize: 12 }} />
-                      <Bar dataKey="Revenus" fill="#10B981" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Revenus" fill="#0057D9" radius={[4, 4, 0, 0]} />
                       <Bar dataKey="Tenants" fill="#3b82f6" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -1198,7 +1198,7 @@ export default function SuperAdmin() {
                       <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${Number(v).toFixed(0)}%`} />
                       <Bar dataKey="Conversion" radius={[0, 4, 4, 0]}>
                         {staffPerformance.map((sp, i) => (
-                          <Cell key={i} fill={sp.conversion_rate >= 50 ? '#10B981' : sp.conversion_rate >= 25 ? '#f59e0b' : '#ef4444'} />
+                          <Cell key={i} fill={sp.conversion_rate >= 50 ? '#0057D9' : sp.conversion_rate >= 25 ? '#f59e0b' : '#ef4444'} />
                         ))}
                       </Bar>
                     </BarChart>

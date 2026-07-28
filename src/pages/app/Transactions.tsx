@@ -88,7 +88,7 @@ export default function Transactions() {
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions comptables</h1>
-        <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl">
+        <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> Nouvelle écriture
         </button>
       </div>
@@ -96,7 +96,7 @@ export default function Transactions() {
       <div className="relative mb-5">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
       </div>
 
       {isLoading ? (
@@ -106,7 +106,7 @@ export default function Transactions() {
           <ArrowLeftRight className="w-14 h-14 text-gray-300 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-1">Aucune transaction</h3>
           <p className="text-sm text-gray-400 mb-4">Enregistrez vos écritures comptables</p>
-          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#10B981] text-white text-sm rounded-xl">Nouvelle écriture</button>
+          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl">Nouvelle écriture</button>
         </div>
       ) : (
         <>
@@ -177,17 +177,17 @@ export default function Transactions() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
                   <input type="date" value={formData.date} onChange={e => setFormData(p => ({ ...p, date: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Référence</label>
                   <input value={formData.reference} onChange={e => setFormData(p => ({ ...p, reference: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <select value={formData.transaction_type} onChange={e => setFormData(p => ({ ...p, transaction_type: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="journal">Journal</option>
                     <option value="payment">Paiement</option>
                     <option value="receipt">Encaissement</option>
@@ -199,7 +199,7 @@ export default function Transactions() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
                 <input value={formData.description} onChange={e => setFormData(p => ({ ...p, description: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
               </div>
 
               {/* Line items — desktop grid */}
@@ -214,22 +214,22 @@ export default function Transactions() {
                   <div key={line.id} className="grid grid-cols-12 px-4 py-2.5 border-t border-gray-100 gap-2 items-center">
                     <div className="col-span-4">
                       <select value={line.account_id} onChange={e => updateLine(line.id, 'account_id', e.target.value)}
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                         <option value="">Sélectionner...</option>
                         {accounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
                       </select>
                     </div>
                     <div className="col-span-4">
                       <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                     </div>
                     <div className="col-span-2">
                       <input type="number" min="0" step="0.01" value={line.debit || ''} onChange={e => updateLine(line.id, 'debit', parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                     </div>
                     <div className="col-span-2">
                       <input type="number" min="0" step="0.01" value={line.credit || ''} onChange={e => updateLine(line.id, 'credit', parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                        className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                     </div>
                   </div>
                 ))}
@@ -246,22 +246,22 @@ export default function Transactions() {
                   <div key={line.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
                     <p className="text-xs font-semibold text-gray-500 uppercase">Ligne {idx + 1}</p>
                     <select value={line.account_id} onChange={e => updateLine(line.id, 'account_id', e.target.value)}
-                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                       <option value="">Sélectionner un compte...</option>
                       {accounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
                     </select>
                     <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                      className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="text-xs text-gray-400">Débit</label>
                         <input type="number" min="0" step="0.01" value={line.debit || ''} onChange={e => updateLine(line.id, 'debit', parseFloat(e.target.value) || 0)}
-                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div>
                         <label className="text-xs text-gray-400">Crédit</label>
                         <input type="number" min="0" step="0.01" value={line.credit || ''} onChange={e => updateLine(line.id, 'credit', parseFloat(e.target.value) || 0)}
-                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function Transactions() {
 
               <div className="flex flex-wrap gap-2">
                 <button onClick={() => setLines(prev => [...prev, { id: uuidv4(), account_id: '', description: '', debit: 0, credit: 0 }])}
-                  className="text-sm text-[#10B981] hover:underline flex items-center gap-1">
+                  className="text-sm text-[#0057D9] hover:underline flex items-center gap-1">
                   <Plus className="w-3.5 h-3.5" /> Ajouter une ligne
                 </button>
                 {lines.length > 2 && (
@@ -293,7 +293,7 @@ export default function Transactions() {
             <div className="flex gap-3 px-5 sm:px-6 pb-5 sm:pb-6">
               <button onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">Annuler</button>
               <button onClick={() => save.mutate()} disabled={save.isPending || !isBalanced || !formData.description}
-                className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
                 {save.isPending ? '...' : 'Comptabiliser'}
               </button>
             </div>

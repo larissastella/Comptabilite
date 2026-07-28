@@ -18,7 +18,7 @@ import Badge from '../../components/ui/Badge';
 import { useState } from 'react';
 
 const STATUS_COLORS: Record<string, string> = {
-  paid: '#10B981',
+  paid: '#0057D9',
   sent: '#3B82F6',
   overdue: '#EF4444',
   draft: '#94A3B8',
@@ -280,7 +280,7 @@ export default function Dashboard() {
       });
 
       return [
-        { name: '0-30j', value: buckets.current, color: '#10B981' },
+        { name: '0-30j', value: buckets.current, color: '#0057D9' },
         { name: '31-60j', value: buckets.d30, color: '#3B82F6' },
         { name: '61-90j', value: buckets.d60, color: '#F59E0B' },
         { name: '91-120j', value: buckets.d90, color: '#F97316' },
@@ -342,7 +342,7 @@ export default function Dashboard() {
           icon={TrendingUp}
           trend={momPct !== 0 ? `${Math.abs(momPct)}%` : undefined}
           trendUp={momPct >= 0}
-          color="bg-[#10B981]"
+          color="bg-[#0057D9]"
           to="/app/sales-invoices"
         />
         <StatCard
@@ -371,7 +371,7 @@ export default function Dashboard() {
       {/* Secondary stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
-          { label: t('dashboard.invoices'), value: stats?.invoiceCount || 0, icon: FileText, color: 'text-[#10B981]', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+          { label: t('dashboard.invoices'), value: stats?.invoiceCount || 0, icon: FileText, color: 'text-[#0057D9]', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
           { label: t('dashboard.customers'), value: stats?.customerCount || 0, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-500/10' },
           { label: t('dashboard.products'), value: stats?.productCount || 0, icon: Package, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-500/10' },
         ].map(s => (
@@ -393,7 +393,7 @@ export default function Dashboard() {
         <div className="lg:col-span-3 bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <Wallet className="w-5 h-5 text-[#10B981]" />
+              <Wallet className="w-5 h-5 text-[#0057D9]" />
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard.revenueChart')}</h2>
             </div>
             {momPct !== 0 && (
@@ -407,8 +407,8 @@ export default function Dashboard() {
               <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="caGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#10B981" stopOpacity={0.3} />
-                    <stop offset="100%" stopColor="#10B981" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0057D9" stopOpacity={0.3} />
+                    <stop offset="100%" stopColor="#0057D9" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="marginGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.2} />
@@ -421,7 +421,7 @@ export default function Dashboard() {
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                 <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area type="monotone" dataKey="CA" stroke="#10B981" strokeWidth={2.5} fill="url(#caGradient)" name="Chiffre d'affaires" />
+                <Area type="monotone" dataKey="CA" stroke="#0057D9" strokeWidth={2.5} fill="url(#caGradient)" name="Chiffre d'affaires" />
                 <Area type="monotone" dataKey="Marge" stroke="#3B82F6" strokeWidth={2} fill="url(#marginGradient)" name="Marge brute" />
               </AreaChart>
             </ResponsiveContainer>
@@ -487,7 +487,7 @@ export default function Dashboard() {
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                 <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line type="monotone" dataKey="Entrees" stroke="#10B981" strokeWidth={2} dot={false} name="Entrées" />
+                <Line type="monotone" dataKey="Entrees" stroke="#0057D9" strokeWidth={2} dot={false} name="Entrées" />
                 <Line type="monotone" dataKey="Sorties" stroke="#F97316" strokeWidth={2} dot={false} name="Sorties" />
               </LineChart>
             </ResponsiveContainer>
@@ -503,7 +503,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-4 sm:p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard.recentInvoices')}</h2>
-            <Link to="/app/sales-invoices" className="text-xs text-[#10B981] hover:underline">Voir tout</Link>
+            <Link to="/app/sales-invoices" className="text-xs text-[#0057D9] hover:underline">Voir tout</Link>
           </div>
           {!recentInvoices || recentInvoices.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-gray-400">
@@ -551,7 +551,7 @@ export default function Dashboard() {
                   tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                 <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={90} />
                 <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => formatCurrency(Number(v))} />
-                <Bar dataKey="CA" fill="#10B981" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="CA" fill="#0057D9" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
@@ -661,7 +661,7 @@ export default function Dashboard() {
                     tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v.toString()} />
                   <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: '#9CA3AF' }} axisLine={false} tickLine={false} width={70} />
                   <Tooltip contentStyle={chartTooltipStyle} formatter={(v, name) => name === 'CA généré' ? formatCurrency(Number(v)) : v} />
-                  <Bar dataKey="CA généré" fill="#10B981" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="CA généré" fill="#0057D9" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

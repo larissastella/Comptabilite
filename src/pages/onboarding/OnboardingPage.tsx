@@ -77,7 +77,7 @@ function BrandingUploader({ label, description, file, url, onFile, onUrl }: {
       <div
         onDragOver={e => e.preventDefault()}
         onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFile(f); }}
-        className="border-2 border-dashed border-gray-200 dark:border-surface-3 rounded-xl p-4 hover:border-[#10B981] transition-colors cursor-pointer"
+        className="border-2 border-dashed border-gray-200 dark:border-surface-3 rounded-xl p-4 hover:border-[#0057D9] transition-colors cursor-pointer"
         onClick={pick}
       >
         <input
@@ -109,7 +109,7 @@ function BrandingUploader({ label, description, file, url, onFile, onUrl }: {
           type="url"
           value={url}
           onChange={e => { onUrl(e.target.value); setPreview(e.target.value); }}
-          className="w-full mt-2 px-3 py-2 border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+          className="w-full mt-2 px-3 py-2 border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
           placeholder="https://..."
         />
       </details>
@@ -323,8 +323,8 @@ export default function OnboardingPage() {
       {/* Header */}
       <header className="bg-[#0F2A3D] px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <BookOpen className="w-7 h-7 text-[#10B981] flex-shrink-0" />
-          <span className="text-white font-bold">Li<span className="text-[#10B981]">Books</span></span>
+          <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
+          <span className="text-white font-bold">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">
@@ -338,7 +338,7 @@ export default function OnboardingPage() {
       {/* Progress bar */}
       <div className="h-1 bg-gray-200 dark:bg-surface-3">
         <div
-          className="h-full bg-[#10B981] transition-all duration-500"
+          className="h-full bg-[#0057D9] transition-all duration-500"
           style={{ width: `${(step / STEPS) * 100}%` }}
         />
       </div>
@@ -349,7 +349,7 @@ export default function OnboardingPage() {
             <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-2">
               <span>Étape {step}/{STEPS}</span>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#10B981] font-medium">{stepTitles[step - 1]}</span>
+              <span className="text-[#0057D9] font-medium">{stepTitles[step - 1]}</span>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{stepTitles[step - 1]}</h2>
           </div>
@@ -366,7 +366,7 @@ export default function OnboardingPage() {
                     type="text"
                     value={data.companyName}
                     onChange={e => set('companyName', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent"
                     placeholder="SARL MonEntreprise"
                   />
                 </div>
@@ -382,7 +382,7 @@ export default function OnboardingPage() {
                         onClick={() => selectCountry(c.code)}
                         className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all ${
                           data.country === c.code
-                            ? 'border-[#10B981] bg-[#10B981]/10 text-[#10B981]'
+                            ? 'border-[#0057D9] bg-[#0057D9]/10 text-[#0057D9]'
                             : 'border-gray-200 dark:border-surface-3 dark:text-gray-300 hover:border-gray-300 text-gray-700'
                         }`}
                       >
@@ -400,7 +400,7 @@ export default function OnboardingPage() {
                     type="text"
                     value={data.staffCode}
                     onChange={e => set('staffCode', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent"
                     placeholder="Si vous avez été référé par un commercial LiBooks"
                   />
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Laissez vide si vous n'avez pas de code.</p>
@@ -419,7 +419,7 @@ export default function OnboardingPage() {
                       <select
                         value={data.region}
                         onChange={e => { set('region', e.target.value); set('city', ''); set('regionCustom', ''); }}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       >
                         <option value="">{t('onboarding.selectRegion')}</option>
                         {regions.map(r => <option key={r} value={r}>{r}</option>)}
@@ -430,7 +430,7 @@ export default function OnboardingPage() {
                           type="text"
                           value={data.regionCustom}
                           onChange={e => set('regionCustom', e.target.value)}
-                          className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                          className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                           placeholder="Saisissez votre région"
                         />
                       )}
@@ -440,7 +440,7 @@ export default function OnboardingPage() {
                       type="text"
                       value={data.regionCustom}
                       onChange={e => { set('regionCustom', e.target.value); set('region', OTHER); }}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       placeholder="Saisissez votre région"
                     />
                   )}
@@ -454,7 +454,7 @@ export default function OnboardingPage() {
                       <select
                         value={data.city}
                         onChange={e => { set('city', e.target.value); set('cityCustom', ''); }}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       >
                         <option value="">{t('onboarding.selectCity')}</option>
                         {cities.map(c => <option key={c} value={c}>{c}</option>)}
@@ -465,7 +465,7 @@ export default function OnboardingPage() {
                           type="text"
                           value={data.cityCustom}
                           onChange={e => set('cityCustom', e.target.value)}
-                          className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                          className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                           placeholder="Saisissez votre ville"
                         />
                       )}
@@ -475,7 +475,7 @@ export default function OnboardingPage() {
                       type="text"
                       value={data.cityCustom}
                       onChange={e => { set('cityCustom', e.target.value); set('city', OTHER); }}
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       placeholder="Saisissez votre ville"
                     />
                   )}
@@ -487,7 +487,7 @@ export default function OnboardingPage() {
                   <select
                     value={data.currency}
                     onChange={e => { set('currency', e.target.value); set('currencyCustom', ''); }}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                   >
                     {COMMON_CURRENCIES.map(c => (
                       <option key={c.code} value={c.code}>{c.code} — {c.name}</option>
@@ -499,7 +499,7 @@ export default function OnboardingPage() {
                       type="text"
                       value={data.currencyCustom}
                       onChange={e => set('currencyCustom', e.target.value)}
-                      className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       placeholder="Code devise (ex: CHF)"
                     />
                   )}
@@ -522,7 +522,7 @@ export default function OnboardingPage() {
                         set('phonePrefixCustom', val);
                       }
                     }}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     placeholder="+xxx"
                   />
                 </div>
@@ -533,7 +533,7 @@ export default function OnboardingPage() {
                   <select
                     value={data.timezone}
                     onChange={e => { set('timezone', e.target.value); set('timezoneCustom', ''); }}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                   >
                     {COMMON_TIMEZONES.map(tz => (
                       <option key={tz} value={tz}>{tz}</option>
@@ -545,7 +545,7 @@ export default function OnboardingPage() {
                       type="text"
                       value={data.timezoneCustom}
                       onChange={e => set('timezoneCustom', e.target.value)}
-                      className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                      className="w-full mt-2 px-4 py-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                       placeholder="ex: Africa/Porto-Novo"
                     />
                   )}
@@ -582,7 +582,7 @@ export default function OnboardingPage() {
                     step="0.01"
                     min="0"
                     max="100"
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                   />
                 </div>
               </div>
@@ -596,12 +596,12 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     onClick={() => set('billing', data.billing === 'monthly' ? 'annual' : 'monthly')}
-                    className={`relative w-12 h-6 rounded-full transition-colors ${data.billing === 'annual' ? 'bg-[#10B981]' : 'bg-gray-300'}`}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${data.billing === 'annual' ? 'bg-[#0057D9]' : 'bg-gray-300'}`}
                   >
                     <span className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${data.billing === 'annual' ? 'translate-x-6' : ''}`} />
                   </button>
                   <span className="text-sm text-gray-600 dark:text-gray-400">Annuel</span>
-                  <span className="text-xs bg-[#10B981]/10 text-[#10B981] px-2 py-0.5 rounded-full font-medium">-20%</span>
+                  <span className="text-xs bg-[#0057D9]/10 text-[#0057D9] px-2 py-0.5 rounded-full font-medium">-20%</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -614,15 +614,15 @@ export default function OnboardingPage() {
                         onClick={() => set('plan', plan.id)}
                         className={`relative flex flex-col items-start p-5 rounded-xl border-2 text-left transition-all ${
                           data.plan === plan.id
-                            ? 'border-[#10B981] bg-[#10B981]/5'
+                            ? 'border-[#0057D9] bg-[#0057D9]/5'
                             : 'border-gray-200 dark:border-surface-3 dark:hover:border-gray-600 hover:border-gray-300'
                         }`}
                       >
                         {plan.popular && (
-                          <span className="absolute -top-2.5 left-4 text-xs bg-[#10B981] text-white px-2 py-0.5 rounded-full">Populaire</span>
+                          <span className="absolute -top-2.5 left-4 text-xs bg-[#0057D9] text-white px-2 py-0.5 rounded-full">Populaire</span>
                         )}
                         {data.plan === plan.id && (
-                          <CheckCircle className="absolute top-3 right-3 w-5 h-5 text-[#10B981]" />
+                          <CheckCircle className="absolute top-3 right-3 w-5 h-5 text-[#0057D9]" />
                         )}
                         <span className="text-base font-bold text-gray-900 dark:text-white">{plan.name}</span>
                         <span className="text-xs text-gray-400 dark:text-gray-500 mb-2">{plan.desc}</span>
@@ -630,12 +630,12 @@ export default function OnboardingPage() {
                         <ul className="mt-3 space-y-1">
                           {plan.features.map(f => (
                             <li key={f} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                              <CheckCircle className="w-3.5 h-3.5 text-[#10B981]" />
+                              <CheckCircle className="w-3.5 h-3.5 text-[#0057D9]" />
                               {f}
                             </li>
                           ))}
                         </ul>
-                        <p className="mt-3 text-xs text-[#10B981] font-medium">7 jours d'essai gratuit</p>
+                        <p className="mt-3 text-xs text-[#0057D9] font-medium">7 jours d'essai gratuit</p>
                       </button>
                     );
                   })}
@@ -655,7 +655,7 @@ export default function OnboardingPage() {
                       onClick={() => set('sector', s)}
                       className={`px-4 py-3 rounded-xl border text-sm text-left transition-all ${
                         data.sector === s
-                          ? 'border-[#10B981] bg-[#10B981]/10 text-[#10B981] font-medium'
+                          ? 'border-[#0057D9] bg-[#0057D9]/10 text-[#0057D9] font-medium'
                           : 'border-gray-200 dark:border-surface-3 dark:text-gray-300 hover:border-gray-300 text-gray-700'
                       }`}
                     >
@@ -700,7 +700,7 @@ export default function OnboardingPage() {
             {/* Step 6: Summary */}
             {step === 6 && (
               <div className="space-y-4">
-                <div className="bg-[#10B981]/5 border border-[#10B981]/20 rounded-xl p-5">
+                <div className="bg-[#0057D9]/5 border border-[#0057D9]/20 rounded-xl p-5">
                   <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Récapitulatif</h3>
                   <div className="space-y-2">
                     {[
@@ -750,7 +750,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={() => setStep(s => s + 1)}
                 disabled={!canNext()}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-colors"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white rounded-xl disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold transition-colors"
               >
                 {t('common.next')}
                 <ChevronRight className="w-4 h-4" />
@@ -760,7 +760,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleFinish}
                 disabled={loading}
-                className="flex items-center gap-2 px-6 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white rounded-xl disabled:opacity-60 text-sm font-semibold transition-colors"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white rounded-xl disabled:opacity-60 text-sm font-semibold transition-colors"
               >
                 {loading ? 'Création...' : 'Créer mon entreprise'}
                 {!loading && <CheckCircle className="w-4 h-4" />}

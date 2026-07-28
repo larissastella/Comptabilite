@@ -12,7 +12,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 
 const NAVY = '#0F2A3D';
-const GREEN = '#10B981';
+const GREEN = '#0057D9';
 
 const MODULES = [
   { icon: BarChart3, title: 'Tableau de bord', desc: 'KPIs en temps réel : CA, achats, créances, dettes. Graphiques mensuels.', color: 'bg-blue-500' },
@@ -104,17 +104,17 @@ export default function LandingPage() {
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#10B981]`} />
+            <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />
             <span className={`text-lg font-bold tracking-tight ${scrolled ? 'text-[#0F2A3D] dark:text-white' : 'text-white'}`}>
-              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#10B981]'}>Books</span>
+              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9]'}>Books</span>
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="#modules" className={`text-sm font-medium transition-colors hover:text-[#10B981] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navModules')}</a>
-            <a href="#pricing" className={`text-sm font-medium transition-colors hover:text-[#10B981] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navPricing')}</a>
-            <a href="#testimonials" className={`text-sm font-medium transition-colors hover:text-[#10B981] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navTestimonials')}</a>
-            <a href="#faq" className={`text-sm font-medium transition-colors hover:text-[#10B981] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navFaq')}</a>
+            <a href="#modules" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navModules')}</a>
+            <a href="#pricing" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navPricing')}</a>
+            <a href="#testimonials" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navTestimonials')}</a>
+            <a href="#faq" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navFaq')}</a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -133,7 +133,7 @@ export default function LandingPage() {
                   key={lang}
                   onClick={() => i18n.changeLanguage(lang)}
                   className={`px-3 py-1.5 transition-all ${i18n.language === lang
-                    ? 'bg-[#10B981] text-white'
+                    ? 'bg-[#0057D9] text-white'
                     : scrolled ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2' : 'text-white/60 hover:bg-white/10'
                   }`}
                 >
@@ -168,7 +168,7 @@ export default function LandingPage() {
               <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 dark:border-surface-3 text-xs font-semibold">
                 {['fr', 'en'].map(lang => (
                   <button key={lang} onClick={() => { i18n.changeLanguage(lang); setMobileMenu(false); }}
-                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#10B981] text-white' : 'text-gray-500 dark:text-gray-400'}`}>
+                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 dark:text-gray-400'}`}>
                     {lang.toUpperCase()}
                   </button>
                 ))}
@@ -534,8 +534,8 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div>
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-7 h-7 text-[#10B981]" />
-                <span className="text-lg font-bold">Li<span className="text-[#10B981]">Books</span></span>
+                <BookOpen className="w-7 h-7 text-[#0057D9]" />
+                <span className="text-lg font-bold">Li<span className="text-[#0057D9]">Books</span></span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
                 {t('landing.footerTagline')}
@@ -599,7 +599,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-1 rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
                 {['fr', 'en'].map(lang => (
                   <button key={lang} onClick={() => i18n.changeLanguage(lang)}
-                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#10B981] text-white' : 'text-gray-500 hover:text-white'}`}>
+                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 hover:text-white'}`}>
                     {lang.toUpperCase()}
                   </button>
                 ))}

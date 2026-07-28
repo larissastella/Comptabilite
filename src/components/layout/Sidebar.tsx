@@ -51,9 +51,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     ? [
         {
           label: 'Plateforme',
-          items: [
-            { key: 'super-admin', label: 'Super Admin', icon: Shield, to: '/app/super-admin' },
-          ],
+          items: isSuperAdmin
+            ? [{ key: 'super-admin', label: 'Super Admin', icon: Shield, to: '/app/super-admin' }]
+            : [],
         },
       ]
     : [
@@ -107,7 +107,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group ${
       isActive
-        ? 'bg-[#10B981] text-white shadow-sm'
+        ? 'bg-[#0057D9] text-white shadow-sm'
         : 'text-slate-300 hover:bg-white/10 hover:text-white'
     }`;
 
@@ -129,10 +129,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
           <NavLink to="/app/dashboard" className="flex items-center gap-2.5">
-            <BookOpen className="w-7 h-7 text-[#10B981] flex-shrink-0" />
+            <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
             <div className="flex items-baseline gap-0.5">
               <span className="text-white font-bold text-[17px] leading-none">LiBooks</span>
-              <span className="text-[#10B981] font-bold text-[17px] leading-none"> Books</span>
+              <span className="text-[#0057D9] font-bold text-[17px] leading-none"> Books</span>
             </div>
           </NavLink>
           <button onClick={onClose} className="text-slate-400 hover:text-white lg:hidden">

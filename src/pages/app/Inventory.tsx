@@ -117,7 +117,7 @@ export default function Inventory() {
     <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('inventory.products')}</h1>
-        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors">
+        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors">
           <Plus className="w-4 h-4" /> {t('inventory.newProduct')}
         </button>
       </div>
@@ -128,13 +128,13 @@ export default function Inventory() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input value={search} onChange={e => setSearch(e.target.value)}
             placeholder="Rechercher produit / SKU..."
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
         </div>
         {categories.length > 0 && (
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <select value={category} onChange={e => setCategory(e.target.value)}
-              className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] bg-white">
+              className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] bg-white">
               <option value="">Toutes catégories</option>
               {categories.map(c => <option key={c} value={c!}>{c}</option>)}
             </select>
@@ -157,7 +157,7 @@ export default function Inventory() {
           <Package className="w-14 h-14 text-gray-300 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-1">{t('inventory.noProducts')}</h3>
           <p className="text-sm text-gray-400 mb-4">{t('inventory.noProductsDesc')}</p>
-          <button onClick={openCreate} className="px-4 py-2 bg-[#10B981] text-white text-sm font-medium rounded-xl hover:bg-[#0d9e6e]">
+          <button onClick={openCreate} className="px-4 py-2 bg-[#0057D9] text-white text-sm font-medium rounded-xl hover:bg-[#003F9E]">
             {t('inventory.newProduct')}
           </button>
         </div>
@@ -219,7 +219,7 @@ export default function Inventory() {
                         </td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100"><Edit2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100"><Edit2 className="w-3.5 h-3.5" /></button>
                             <button onClick={() => deleteProduct.mutate(p.id)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
                         </td>
@@ -291,12 +291,12 @@ export default function Inventory() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.sku')}</label>
                   <input value={form.sku} onChange={e => setForm(p => ({ ...p, sku: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" placeholder="SKU-001" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" placeholder="SKU-001" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                   <select value={form.product_type} onChange={e => setForm(p => ({ ...p, product_type: e.target.value as ProductType }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="goods">Marchandise</option>
                     <option value="service">Service</option>
                   </select>
@@ -305,19 +305,19 @@ export default function Inventory() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nom (FR) *</label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.category')}</label>
                   <input value={form.category} onChange={e => setForm(p => ({ ...p, category: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" list="categories-list" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" list="categories-list" />
                   <datalist id="categories-list">{categories.map(c => <option key={c} value={c!} />)}</datalist>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.unit')}</label>
                   <select value={form.unit_of_measure} onChange={e => setForm(p => ({ ...p, unit_of_measure: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     {UNITS.map(u => <option key={u} value={u}>{u}</option>)}
                   </select>
                 </div>
@@ -326,17 +326,17 @@ export default function Inventory() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.salePrice')}</label>
                   <input type="number" step="0.01" min="0" value={form.sale_price} onChange={e => setForm(p => ({ ...p, sale_price: parseFloat(e.target.value) || 0 }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('inventory.purchasePrice')}</label>
                   <input type="number" step="0.01" min="0" value={form.purchase_price} onChange={e => setForm(p => ({ ...p, purchase_price: parseFloat(e.target.value) || 0 }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">TVA %</label>
                   <input type="number" step="0.01" min="0" value={form.vat_rate} onChange={e => setForm(p => ({ ...p, vat_rate: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
                     placeholder={`${tenant?.vat_rate || 0}`} />
                 </div>
               </div>
@@ -354,7 +354,7 @@ export default function Inventory() {
                 <button type="button" onClick={() => setShowForm(false)}
                   className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50">{t('common.cancel')}</button>
                 <button type="submit" disabled={save.isPending}
-                  className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-[#0d9e6e]">
+                  className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-[#003F9E]">
                   {save.isPending ? '...' : t('common.save')}
                 </button>
               </div>

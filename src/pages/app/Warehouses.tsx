@@ -69,7 +69,7 @@ export default function Warehouses() {
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('warehouses.title')}</h1>
-        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl">
+        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> {t('warehouses.new')}
         </button>
       </div>
@@ -83,18 +83,18 @@ export default function Warehouses() {
           <Warehouse className="w-14 h-14 text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('warehouses.noWarehouses')}</h3>
           <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">{t('warehouses.noWarehousesDesc')}</p>
-          <button onClick={openCreate} className="px-4 py-2 bg-[#10B981] text-white text-sm rounded-xl hover:bg-[#0d9e6e]">{t('warehouses.new')}</button>
+          <button onClick={openCreate} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl hover:bg-[#003F9E]">{t('warehouses.new')}</button>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {warehouses.map(w => (
-            <div key={w.id} className={`bg-white dark:bg-surface-1 rounded-2xl border p-5 group hover:shadow-md dark:hover:shadow-lg transition-shadow ${w.is_default ? 'border-[#10B981] dark:border-[#10B981]' : 'border-gray-100 dark:border-surface-3'}`}>
+            <div key={w.id} className={`bg-white dark:bg-surface-1 rounded-2xl border p-5 group hover:shadow-md dark:hover:shadow-lg transition-shadow ${w.is_default ? 'border-[#0057D9] dark:border-[#0057D9]' : 'border-gray-100 dark:border-surface-3'}`}>
               <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 bg-[#10B981]/10 rounded-xl flex items-center justify-center">
-                  <Warehouse className="w-5 h-5 text-[#10B981]" />
+                <div className="w-10 h-10 bg-[#0057D9]/10 rounded-xl flex items-center justify-center">
+                  <Warehouse className="w-5 h-5 text-[#0057D9]" />
                 </div>
                 {w.is_default && (
-                  <span className="flex items-center gap-1 text-xs text-[#10B981] font-medium">
+                  <span className="flex items-center gap-1 text-xs text-[#0057D9] font-medium">
                     <Star className="w-3.5 h-3.5 fill-current" /> {t('warehouses.default')}
                   </span>
                 )}
@@ -111,7 +111,7 @@ export default function Warehouses() {
                   {w.is_active ? 'Actif' : 'Inactif'}
                 </span>
                 <div className="flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => openEdit(w)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100"><Edit2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => openEdit(w)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100"><Edit2 className="w-3.5 h-3.5" /></button>
                   <button onClick={() => deleteWarehouse.mutate(w.id)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
@@ -128,17 +128,17 @@ export default function Warehouses() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nom *</label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
                 <input value={form.address} onChange={e => setForm(p => ({ ...p, address: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Ville</label>
                 <input value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
               </div>
               <div className="flex gap-4">
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -152,7 +152,7 @@ export default function Warehouses() {
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">{t('common.cancel')}</button>
-                <button type="submit" disabled={save.isPending} className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60">{t('common.save')}</button>
+                <button type="submit" disabled={save.isPending} className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">{t('common.save')}</button>
               </div>
             </form>
           </div>

@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 
 type ReportTab = 'income' | 'balance' | 'vat' | 'trial';
 
-const COLORS = ['#10B981', '#F97316', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#EAB308', '#EF4444'];
+const COLORS = ['#0057D9', '#F97316', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#EAB308', '#EF4444'];
 
 export default function Reports() {
   const { t } = useTranslation();
@@ -200,17 +200,17 @@ export default function Reports() {
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-500">Du</label>
             <input type="date" value={period.from} onChange={e => setPeriod(p => ({ ...p, from: e.target.value }))}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
           </div>
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-500">Au</label>
             <input type="date" value={period.to} onChange={e => setPeriod(p => ({ ...p, to: e.target.value }))}
-              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
           </div>
           <button
             onClick={downloadPdf}
             disabled={downloading}
-            className="flex items-center gap-2 px-4 py-2 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl disabled:opacity-60 transition-colors flex-shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl disabled:opacity-60 transition-colors flex-shrink-0"
           >
             {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
             <span className="hidden sm:inline">Télécharger PDF</span>
@@ -223,7 +223,7 @@ export default function Reports() {
       <div className="flex gap-1 mb-6 overflow-x-auto pb-1">
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-[#10B981] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`flex items-center gap-2 flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${activeTab === tab.key ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
             <tab.icon className="w-4 h-4" />
             {tab.label}
           </button>
@@ -266,7 +266,7 @@ export default function Reports() {
                   contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }}
                 />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} />
-                <Bar dataKey="Revenus" fill="#10B981" radius={[4,4,0,0]} name="Revenus" />
+                <Bar dataKey="Revenus" fill="#0057D9" radius={[4,4,0,0]} name="Revenus" />
                 <Bar dataKey="Achats" fill="#F97316" radius={[4,4,0,0]} name="Achats" />
                 <Bar dataKey="Marge" fill="#3B82F6" radius={[4,4,0,0]} name="Marge brute" />
               </BarChart>

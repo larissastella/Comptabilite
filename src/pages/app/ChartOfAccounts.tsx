@@ -132,7 +132,7 @@ export default function ChartOfAccounts() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('accounts.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{t('accounts.syscohada')}</p>
         </div>
-        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors">
+        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors">
           <Plus className="w-4 h-4" />
           {t('accounts.new')}
         </button>
@@ -145,7 +145,7 @@ export default function ChartOfAccounts() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Rechercher par code ou intitulé..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
         />
       </div>
 
@@ -165,7 +165,7 @@ export default function ChartOfAccounts() {
           <BookOpen className="w-14 h-14 text-gray-300 dark:text-gray-600 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">{t('accounts.noAccounts')}</h3>
           <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">Créez votre premier compte ou importez le SYSCOHADA</p>
-          <button onClick={openCreate} className="px-4 py-2 bg-[#10B981] text-white text-sm font-medium rounded-xl hover:bg-[#0d9e6e] transition-colors">
+          <button onClick={openCreate} className="px-4 py-2 bg-[#0057D9] text-white text-sm font-medium rounded-xl hover:bg-[#003F9E] transition-colors">
             {t('accounts.new')}
           </button>
         </div>
@@ -224,7 +224,7 @@ export default function ChartOfAccounts() {
                             </span>
                           </div>
                           <div className="col-span-1 flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onClick={() => openEdit(acc)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                            <button onClick={() => openEdit(acc)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                               <Edit2 className="w-3.5 h-3.5" />
                             </button>
                             {!acc.is_system && (
@@ -251,7 +251,7 @@ export default function ChartOfAccounts() {
                               {t(`accounts.${acc.account_type}`)}
                             </span>
                             <div className="flex gap-1">
-                              <button onClick={() => openEdit(acc)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                              <button onClick={() => openEdit(acc)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                                 <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               {!acc.is_system && (
@@ -284,12 +284,12 @@ export default function ChartOfAccounts() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('accounts.code')}</label>
                   <input value={form.code} onChange={e => setForm(p => ({ ...p, code: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Classe</label>
                   <select value={form.account_class} onChange={e => setForm(p => ({ ...p, account_class: Number(e.target.value) }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     {Array.from({ length: 9 }, (_, i) => i + 1).map(c => <option key={c} value={c}>Classe {c}</option>)}
                   </select>
                 </div>
@@ -297,17 +297,17 @@ export default function ChartOfAccounts() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('accounts.accountName')} (FR)</label>
                 <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" required />
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" required />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('accounts.accountName')} (EN)</label>
                 <input value={form.name_en} onChange={e => setForm(p => ({ ...p, name_en: e.target.value }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('accounts.type')}</label>
                 <select value={form.account_type} onChange={e => setForm(p => ({ ...p, account_type: e.target.value as AccountType }))}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                   {(['asset','liability','equity','revenue','expense','other'] as AccountType[]).map(t => (
                     <option key={t} value={t}>{t}</option>
                   ))}
@@ -324,7 +324,7 @@ export default function ChartOfAccounts() {
                   {t('common.cancel')}
                 </button>
                 <button type="submit" disabled={save.isPending}
-                  className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-[#0d9e6e]">
+                  className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60 hover:bg-[#003F9E]">
                   {save.isPending ? '...' : t('common.save')}
                 </button>
               </div>

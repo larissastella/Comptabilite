@@ -80,7 +80,7 @@ export default function InvoiceDetail() {
       <div className="p-6 dark:bg-surface-0 text-center">
         <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
         <h3 className="text-gray-700 dark:text-gray-300 font-medium">Facture introuvable</h3>
-        <Link to="/app/sales-invoices" className="text-[#10B981] text-sm hover:underline mt-2 inline-block">Retour aux factures</Link>
+        <Link to="/app/sales-invoices" className="text-[#0057D9] text-sm hover:underline mt-2 inline-block">Retour aux factures</Link>
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function InvoiceDetail() {
             </button>
           )}
           {['draft','sent'].includes(invoice.status) && (
-            <button onClick={() => markPaid.mutate()} className="flex items-center gap-2 px-4 py-2 bg-[#10B981] text-white text-sm rounded-xl hover:bg-[#0d9e6e]">
+            <button onClick={() => markPaid.mutate()} className="flex items-center gap-2 px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl hover:bg-[#003F9E]">
               <CheckCircle className="w-4 h-4" /> Marquer payée
             </button>
           )}
@@ -139,7 +139,7 @@ export default function InvoiceDetail() {
               <h2 className="text-3xl font-bold text-[#0F2A3D]">FACTURE</h2>
               <Badge variant={st.variant}>{st.label}</Badge>
             </div>
-            <p className="text-xl font-mono font-semibold text-[#10B981]">{invoice.invoice_number}</p>
+            <p className="text-xl font-mono font-semibold text-[#0057D9]">{invoice.invoice_number}</p>
             <p className="text-sm text-gray-500 mt-1">Date: {format(new Date(invoice.invoice_date), 'dd/MM/yyyy')}</p>
             {invoice.due_date && (
               <p className="text-sm text-gray-500">Échéance: {format(new Date(invoice.due_date), 'dd/MM/yyyy')}</p>
@@ -235,7 +235,7 @@ export default function InvoiceDetail() {
             </div>
             <div className="flex justify-between font-bold text-lg border-t-2 border-[#0F2A3D] pt-2">
               <span className="text-[#0F2A3D]">Total TTC</span>
-              <span className="text-[#10B981]">{formatCurrency(invoice.total)}</span>
+              <span className="text-[#0057D9]">{formatCurrency(invoice.total)}</span>
             </div>
             {invoice.amount_paid > 0 && (
               <>

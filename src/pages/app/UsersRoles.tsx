@@ -138,7 +138,7 @@ export default function UsersRoles() {
       <div className="flex gap-2 mb-6">
         {(['members', 'roles'] as UsersTab[]).map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${tab === t ? 'bg-[#10B981] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${tab === t ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
             {t === 'members' ? 'Membres' : 'Rôles'}
           </button>
         ))}
@@ -147,7 +147,7 @@ export default function UsersRoles() {
       {tab === 'members' && (
         <div>
           <div className="flex justify-end mb-4">
-            <button onClick={() => setShowInviteForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] text-white text-sm font-semibold rounded-xl hover:bg-[#0d9e6e]">
+            <button onClick={() => setShowInviteForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] text-white text-sm font-semibold rounded-xl hover:bg-[#003F9E]">
               <Plus className="w-4 h-4" /> {t('users.invite')}
             </button>
           </div>
@@ -173,8 +173,8 @@ export default function UsersRoles() {
                       <tr key={m.id} className="hover:bg-gray-50 group">
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-[#10B981]/20 rounded-full flex items-center justify-center">
-                              <Users className="w-4 h-4 text-[#10B981]" />
+                            <div className="w-8 h-8 bg-[#0057D9]/20 rounded-full flex items-center justify-center">
+                              <Users className="w-4 h-4 text-[#0057D9]" />
                             </div>
                             <span className="text-sm text-gray-700 font-mono">{m.user_id.slice(0,8)}...</span>
                           </div>
@@ -185,7 +185,7 @@ export default function UsersRoles() {
                           </span>
                         </td>
                         <td className="px-5 py-3.5">
-                          {m.is_owner && <span className="text-xs text-[#10B981] font-medium flex items-center gap-1"><Shield className="w-3.5 h-3.5" />Propriétaire</span>}
+                          {m.is_owner && <span className="text-xs text-[#0057D9] font-medium flex items-center gap-1"><Shield className="w-3.5 h-3.5" />Propriétaire</span>}
                         </td>
                         <td className="px-5 py-3.5">
                           {!m.is_owner && (
@@ -205,8 +205,8 @@ export default function UsersRoles() {
                 {members.map(m => (
                   <div key={m.id} className="bg-white rounded-2xl border border-gray-100 p-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-8 h-8 bg-[#10B981]/20 rounded-full flex items-center justify-center">
-                        <Users className="w-4 h-4 text-[#10B981]" />
+                      <div className="w-8 h-8 bg-[#0057D9]/20 rounded-full flex items-center justify-center">
+                        <Users className="w-4 h-4 text-[#0057D9]" />
                       </div>
                       <span className="text-sm text-gray-700 font-mono">{m.user_id.slice(0,8)}...</span>
                     </div>
@@ -215,7 +215,7 @@ export default function UsersRoles() {
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                           {m.role}
                         </span>
-                        {m.is_owner && <span className="text-xs text-[#10B981] font-medium flex items-center gap-1"><Shield className="w-3.5 h-3.5" />Propriétaire</span>}
+                        {m.is_owner && <span className="text-xs text-[#0057D9] font-medium flex items-center gap-1"><Shield className="w-3.5 h-3.5" />Propriétaire</span>}
                       </div>
                       {!m.is_owner && (
                         <button onClick={() => removeMember.mutate(m.id)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50">
@@ -239,13 +239,13 @@ export default function UsersRoles() {
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input type="email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" placeholder="membre@entreprise.com" />
+                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" placeholder="membre@entreprise.com" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
                     <select value={inviteRole} onChange={e => setInviteRole(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                       <option value="admin">Admin</option>
                       <option value="accountant">Comptable</option>
                       <option value="sales">Commercial</option>
@@ -258,7 +258,7 @@ export default function UsersRoles() {
                     <button
                       onClick={() => inviteMember.mutate()}
                       disabled={!inviteEmail || inviteMember.isPending}
-                      className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold hover:bg-[#0d9e6e] disabled:opacity-60"
+                      className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold hover:bg-[#003F9E] disabled:opacity-60"
                     >
                       {inviteMember.isPending ? 'Envoi...' : 'Envoyer l\'invitation'}
                     </button>
@@ -273,7 +273,7 @@ export default function UsersRoles() {
       {tab === 'roles' && (
         <div>
           <div className="flex justify-end mb-4">
-            <button onClick={() => setShowRoleForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] text-white text-sm font-semibold rounded-xl hover:bg-[#0d9e6e]">
+            <button onClick={() => setShowRoleForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] text-white text-sm font-semibold rounded-xl hover:bg-[#003F9E]">
               <Plus className="w-4 h-4" /> {t('users.newRole')}
             </button>
           </div>
@@ -285,7 +285,7 @@ export default function UsersRoles() {
               {['admin', 'accountant', 'sales', 'cashier'].map(role => (
                 <div key={role} className="bg-white rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Shield className="w-4 h-4 text-[#10B981]" />
+                    <Shield className="w-4 h-4 text-[#0057D9]" />
                     <span className="text-sm font-semibold text-gray-900 capitalize">{role}</span>
                   </div>
                   <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Système</span>
@@ -325,7 +325,7 @@ export default function UsersRoles() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Nom du rôle *</label>
                     <input value={newRoleName} onChange={e => setNewRoleName(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" placeholder="Ex: Gestionnaire stock" />
+                      className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" placeholder="Ex: Gestionnaire stock" />
                   </div>
 
                   <div>
@@ -346,7 +346,7 @@ export default function UsersRoles() {
                               <button key={perm} onClick={() => togglePerm(m.key, perm)}
                                 className="flex justify-center">
                                 {permissions[m.key]?.[perm]
-                                  ? <CheckSquare className="w-4 h-4 text-[#10B981]" />
+                                  ? <CheckSquare className="w-4 h-4 text-[#0057D9]" />
                                   : <Square className="w-4 h-4 text-gray-300" />
                                 }
                               </button>
@@ -370,14 +370,14 @@ export default function UsersRoles() {
                           <div key={m.key} className="border border-gray-200 rounded-xl p-3">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-sm text-gray-700 font-medium">{m.label}</span>
-                              <button onClick={() => toggleAllPerms(m.key)} className="text-xs text-[#10B981] hover:underline">
+                              <button onClick={() => toggleAllPerms(m.key)} className="text-xs text-[#0057D9] hover:underline">
                                 {allSet ? 'Tout désélectionner' : 'Tout sélectionner'}
                               </button>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                               {PERMS.map(perm => (
                                 <button key={perm} onClick={() => togglePerm(m.key, perm)}
-                                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${permissions[m.key]?.[perm] ? 'bg-[#10B981]/10 text-[#10B981]' : 'bg-gray-50 text-gray-500'}`}>
+                                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${permissions[m.key]?.[perm] ? 'bg-[#0057D9]/10 text-[#0057D9]' : 'bg-gray-50 text-gray-500'}`}>
                                   {permissions[m.key]?.[perm]
                                     ? <CheckSquare className="w-3.5 h-3.5" />
                                     : <Square className="w-3.5 h-3.5" />
@@ -395,7 +395,7 @@ export default function UsersRoles() {
                 <div className="flex gap-3 px-5 sm:px-6 pb-5 sm:pb-6">
                   <button onClick={() => setShowRoleForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">Annuler</button>
                   <button onClick={() => createRole.mutate()} disabled={!newRoleName || createRole.isPending}
-                    className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                    className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
                     {createRole.isPending ? '...' : 'Créer le rôle'}
                   </button>
                 </div>

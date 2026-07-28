@@ -117,7 +117,7 @@ export default function Settings() {
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center justify-between w-full px-4 py-3.5 text-sm transition-colors border-b border-gray-50 dark:border-surface-2 last:border-0 whitespace-nowrap flex-shrink-0 lg:flex-shrink ${
-                  activeTab === tab.key ? 'bg-[#10B981]/10 dark:bg-[#10B981]/20 text-[#10B981] font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2'
+                  activeTab === tab.key ? 'bg-[#0057D9]/10 dark:bg-[#0057D9]/20 text-[#0057D9] font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -141,12 +141,12 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Nom de l'entreprise</label>
                       <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Préfixe des factures</label>
                       <input value={form.invoice_prefix} onChange={e => setForm(p => ({ ...p, invoice_prefix: e.target.value }))}
-                        className="w-full max-w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full max-w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                       <p className="text-xs text-gray-400 mt-1">Ex: FAC-2026-00001</p>
                     </div>
 
@@ -184,17 +184,17 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">NIF / Numéro d'identification fiscale</label>
                       <input value={form.legal_nif} onChange={e => setForm(p => ({ ...p, legal_nif: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">RCCM</label>
                       <input value={form.legal_rccm} onChange={e => setForm(p => ({ ...p, legal_rccm: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Régime fiscal</label>
                       <select value={form.legal_regime} onChange={e => setForm(p => ({ ...p, legal_regime: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                         <option value="">Sélectionner</option>
                         <option value="rsi">RSI — Régime Simplifié d'Imposition</option>
                         <option value="reel">Réel — Régime du Réel</option>
@@ -211,22 +211,22 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Banque</label>
                       <input value={form.bank_name} onChange={e => setForm(p => ({ ...p, bank_name: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" placeholder="Afriland First Bank" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" placeholder="Afriland First Bank" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Numéro de compte</label>
                       <input value={form.bank_account} onChange={e => setForm(p => ({ ...p, bank_account: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">IBAN</label>
                       <input value={form.bank_iban} onChange={e => setForm(p => ({ ...p, bank_iban: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" placeholder="CM21..." />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" placeholder="CM21..." />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Code SWIFT/BIC</label>
                       <input value={form.bank_swift} onChange={e => setForm(p => ({ ...p, bank_swift: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                     </div>
                   </>
                 )}
@@ -237,14 +237,14 @@ export default function Settings() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Taux de TVA par défaut (%)</label>
                       <input type="number" step="0.01" min="0" max="100" value={form.vat_rate} onChange={e => setForm(p => ({ ...p, vat_rate: parseFloat(e.target.value) || 0 }))}
-                        className="w-full max-w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                        className="w-full max-w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                       <p className="text-xs text-gray-400 mt-1">Ce taux s'applique par défaut aux nouvelles factures et produits.</p>
                     </div>
                   </>
                 )}
 
                 <button onClick={() => save.mutate()} disabled={save.isPending}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl text-sm disabled:opacity-60 mt-4">
+                  className="flex items-center gap-2 px-6 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl text-sm disabled:opacity-60 mt-4">
                   <Save className="w-4 h-4" />
                   {save.isPending ? 'Enregistrement...' : t('common.save')}
                 </button>
@@ -300,10 +300,10 @@ export default function Settings() {
                     <button
                       key={lang.code}
                       onClick={() => i18n.changeLanguage(lang.code)}
-                      className={`flex items-center gap-3 px-5 py-4 rounded-xl border-2 transition-all ${i18n.language === lang.code ? 'border-[#10B981] bg-[#10B981]/5' : 'border-gray-200 hover:border-gray-300'}`}
+                      className={`flex items-center gap-3 px-5 py-4 rounded-xl border-2 transition-all ${i18n.language === lang.code ? 'border-[#0057D9] bg-[#0057D9]/5' : 'border-gray-200 hover:border-gray-300'}`}
                     >
                       <span className="text-2xl">{lang.flag}</span>
-                      <span className={`font-medium text-sm ${i18n.language === lang.code ? 'text-[#10B981]' : 'text-gray-700'}`}>{lang.label}</span>
+                      <span className={`font-medium text-sm ${i18n.language === lang.code ? 'text-[#0057D9]' : 'text-gray-700'}`}>{lang.label}</span>
                     </button>
                   ))}
                 </div>

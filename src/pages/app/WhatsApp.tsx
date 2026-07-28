@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 export default function WhatsApp() {
   const { t } = useTranslation();
-  const { tenant } = useTenant();
+  const { tenant, formatCurrency } = useTenant();
   const qc = useQueryClient();
   const [phone, setPhone] = useState('');
   const [testMessage, setTestMessage] = useState('');
@@ -125,8 +125,19 @@ export default function WhatsApp() {
     mutationFn: async (invoiceId: string) => {
       const inv = invoices.find((i: Record<string, unknown>) => i.id === invoiceId) as Record<string, unknown> | undefined;
       if (!inv) throw new Error('Facture introuvable');
-      const customer = inv.customers as { phone?: string } | null;
+      const customer = inv.customers as { name?: string; phone?: string } | null;
       if (!customer?.phone) throw new Error('Le client n\'a pas de numéro de téléphone');
+
+      // Real, working WhatsApp send today: opens WhatsApp with a
+      // pre-filled message via the official click-to-chat deep link
+      // (no Meta Business API approval needed). Attaching the PDF
+      // directly requires the paid WhatsApp Business Cloud API — this
+      // is the honest, functional interim: the customer gets a real
+      // message with the invoice details, tap-to-send by the user.
+      const phone = customer.phone.replace(/[^\d]/g, '');
+      const total = formatCurrency(Number(inv.total));
+      const message = `Bonjour ${customer.name || ''}, voici votre facture ${inv.invoice_number} d'un montant de ${total}. Merci de votre confiance !`;
+      const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
       const { error } = await supabase
         .from('sales_invoices')
@@ -141,10 +152,12 @@ export default function WhatsApp() {
         record_id: invoiceId,
         after_data: { phone: customer.phone, invoice_number: inv.invoice_number },
       });
+
+      window.open(waLink, '_blank');
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['wa-invoices'] });
-      toast.success('Facture envoyée via WhatsApp');
+      toast.success('WhatsApp ouvert avec le message pré-rempli — envoie-le manuellement');
     },
     onError: (err: Error) => toast.error(err.message),
   });

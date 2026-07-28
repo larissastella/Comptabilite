@@ -39,15 +39,15 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
-          <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold text-white">Li<span className="text-[#10B981]">Books</span></span>
+          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <span className="text-2xl font-bold text-white">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
 
         <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
           {sent ? (
             <div className="text-center py-4">
               <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-[#10B981]" />
+                <CheckCircle className="w-8 h-8 text-[#0057D9]" />
               </div>
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('auth.checkYourEmail')}</h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
               </p>
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 {t('auth.backToLogin')}
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
                       type="email"
                       value={email}
                       onChange={e => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition"
                       placeholder="nom@entreprise.com"
                       required
                     />
@@ -89,14 +89,14 @@ export default function ForgotPasswordPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
+                  className="w-full py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
                 >
                   {loading ? 'Envoi...' : t('auth.sendResetLink')}
                 </button>
               </form>
 
               <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-                <Link to="/login" className="text-[#10B981] font-medium hover:underline">
+                <Link to="/login" className="text-[#0057D9] font-medium hover:underline">
                   {t('auth.backToLogin')}
                 </Link>
               </p>

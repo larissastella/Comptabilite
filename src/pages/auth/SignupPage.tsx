@@ -70,17 +70,17 @@ export default function SignupPage() {
       {/* Left panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 text-white">
         <Link to="/" className="flex items-center gap-2.5">
-          <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold">Li<span className="text-[#10B981]">Books</span></span>
+          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <span className="text-2xl font-bold">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
 
         <div>
-          <div className="inline-block bg-[#10B981]/20 text-[#10B981] text-sm font-medium px-4 py-1.5 rounded-full mb-4">
+          <div className="inline-block bg-[#0057D9]/20 text-[#0057D9] text-sm font-medium px-4 py-1.5 rounded-full mb-4">
             {t('auth.trialBadge')}
           </div>
           <h2 className="text-4xl font-bold mb-4 leading-tight">
             Commencez gratuitement,<br />
-            <span className="text-[#10B981]">sans carte bancaire.</span>
+            <span className="text-[#0057D9]">sans carte bancaire.</span>
           </h2>
           <p className="text-slate-300 mb-8">
             Accès complet pendant 7 jours. Aucune configuration complexe.
@@ -89,7 +89,7 @@ export default function SignupPage() {
           <div className="space-y-3">
             {features.map(f => (
               <div key={f} className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-[#10B981] flex-shrink-0" />
+                <CheckCircle className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                 <span className="text-slate-200 text-sm">{f}</span>
               </div>
             ))}
@@ -111,8 +111,8 @@ export default function SignupPage() {
 
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden justify-center">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
@@ -130,7 +130,7 @@ export default function SignupPage() {
                     type="email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.email ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.email ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
                     placeholder="nom@entreprise.com"
                   />
                 </div>
@@ -145,7 +145,7 @@ export default function SignupPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.password ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
+                    className={`w-full pl-10 pr-12 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.password ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
                     placeholder="••••••••"
                   />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
@@ -164,7 +164,7 @@ export default function SignupPage() {
                     type={showPassword ? 'text' : 'password'}
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] focus:border-transparent transition dark:bg-surface-2 dark:text-white ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300 dark:border-surface-3'}`}
                     placeholder="••••••••"
                   />
                 </div>
@@ -174,7 +174,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
+                className="w-full py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
               >
                 {loading ? 'Création du compte...' : 'Créer mon compte gratuit'}
               </button>
@@ -182,14 +182,14 @@ export default function SignupPage() {
 
             <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
               En vous inscrivant, vous acceptez nos{' '}
-              <Link to="/terms" className="text-[#10B981] hover:underline">CGU</Link>{' '}
+              <Link to="/terms" className="text-[#0057D9] hover:underline">CGU</Link>{' '}
               et notre{' '}
-              <Link to="/privacy" className="text-[#10B981] hover:underline">politique de confidentialité</Link>.
+              <Link to="/privacy" className="text-[#0057D9] hover:underline">politique de confidentialité</Link>.
             </p>
 
             <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
               {t('auth.hasAccount')}{' '}
-              <Link to="/login" className="text-[#10B981] font-medium hover:underline">
+              <Link to="/login" className="text-[#0057D9] font-medium hover:underline">
                 {t('auth.login')}
               </Link>
             </p>

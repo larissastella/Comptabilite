@@ -33,7 +33,7 @@ export default function PremiumGate({ module, children }: PremiumGateProps) {
           Votre forfait actuel (<strong>{plan}</strong>) ne l'inclut pas.
           Passez à un forfait supérieur pour y accéder.
         </p>
-        <Link to="/app/billing" className="px-6 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors">
+        <Link to="/app/billing" className="px-6 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors">
           {t('billing.upgrade')}
         </Link>
       </div>

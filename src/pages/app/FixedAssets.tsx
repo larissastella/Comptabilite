@@ -150,7 +150,7 @@ export default function FixedAssets() {
           </button>
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors"
           >
             <Plus className="w-4 h-4" /> Nouvelle immobilisation
           </button>
@@ -190,7 +190,7 @@ export default function FixedAssets() {
                     <td className="px-4 py-3 text-right text-gray-500 dark:text-gray-500">{formatCurrency(monthlyAmount(a))}</td>
                     <td className="px-4 py-3">
                       <div className="w-24 h-1.5 bg-gray-100 dark:bg-surface-3 rounded-full overflow-hidden">
-                        <div className="h-full bg-[#10B981]" style={{ width: `${progressPct(a)}%` }} />
+                        <div className="h-full bg-[#0057D9]" style={{ width: `${progressPct(a)}%` }} />
                       </div>
                       <span className="text-xs text-gray-400">{progressPct(a)}%</span>
                     </td>
@@ -307,7 +307,7 @@ export default function FixedAssets() {
             <button
               onClick={() => createAsset.mutate()}
               disabled={createAsset.isPending}
-              className="w-full mt-5 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
+              className="w-full mt-5 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
             >
               {createAsset.isPending ? 'Enregistrement...' : "Enregistrer l'immobilisation"}
             </button>

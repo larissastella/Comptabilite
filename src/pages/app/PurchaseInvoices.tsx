@@ -159,7 +159,7 @@ export default function PurchaseInvoices() {
     <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Factures Achats</h1>
-        <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl">
+        <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> Nouveau bon de commande
         </button>
       </div>
@@ -167,7 +167,7 @@ export default function PurchaseInvoices() {
       <div className="flex gap-1 overflow-x-auto pb-2 mb-5">
         {STATUS_TABS.map(tab => (
           <button key={tab.key} onClick={() => setStatusFilter(tab.key)}
-            className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${statusFilter === tab.key ? 'bg-[#10B981] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${statusFilter === tab.key ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
             {tab.label}
           </button>
         ))}
@@ -176,7 +176,7 @@ export default function PurchaseInvoices() {
       <div className="relative mb-5">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
       </div>
 
       {isLoading ? (
@@ -186,7 +186,7 @@ export default function PurchaseInvoices() {
           <ShoppingCart className="w-14 h-14 text-gray-300 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-1">Aucune facture achat</h3>
           <p className="text-sm text-gray-400 mb-4">Enregistrez vos achats fournisseurs</p>
-          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#10B981] text-white text-sm rounded-xl">Nouveau bon</button>
+          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl">Nouveau bon</button>
         </div>
       ) : (
         <>
@@ -213,7 +213,7 @@ export default function PurchaseInvoices() {
                       <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">{formatCurrency(inv.balance_due)}</td>
                       <td className="px-4 py-3.5">
                         {inv.status !== 'paid' && (
-                          <button onClick={() => markPaid.mutate(inv)} className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                          <button onClick={() => markPaid.mutate(inv)} className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                             <CheckCircle className="w-3.5 h-3.5" />
                           </button>
                         )}
@@ -250,7 +250,7 @@ export default function PurchaseInvoices() {
                     <p className="text-sm text-gray-600">{formatCurrency(inv.balance_due)}</p>
                   </div>
                   {inv.status !== 'paid' && (
-                    <button onClick={() => markPaid.mutate(inv)} className="p-2 text-gray-400 hover:text-[#10B981] rounded-lg bg-gray-50">
+                    <button onClick={() => markPaid.mutate(inv)} className="p-2 text-gray-400 hover:text-[#0057D9] rounded-lg bg-gray-50">
                       <CheckCircle className="w-4 h-4" />
                     </button>
                   )}
@@ -274,7 +274,7 @@ export default function PurchaseInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Fournisseur</label>
                   <select value={formData.supplier_id} onChange={e => setFormData(p => ({ ...p, supplier_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="">Aucun</option>
                     {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
@@ -282,17 +282,17 @@ export default function PurchaseInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
                   <input type="date" value={formData.invoice_date} onChange={e => setFormData(p => ({ ...p, invoice_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Échéance</label>
                   <input type="date" value={formData.due_date} onChange={e => setFormData(p => ({ ...p, due_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Magasin</label>
                   <select value={formData.warehouse_id} onChange={e => setFormData(p => ({ ...p, warehouse_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="">Sélectionner</option>
                     {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
@@ -300,7 +300,7 @@ export default function PurchaseInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Réf fournisseur</label>
                   <input value={formData.supplier_ref} onChange={e => setFormData(p => ({ ...p, supplier_ref: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
               </div>
 
@@ -320,26 +320,26 @@ export default function PurchaseInvoices() {
                     <div key={line.id} className="grid grid-cols-12 px-4 py-2.5 border-t border-gray-100 gap-2 items-center">
                       <div className="col-span-3">
                         <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
-                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                           <option value="">Saisie libre</option>
                           {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                       </div>
                       <div className="col-span-4">
                         <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div className="col-span-1">
                         <input type="number" min="0" step="0.001" value={line.quantity} onChange={e => updateLine(line.id, 'quantity', parseFloat(e.target.value) || 0)}
-                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div className="col-span-2">
                         <input type="number" min="0" step="0.01" value={line.unit_price} onChange={e => updateLine(line.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div className="col-span-1">
                         <input type="number" min="0" step="0.01" value={line.vat_rate} onChange={e => updateLine(line.id, 'vat_rate', parseFloat(e.target.value) || 0)}
-                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div className="col-span-1 flex items-center justify-end gap-1">
                         <span className="text-xs font-semibold text-gray-700">{formatCurrency(total)}</span>
@@ -372,27 +372,27 @@ export default function PurchaseInvoices() {
                         </div>
                       </div>
                       <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
-                        className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                        className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                         <option value="">Saisie libre</option>
                         {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
                       <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                        className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                        className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       <div className="grid grid-cols-3 gap-2">
                         <div>
                           <label className="text-xs text-gray-400">Qté</label>
                           <input type="number" min="0" step="0.001" value={line.quantity} onChange={e => updateLine(line.id, 'quantity', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div>
                           <label className="text-xs text-gray-400">Prix</label>
                           <input type="number" min="0" step="0.01" value={line.unit_price} onChange={e => updateLine(line.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div>
                           <label className="text-xs text-gray-400">TVA%</label>
                           <input type="number" min="0" step="0.01" value={line.vat_rate} onChange={e => updateLine(line.id, 'vat_rate', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                       </div>
                     </div>
@@ -400,7 +400,7 @@ export default function PurchaseInvoices() {
                 })}
               </div>
               <button onClick={() => setLines(prev => [...prev, { id: uuidv4(), product_id: '', description: '', quantity: 1, unit_price: 0, vat_rate: tenant?.vat_rate || 0 }])}
-                className="flex items-center gap-1.5 text-sm text-[#10B981] hover:underline">
+                className="flex items-center gap-1.5 text-sm text-[#0057D9] hover:underline">
                 <Plus className="w-4 h-4" /> Ajouter une ligne
               </button>
 
@@ -408,7 +408,7 @@ export default function PurchaseInvoices() {
                 <div className="w-full sm:w-64 space-y-2">
                   <div className="flex justify-between text-sm"><span className="text-gray-500">Sous-total</span><span>{formatCurrency(totals.subtotal)}</span></div>
                   <div className="flex justify-between text-sm"><span className="text-gray-500">TVA</span><span>{formatCurrency(totals.vat)}</span></div>
-                  <div className="flex justify-between font-bold border-t border-gray-200 pt-2"><span>Total</span><span className="text-[#10B981]">{formatCurrency(totals.total)}</span></div>
+                  <div className="flex justify-between font-bold border-t border-gray-200 pt-2"><span>Total</span><span className="text-[#0057D9]">{formatCurrency(totals.total)}</span></div>
                 </div>
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function PurchaseInvoices() {
             <div className="flex gap-3 px-5 sm:px-6 pb-5 sm:pb-6">
               <button onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">Annuler</button>
               <button onClick={() => createInvoice.mutate()} disabled={createInvoice.isPending}
-                className="flex-1 px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
                 {createInvoice.isPending ? 'Création...' : 'Créer le bon'}
               </button>
             </div>

@@ -246,7 +246,7 @@ export default function SalesInvoices() {
     <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('invoices.title')}</h1>
-        <button onClick={() => { setShowForm(true); resetForm(); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl">
+        <button onClick={() => { setShowForm(true); resetForm(); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> {t('invoices.new')}
         </button>
       </div>
@@ -259,7 +259,7 @@ export default function SalesInvoices() {
             onClick={() => setStatusFilter(tab.key)}
             className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
               statusFilter === tab.key
-                ? 'bg-[#10B981] text-white'
+                ? 'bg-[#0057D9] text-white'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -277,7 +277,7 @@ export default function SalesInvoices() {
       <div className="relative mb-5">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher par numéro ou client..."
-          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+          className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
       </div>
 
       {isLoading ? (
@@ -287,7 +287,7 @@ export default function SalesInvoices() {
           <FileText className="w-14 h-14 text-gray-300 mb-4" />
           <h3 className="text-lg font-semibold text-gray-700 mb-1">{t('invoices.noInvoices')}</h3>
           <p className="text-sm text-gray-400 mb-4">{t('invoices.noInvoicesDesc')}</p>
-          <button onClick={() => { setShowForm(true); resetForm(); }} className="px-4 py-2 bg-[#10B981] text-white text-sm rounded-xl hover:bg-[#0d9e6e]">{t('invoices.createFirst')}</button>
+          <button onClick={() => { setShowForm(true); resetForm(); }} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl hover:bg-[#003F9E]">{t('invoices.createFirst')}</button>
         </div>
       ) : (
         <>
@@ -306,7 +306,7 @@ export default function SalesInvoices() {
                   {filtered.map(inv => (
                     <tr key={inv.id} className="hover:bg-gray-50 group">
                       <td className="px-4 py-3.5">
-                        <Link to={`/app/sales-invoices/${inv.id}`} className="font-mono text-sm font-semibold text-[#10B981] hover:underline">
+                        <Link to={`/app/sales-invoices/${inv.id}`} className="font-mono text-sm font-semibold text-[#0057D9] hover:underline">
                           {inv.invoice_number}
                         </Link>
                       </td>
@@ -322,14 +322,14 @@ export default function SalesInvoices() {
                       <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">{formatCurrency(inv.balance_due)}</td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link to={`/app/sales-invoices/${inv.id}`} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                          <Link to={`/app/sales-invoices/${inv.id}`} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                             <FileText className="w-3.5 h-3.5" />
                           </Link>
                           <button onClick={() => sendWhatsApp(inv)} className="p-1.5 text-gray-400 hover:text-green-500 rounded-lg hover:bg-green-50">
                             <MessageCircle className="w-3.5 h-3.5" />
                           </button>
                           {inv.status !== 'paid' && (
-                            <button onClick={() => markPaid.mutate(inv.id)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                            <button onClick={() => markPaid.mutate(inv.id)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                               <CheckCircle className="w-3.5 h-3.5" />
                             </button>
                           )}
@@ -348,7 +348,7 @@ export default function SalesInvoices() {
               <div key={inv.id} className="bg-white rounded-2xl border border-gray-100 p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
-                    <Link to={`/app/sales-invoices/${inv.id}`} className="font-mono text-sm font-semibold text-[#10B981] hover:underline">
+                    <Link to={`/app/sales-invoices/${inv.id}`} className="font-mono text-sm font-semibold text-[#0057D9] hover:underline">
                       {inv.invoice_number}
                     </Link>
                     <p className="text-sm text-gray-900 mt-0.5">{inv.customers?.name || '—'}</p>
@@ -369,14 +369,14 @@ export default function SalesInvoices() {
                     <p className="text-sm text-gray-600">{formatCurrency(inv.balance_due)}</p>
                   </div>
                   <div className="flex gap-1">
-                    <Link to={`/app/sales-invoices/${inv.id}`} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                    <Link to={`/app/sales-invoices/${inv.id}`} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                       <FileText className="w-4 h-4" />
                     </Link>
                     <button onClick={() => sendWhatsApp(inv)} className="p-1.5 text-gray-400 hover:text-green-500 rounded-lg hover:bg-green-50">
                       <MessageCircle className="w-4 h-4" />
                     </button>
                     {inv.status !== 'paid' && (
-                      <button onClick={() => markPaid.mutate(inv.id)} className="p-1.5 text-gray-400 hover:text-[#10B981] rounded-lg hover:bg-gray-100">
+                      <button onClick={() => markPaid.mutate(inv.id)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100">
                         <CheckCircle className="w-4 h-4" />
                       </button>
                     )}
@@ -405,7 +405,7 @@ export default function SalesInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invoices.customer')}</label>
                   <select value={formData.customer_id} onChange={e => setFormData(p => ({ ...p, customer_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="">Aucun client</option>
                     {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
@@ -413,17 +413,17 @@ export default function SalesInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invoices.date')}</label>
                   <input type="date" value={formData.invoice_date} onChange={e => setFormData(p => ({ ...p, invoice_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invoices.dueDate')}</label>
                   <input type="date" value={formData.due_date} onChange={e => setFormData(p => ({ ...p, due_date: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Magasin</label>
                   <select value={formData.warehouse_id} onChange={e => setFormData(p => ({ ...p, warehouse_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="">Défaut</option>
                     {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
@@ -431,7 +431,7 @@ export default function SalesInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">{t('invoices.paymentMethod')}</label>
                   <select value={formData.payment_method} onChange={e => setFormData(p => ({ ...p, payment_method: e.target.value }))}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]">
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
                     <option value="">Sélectionner</option>
                     <option value="cash">Espèces</option>
                     <option value="mobile_money">Mobile Money</option>
@@ -461,30 +461,30 @@ export default function SalesInvoices() {
                       <div key={line.id} className="grid grid-cols-12 px-4 py-2.5 border-t border-gray-100 gap-2 items-center">
                         <div className="col-span-3">
                           <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                             <option value="">Saisie libre</option>
                             {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                           </select>
                         </div>
                         <div className="col-span-3">
                           <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div className="col-span-1">
                           <input type="number" step="0.001" min="0" value={line.quantity} onChange={e => updateLine(line.id, 'quantity', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div className="col-span-2">
                           <input type="number" step="0.01" min="0" value={line.unit_price} onChange={e => updateLine(line.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div className="col-span-1">
                           <input type="number" step="0.1" min="0" max="100" value={line.discount_pct} onChange={e => updateLine(line.id, 'discount_pct', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div className="col-span-1">
                           <input type="number" step="0.01" min="0" value={line.vat_rate} onChange={e => updateLine(line.id, 'vat_rate', parseFloat(e.target.value) || 0)}
-                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                            className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div className="col-span-1 flex items-center justify-end gap-1">
                           <span className="text-xs font-semibold text-gray-700 whitespace-nowrap">{formatCurrency(total)}</span>
@@ -517,39 +517,39 @@ export default function SalesInvoices() {
                           </div>
                         </div>
                         <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
-                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]">
+                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
                           <option value="">Saisie libre</option>
                           {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                         <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
-                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                          className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <label className="text-xs text-gray-400">Qté</label>
                             <input type="number" step="0.001" min="0" value={line.quantity} onChange={e => updateLine(line.id, 'quantity', parseFloat(e.target.value) || 0)}
-                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                           </div>
                           <div>
                             <label className="text-xs text-gray-400">Prix unit.</label>
                             <input type="number" step="0.01" min="0" value={line.unit_price} onChange={e => updateLine(line.id, 'unit_price', parseFloat(e.target.value) || 0)}
-                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                           </div>
                           <div>
                             <label className="text-xs text-gray-400">Remise %</label>
                             <input type="number" step="0.1" min="0" max="100" value={line.discount_pct} onChange={e => updateLine(line.id, 'discount_pct', parseFloat(e.target.value) || 0)}
-                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                           </div>
                           <div>
                             <label className="text-xs text-gray-400">TVA %</label>
                             <input type="number" step="0.01" min="0" value={line.vat_rate} onChange={e => updateLine(line.id, 'vat_rate', parseFloat(e.target.value) || 0)}
-                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#10B981]" />
+                              className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                           </div>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <button onClick={addLine} className="mt-2 flex items-center gap-1.5 text-sm text-[#10B981] hover:underline">
+                <button onClick={addLine} className="mt-2 flex items-center gap-1.5 text-sm text-[#0057D9] hover:underline">
                   <Plus className="w-4 h-4" /> {t('invoices.addItem')}
                 </button>
               </div>
@@ -567,7 +567,7 @@ export default function SalesInvoices() {
                   </div>
                   <div className="flex justify-between font-bold text-base border-t border-gray-200 pt-2">
                     <span>Total</span>
-                    <span className="text-[#10B981]">{formatCurrency(totals.total)}</span>
+                    <span className="text-[#0057D9]">{formatCurrency(totals.total)}</span>
                   </div>
                 </div>
               </div>
@@ -577,12 +577,12 @@ export default function SalesInvoices() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                   <textarea value={formData.notes} onChange={e => setFormData(p => ({ ...p, notes: e.target.value }))} rows={3}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] resize-none" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] resize-none" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Conditions</label>
                   <textarea value={formData.terms} onChange={e => setFormData(p => ({ ...p, terms: e.target.value }))} rows={3}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] resize-none" />
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] resize-none" />
                 </div>
               </div>
             </div>
@@ -590,7 +590,7 @@ export default function SalesInvoices() {
             <div className="flex gap-3 px-5 sm:px-6 pb-5 sm:pb-6">
               <button onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm hover:bg-gray-50">{t('common.cancel')}</button>
               <button onClick={() => createInvoice.mutate()} disabled={createInvoice.isPending}
-                className="flex-1 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                className="flex-1 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
                 {createInvoice.isPending ? 'Création...' : 'Créer la facture'}
               </button>
             </div>

@@ -4,7 +4,7 @@ Font.registerHyphenationCallback(word => [word]);
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: 'Helvetica', color: '#1f2937' },
-  header: { marginBottom: 24, borderBottomWidth: 2, borderBottomColor: '#10B981', paddingBottom: 12 },
+  header: { marginBottom: 24, borderBottomWidth: 2, borderBottomColor: '#0057D9', paddingBottom: 12 },
   logo: { fontSize: 18, fontWeight: 'bold', color: '#0F2A3D' },
   subtitle: { fontSize: 9, color: '#6b7280', marginTop: 2 },
   title: { fontSize: 16, fontWeight: 'bold', textAlign: 'center', marginVertical: 16, color: '#0F2A3D' },

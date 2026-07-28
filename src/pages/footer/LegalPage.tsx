@@ -8,8 +8,8 @@ export default function LegalPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -33,7 +33,7 @@ export default function LegalPage() {
               <li><strong className="text-gray-900 dark:text-white">LIYAH GROUP</strong></li>
               <li>Dubaï, Émirats Arabes Unis</li>
               <li>Yaoundé, Cameroun</li>
-              <li>Email : <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline">info@liafrik.com</a></li>
+              <li>Email : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a></li>
             </ul>
           </section>
 
@@ -88,10 +88,10 @@ export default function LegalPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">7. Contact</h2>
             <p>
-              Pour toute question relative aux mentions légales : <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline">info@liafrik.com</a>
+              Pour toute question relative aux mentions légales : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a>
             </p>
             <p className="mt-1">
-              Pour le support technique : <a href="mailto:support@liafrik.com" className="text-[#10B981] hover:underline">support@liafrik.com</a>
+              Pour le support technique : <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>
             </p>
           </section>
         </div>

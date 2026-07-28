@@ -38,13 +38,13 @@ export default function VerifyEmailPage() {
 
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
-          <BookOpen className="w-8 h-8 text-[#10B981]" />
-          <span className="text-2xl font-bold text-white">Li<span className="text-[#10B981]">Books</span></span>
+          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <span className="text-2xl font-bold text-white">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
 
         <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8 text-center">
           <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Mail className="w-8 h-8 text-[#10B981]" />
+            <Mail className="w-8 h-8 text-[#0057D9]" />
           </div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('auth.verifyEmail')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
@@ -55,7 +55,7 @@ export default function VerifyEmailPage() {
             <button
               onClick={handleResend}
               disabled={loading || !email}
-              className="w-full py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
+              className="w-full py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors disabled:opacity-60"
             >
               {loading ? 'Envoi...' : t('auth.resendConfirmation')}
             </button>

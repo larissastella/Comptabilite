@@ -58,7 +58,7 @@ export default function AcceptInvitePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="flex items-center gap-2 mb-8">
-        <BookOpen className="w-7 h-7 text-[#10B981]" />
+        <BookOpen className="w-7 h-7 text-[#0057D9]" />
         <span className="text-xl font-bold text-gray-900">Comptabilite</span>
       </div>
 
@@ -72,11 +72,11 @@ export default function AcceptInvitePage() {
             <XCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
             <h1 className="text-lg font-bold text-gray-900 mb-2">Invitation introuvable</h1>
             <p className="text-sm text-gray-500 mb-6">Ce lien d'invitation n'est plus valide.</p>
-            <Link to="/" className="text-sm text-[#10B981] font-medium hover:underline">Retour à l'accueil</Link>
+            <Link to="/" className="text-sm text-[#0057D9] font-medium hover:underline">Retour à l'accueil</Link>
           </div>
         ) : accepted ? (
           <div className="py-4">
-            <CheckCircle className="w-12 h-12 text-[#10B981] mx-auto mb-3" />
+            <CheckCircle className="w-12 h-12 text-[#0057D9] mx-auto mb-3" />
             <h1 className="text-lg font-bold text-gray-900 mb-2">C'est fait !</h1>
             <p className="text-sm text-gray-500">Redirection vers le tableau de bord...</p>
           </div>
@@ -88,8 +88,8 @@ export default function AcceptInvitePage() {
           </div>
         ) : (
           <>
-            <div className="w-14 h-14 bg-[#10B981]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-6 h-6 text-[#10B981]" />
+            <div className="w-14 h-14 bg-[#0057D9]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-6 h-6 text-[#0057D9]" />
             </div>
             <h1 className="text-lg font-bold text-gray-900 mb-1">Rejoindre {preview.tenant_name}</h1>
             <p className="text-sm text-gray-500 mb-6">
@@ -99,7 +99,7 @@ export default function AcceptInvitePage() {
             {!user ? (
               <div className="space-y-3">
                 <p className="text-xs text-gray-400 mb-2">Connecte-toi ou crée un compte avec l'adresse <strong>{preview.email}</strong> pour accepter.</p>
-                <Link to="/signup" className="block w-full px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold hover:bg-[#0d9e6e]">
+                <Link to="/signup" className="block w-full px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold hover:bg-[#003F9E]">
                   Créer un compte
                 </Link>
                 <Link to="/login" className="block w-full px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50">
@@ -116,7 +116,7 @@ export default function AcceptInvitePage() {
               <button
                 onClick={() => acceptInvite.mutate()}
                 disabled={acceptInvite.isPending}
-                className="w-full px-4 py-2.5 bg-[#10B981] text-white rounded-xl text-sm font-semibold hover:bg-[#0d9e6e] disabled:opacity-60"
+                className="w-full px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold hover:bg-[#003F9E] disabled:opacity-60"
               >
                 {acceptInvite.isPending ? 'Ajout en cours...' : "Rejoindre l'équipe"}
               </button>

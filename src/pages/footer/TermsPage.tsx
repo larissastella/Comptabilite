@@ -8,8 +8,8 @@ export default function TermsPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -114,7 +114,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">9. Responsabilités de LIYAH GROUP</h2>
             <p>
               LIYAH GROUP s'engage à fournir un service disponible à 99,9 % (hors maintenance planifiée).
-              En cas de panne, le support est joignable à <a href="mailto:support@liafrik.com" className="text-[#10B981] hover:underline">support@liafrik.com</a>.
+              En cas de panne, le support est joignable à <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>.
               LIYAH GROUP ne saurait être tenu responsable des décisions comptables ou fiscales prises sur
               la base des informations fournies par la plateforme. Celles-ci sont fournies à titre indicatif.
             </p>
@@ -133,7 +133,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">11. Confidentialité</h2>
             <p>
               Le traitement des données personnelles est décrit dans notre
-              <Link to="/privacy" className="text-[#10B981] hover:underline"> Politique de confidentialité</Link>.
+              <Link to="/privacy" className="text-[#0057D9] hover:underline"> Politique de confidentialité</Link>.
             </p>
           </section>
 
@@ -157,8 +157,8 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">14. Contact</h2>
             <p>
-              Informations générales : <a href="mailto:info@liafrik.com" className="text-[#10B981] hover:underline">info@liafrik.com</a><br />
-              Support technique : <a href="mailto:support@liafrik.com" className="text-[#10B981] hover:underline">support@liafrik.com</a>
+              Informations générales : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a><br />
+              Support technique : <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>
             </p>
           </section>
         </div>

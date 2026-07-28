@@ -46,7 +46,7 @@ function Spinner() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-10 h-10 border-4 border-[#10B981] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-[#0057D9] border-t-transparent rounded-full animate-spin" />
         <span className="text-gray-500 text-sm">Chargement...</span>
       </div>
     </div>
@@ -123,7 +123,7 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
         <p className="text-xl font-bold text-gray-800">{title}</p>
         <p className="text-sm text-gray-500 mt-2 max-w-sm">{desc}</p>
       </div>
-      <Link to="/app/billing" className="mt-2 px-6 py-2.5 bg-[#10B981] text-white text-sm font-semibold rounded-xl hover:bg-[#0d9e6e] transition-colors">
+      <Link to="/app/billing" className="mt-2 px-6 py-2.5 bg-[#0057D9] text-white text-sm font-semibold rounded-xl hover:bg-[#003F9E] transition-colors">
         Voir les forfaits
       </Link>
     </div>

@@ -172,7 +172,7 @@ export default function AICashflow() {
                 tickFormatter={v => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : String(v)} />
               <Tooltip formatter={(v) => formatCurrency(v as number)} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="Encaissements" fill="#10B981" radius={[4,4,0,0]} />
+              <Bar dataKey="Encaissements" fill="#0057D9" radius={[4,4,0,0]} />
               <Bar dataKey="Décaissements" fill="#F97316" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>

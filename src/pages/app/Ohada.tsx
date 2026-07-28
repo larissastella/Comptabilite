@@ -154,7 +154,7 @@ export default function Ohada() {
           <button
             key={tabItem.key}
             onClick={() => setTab(tabItem.key)}
-            className={`flex items-center gap-2 flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${tab === tabItem.key ? 'bg-[#10B981] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            className={`flex items-center gap-2 flex-shrink-0 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${tab === tabItem.key ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
           >
             <tabItem.icon className="w-4 h-4" />
             {tabItem.label}
@@ -225,9 +225,9 @@ export default function Ohada() {
               <button
                 key={exp.label}
                 onClick={() => exportOhadaCsv(exp.kind, exp.label)}
-                className="text-left p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#10B981] hover:shadow-sm transition-all"
+                className="text-left p-4 bg-white rounded-2xl border border-gray-100 hover:border-[#0057D9] hover:shadow-sm transition-all"
               >
-                <Download className="w-5 h-5 text-[#10B981] mb-2" />
+                <Download className="w-5 h-5 text-[#0057D9] mb-2" />
                 <p className="text-sm font-semibold text-gray-900">{exp.label}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{exp.desc}</p>
               </button>
@@ -261,7 +261,7 @@ export default function Ohada() {
                   <button
                     onClick={() => generatePayslip.mutate(emp.id as string)}
                     disabled={generatePayslip.isPending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-xs font-semibold rounded-lg disabled:opacity-60 transition-colors flex-shrink-0"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-xs font-semibold rounded-lg disabled:opacity-60 transition-colors flex-shrink-0"
                   >
                     <FileText className="w-3.5 h-3.5" />
                     <span className="hidden sm:inline">Générer le bulletin</span>
@@ -285,7 +285,7 @@ export default function Ohada() {
             onDragOver={e => e.preventDefault()}
             onDrop={onOcrDrop}
             onClick={() => !ocrUploading && ocrInputRef.current?.click()}
-            className="relative border-2 border-dashed border-gray-200 rounded-xl p-8 max-w-md mx-auto hover:border-[#10B981] transition-colors cursor-pointer"
+            className="relative border-2 border-dashed border-gray-200 rounded-xl p-8 max-w-md mx-auto hover:border-[#0057D9] transition-colors cursor-pointer"
           >
             <input
               ref={ocrInputRef}
@@ -300,12 +300,12 @@ export default function Ohada() {
             />
             {ocrUploading ? (
               <>
-                <Loader2 className="w-8 h-8 text-[#10B981] mx-auto mb-3 animate-spin" />
+                <Loader2 className="w-8 h-8 text-[#0057D9] mx-auto mb-3 animate-spin" />
                 <p className="text-sm text-gray-600 font-medium">Téléversement en cours...</p>
               </>
             ) : ocrUploaded ? (
               <>
-                <FileText className="w-8 h-8 text-[#10B981] mx-auto mb-3" />
+                <FileText className="w-8 h-8 text-[#0057D9] mx-auto mb-3" />
                 <p className="text-sm font-medium text-gray-900 truncate">{ocrUploaded.name}</p>
                 <p className="text-xs text-green-600 mt-1">Document téléversé avec succès</p>
                 <button

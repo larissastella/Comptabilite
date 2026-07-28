@@ -37,8 +37,8 @@ export default function ContactPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -58,23 +58,23 @@ export default function ContactPage() {
 
         {/* Contact channels */}
         <div className="grid sm:grid-cols-2 gap-4 mb-10">
-          <a href="mailto:info@liafrik.com" className="flex items-start gap-3 p-5 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 hover:border-[#10B981] transition-colors">
-            <div className="w-10 h-10 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Mail className="w-5 h-5 text-[#10B981]" />
+          <a href="mailto:info@liafrik.com" className="flex items-start gap-3 p-5 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 hover:border-[#0057D9] transition-colors">
+            <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Mail className="w-5 h-5 text-[#0057D9]" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Informations générales</h3>
-              <p className="text-sm text-[#10B981] mt-0.5">info@liafrik.com</p>
+              <p className="text-sm text-[#0057D9] mt-0.5">info@liafrik.com</p>
               <p className="text-xs text-gray-400 mt-1">Partenariats, presse, questions produit</p>
             </div>
           </a>
-          <a href="mailto:support@liafrik.com" className="flex items-start gap-3 p-5 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 hover:border-[#10B981] transition-colors">
-            <div className="w-10 h-10 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <MessageCircle className="w-5 h-5 text-[#10B981]" />
+          <a href="mailto:support@liafrik.com" className="flex items-start gap-3 p-5 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 hover:border-[#0057D9] transition-colors">
+            <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <MessageCircle className="w-5 h-5 text-[#0057D9]" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Support technique</h3>
-              <p className="text-sm text-[#10B981] mt-0.5">support@liafrik.com</p>
+              <p className="text-sm text-[#0057D9] mt-0.5">support@liafrik.com</p>
               <p className="text-xs text-gray-400 mt-1">Bug, configuration, aide d'utilisation</p>
             </div>
           </a>
@@ -83,14 +83,14 @@ export default function ContactPage() {
         {/* Locations */}
         <div className="flex flex-col sm:flex-row gap-4 mb-10">
           <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 flex-1">
-            <MapPin className="w-5 h-5 text-[#10B981] flex-shrink-0" />
+            <MapPin className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-gray-900 dark:text-white">Dubaï, EAU</p>
               <p className="text-xs text-gray-400">Innovation & développement</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3 flex-1">
-            <MapPin className="w-5 h-5 text-[#10B981] flex-shrink-0" />
+            <MapPin className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
             <div>
               <p className="text-sm font-medium text-gray-900 dark:text-white">Yaoundé, Cameroun</p>
               <p className="text-xs text-gray-400">Ancrage africain & support terrain</p>
@@ -105,26 +105,26 @@ export default function ContactPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom *</label>
               <input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email *</label>
               <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sujet</label>
             <input value={form.subject} onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
-              className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981]" />
+              className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message *</label>
             <textarea value={form.message} onChange={e => setForm(p => ({ ...p, message: e.target.value }))} rows={5}
-              className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#10B981] resize-none" />
+              className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] resize-none" />
           </div>
           <button type="submit" disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl text-sm disabled:opacity-60 transition-colors">
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl text-sm disabled:opacity-60 transition-colors">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
             {loading ? 'Envoi...' : 'Envoyer le message'}
           </button>

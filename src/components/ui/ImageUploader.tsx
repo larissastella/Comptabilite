@@ -51,7 +51,7 @@ export default function ImageUploader({
       <div
         onDragOver={e => e.preventDefault()}
         onDrop={onDrop}
-        className="relative border-2 border-dashed border-gray-200 dark:border-surface-3 dark:bg-surface-2 rounded-xl p-4 hover:border-[#10B981] dark:hover:border-[#10B981] transition-colors cursor-pointer"
+        className="relative border-2 border-dashed border-gray-200 dark:border-surface-3 dark:bg-surface-2 rounded-xl p-4 hover:border-[#0057D9] dark:hover:border-[#0057D9] transition-colors cursor-pointer"
         onClick={() => inputRef.current?.click()}
       >
         <input
@@ -84,7 +84,7 @@ export default function ImageUploader({
             </p>
           </div>
           {uploading ? (
-            <Loader2 className="w-5 h-5 text-[#10B981] animate-spin flex-shrink-0" />
+            <Loader2 className="w-5 h-5 text-[#0057D9] animate-spin flex-shrink-0" />
           ) : (
             <Upload className="w-5 h-5 text-gray-400 flex-shrink-0" />
           )}

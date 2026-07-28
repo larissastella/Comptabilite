@@ -9,8 +9,8 @@ export default function AboutPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#10B981]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#10B981]">Books</span></span>
+            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -25,7 +25,7 @@ export default function AboutPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {/* Hero */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-full text-sm text-[#10B981] font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-full text-sm text-[#0057D9] font-medium mb-6">
             <Sparkles className="w-4 h-4" />
             Notre histoire
           </div>
@@ -42,8 +42,8 @@ export default function AboutPage() {
         {/* Mission */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-xl flex items-center justify-center">
-              <Target className="w-5 h-5 text-[#10B981]" />
+            <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
+              <Target className="w-5 h-5 text-[#0057D9]" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Notre mission</h2>
           </div>
@@ -59,8 +59,8 @@ export default function AboutPage() {
         {/* Values */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-xl flex items-center justify-center">
-              <Heart className="w-5 h-5 text-[#10B981]" />
+            <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
+              <Heart className="w-5 h-5 text-[#0057D9]" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Nos valeurs</h2>
           </div>
@@ -73,7 +73,7 @@ export default function AboutPage() {
             ].map(v => (
               <div key={v.title} className="p-4 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <CheckCircle className="w-4 h-4 text-[#10B981] flex-shrink-0" />
+                  <CheckCircle className="w-4 h-4 text-[#0057D9] flex-shrink-0" />
                   <h3 className="font-semibold text-gray-900 dark:text-white text-sm">{v.title}</h3>
                 </div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{v.desc}</p>
@@ -85,8 +85,8 @@ export default function AboutPage() {
         {/* LIYAH GROUP */}
         <section className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-[#10B981]/10 dark:bg-[#10B981]/20 rounded-xl flex items-center justify-center">
-              <Globe2 className="w-5 h-5 text-[#10B981]" />
+            <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
+              <Globe2 className="w-5 h-5 text-[#0057D9]" />
             </div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">LIYAH GROUP — l'éditeur</h2>
           </div>
@@ -121,7 +121,7 @@ export default function AboutPage() {
               { value: 'SYSCOHADA', label: 'Conformité OHADA' },
             ].map(s => (
               <div key={s.label} className="text-center p-4 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3">
-                <p className="text-2xl font-bold text-[#10B981]">{s.value}</p>
+                <p className="text-2xl font-bold text-[#0057D9]">{s.value}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{s.label}</p>
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function AboutPage() {
         <div className="text-center">
           <Link
             to="/signup"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-[#10B981] hover:bg-[#0d9e6e] text-white font-semibold rounded-xl transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#0057D9] hover:bg-[#003F9E] text-white font-semibold rounded-xl transition-colors"
           >
             Commencer gratuitement
           </Link>

@@ -201,7 +201,7 @@ export default function CreditNotes() {
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors"
         >
           <Plus className="w-4 h-4" /> Nouvel avoir
         </button>
@@ -213,7 +213,7 @@ export default function CreditNotes() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Rechercher un avoir ou un client..."
-          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-1 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10B981]"
+          className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-1 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
         />
       </div>
 
@@ -345,7 +345,7 @@ export default function CreditNotes() {
                   </button>
                 </div>
               ))}
-              <button onClick={addLine} className="text-xs text-[#10B981] font-medium hover:underline">+ Ajouter une ligne</button>
+              <button onClick={addLine} className="text-xs text-[#0057D9] font-medium hover:underline">+ Ajouter une ligne</button>
             </div>
 
             <div className="border-t border-gray-100 dark:border-surface-3 pt-3 space-y-1 text-sm">
@@ -357,7 +357,7 @@ export default function CreditNotes() {
             <button
               onClick={() => createCreditNote.mutate()}
               disabled={createCreditNote.isPending}
-              className="w-full mt-5 flex items-center justify-center gap-2 py-2.5 bg-[#10B981] hover:bg-[#0d9e6e] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
+              className="w-full mt-5 flex items-center justify-center gap-2 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
             >
               <CheckCircle className="w-4 h-4" />
               {createCreditNote.isPending ? 'Création...' : "Créer et comptabiliser l'avoir"}

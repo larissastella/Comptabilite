@@ -213,7 +213,7 @@ export default function BankReconciliation() {
                           {l.status === 'unmatched' && (
                             <button
                               onClick={() => setMatchingLine(l)}
-                              className="inline-flex items-center gap-1 text-xs text-[#10B981] font-medium hover:underline"
+                              className="inline-flex items-center gap-1 text-xs text-[#0057D9] font-medium hover:underline"
                             >
                               <Link2 className="w-3.5 h-3.5" /> Rapprocher
                             </button>
@@ -248,7 +248,7 @@ export default function BankReconciliation() {
                     key={l.id}
                     onClick={() => matchMutation.mutate({ statementLineId: matchingLine.id, transactionLineId: l.id })}
                     disabled={matchMutation.isPending}
-                    className="w-full text-left p-3 border border-gray-200 dark:border-surface-3 rounded-xl hover:border-[#10B981] transition-colors disabled:opacity-50"
+                    className="w-full text-left p-3 border border-gray-200 dark:border-surface-3 rounded-xl hover:border-[#0057D9] transition-colors disabled:opacity-50"
                   >
                     <p className="text-sm text-gray-900 dark:text-white">{l.description || l.transactions?.reference || '—'}</p>
                     <p className="text-xs text-gray-400">{l.transactions?.date && format(new Date(l.transactions.date), 'dd/MM/yyyy')} · {formatCurrency(l.debit - l.credit)}</p>

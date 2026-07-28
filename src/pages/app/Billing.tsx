@@ -76,11 +76,11 @@ export default function Billing() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('billing.title')}</h1>
 
       {/* Current plan card */}
-      <div className={`rounded-2xl border-2 p-5 sm:p-6 mb-8 ${isTrialing ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-500/10' : 'border-[#10B981] dark:border-[#10B981] bg-[#10B981]/5 dark:bg-[#10B981]/10'}`}>
+      <div className={`rounded-2xl border-2 p-5 sm:p-6 mb-8 ${isTrialing ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-500/10' : 'border-[#0057D9] dark:border-[#0057D9] bg-[#0057D9]/5 dark:bg-[#0057D9]/10'}`}>
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-5 h-5 text-[#10B981]" />
+              <Zap className="w-5 h-5 text-[#0057D9]" />
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('billing.currentPlan')}</h2>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{currentPlan?.name || tenant?.plan}</p>
@@ -94,7 +94,7 @@ export default function Billing() {
               </div>
             )}
             {isActive && (
-              <p className="text-sm text-[#10B981] mt-2 flex items-center gap-1">
+              <p className="text-sm text-[#0057D9] mt-2 flex items-center gap-1">
                 <CheckCircle className="w-4 h-4" /> Abonnement actif
               </p>
             )}
@@ -122,21 +122,21 @@ export default function Billing() {
               <div
                 key={plan.id}
                 className={`relative bg-white rounded-2xl border-2 p-5 transition-all ${
-                  isCurrent ? 'border-[#10B981]' : plan.popular ? 'border-blue-300 shadow-md' : 'border-gray-200'
+                  isCurrent ? 'border-[#0057D9]' : plan.popular ? 'border-blue-300 shadow-md' : 'border-gray-200'
                 }`}
               >
                 {plan.popular && !isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-blue-500 text-white px-3 py-1 rounded-full">Populaire</span>
                 )}
                 {isCurrent && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-[#10B981] text-white px-3 py-1 rounded-full">Actuel</span>
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-[#0057D9] text-white px-3 py-1 rounded-full">Actuel</span>
                 )}
                 <h3 className="text-base font-bold text-gray-900">{plan.name}</h3>
                 <p className="text-2xl font-bold text-gray-900 mt-1">${plan.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
                 <ul className="mt-3 space-y-1.5">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
-                      <CheckCircle className="w-3.5 h-3.5 text-[#10B981] flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-3.5 h-3.5 text-[#0057D9] flex-shrink-0 mt-0.5" />
                       {f}
                     </li>
                   ))}
@@ -145,7 +145,7 @@ export default function Billing() {
                   <button
                     onClick={() => handleStripeRedirect(plan.id)}
                     disabled={redirecting}
-                    className="w-full mt-4 py-2 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
+                    className="w-full mt-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
                   >
                     {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
                     {plan.price > (currentPlan?.price || 0) ? t('billing.upgrade') : t('billing.downgrade')}
@@ -165,7 +165,7 @@ export default function Billing() {
           <button
             onClick={handleManageBilling}
             disabled={redirecting}
-            className="flex items-center gap-1.5 text-sm text-[#10B981] hover:underline disabled:opacity-60"
+            className="flex items-center gap-1.5 text-sm text-[#0057D9] hover:underline disabled:opacity-60"
           >
             {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />} Gérer
           </button>
