@@ -173,8 +173,11 @@ export default function Settings() {
                     )}
 
                     <div className="bg-blue-50 rounded-xl p-4">
-                      <p className="text-sm text-blue-700"><strong>Devise:</strong> {tenant?.currency} — <span className="text-blue-500">Immuable</span></p>
-                      <p className="text-xs text-blue-500 mt-1">La devise est verrouillée lors de la création du compte.</p>
+                      <p className="text-sm text-blue-700"><strong>Devise de base :</strong> {tenant?.currency} — <span className="text-blue-500">Immuable</span></p>
+                      <p className="text-xs text-blue-500 mt-1">
+                        Verrouillée à la création du compte pour préserver l'intégrité de tes rapports historiques (changer la devise de base rétroactivement fausserait toutes les factures et écritures passées).
+                        Tu peux néanmoins émettre des factures individuelles dans une autre devise (USD, EUR...) à tout moment — les écarts de change sont calculés automatiquement.
+                      </p>
                     </div>
                   </>
                 )}
