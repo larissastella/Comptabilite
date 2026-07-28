@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, ArrowUpRight, CreditCard, Calendar, Zap, Loader2 } from 'lucide-react';
 import { useTenant } from '../../contexts/TenantContext';
+import { supabase } from '../../lib/supabase';
 import { format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useState } from 'react';
@@ -26,13 +27,48 @@ export default function Billing() {
   const isActive = tenant?.subscription_status === 'active';
   const currentPlan = PLANS.find(p => p.id === tenant?.plan);
 
-  function handleStripeRedirect() {
+  async function handleStripeRedirect(planId: string) {
+    if (!tenant?.id) return;
     setRedirecting(true);
-    toast('Redirection vers la configuration du paiement Stripe...', { icon: '💳' });
-    setTimeout(() => {
-      window.open('https://bolt.new/setup/stripe', '_blank');
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
+      window.location.href = json.url;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
       setRedirecting(false);
-    }, 800);
+    }
+  }
+
+  async function handleManageBilling() {
+    if (!tenant?.id) return;
+    setRedirecting(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-portal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({ tenant_id: tenant.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Impossible d'ouvrir la gestion de facturation");
+      window.location.href = json.url;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erreur');
+      setRedirecting(false);
+    }
   }
 
   return (
@@ -107,7 +143,7 @@ export default function Billing() {
                 </ul>
                 {!isCurrent && (
                   <button
-                    onClick={handleStripeRedirect}
+                    onClick={() => handleStripeRedirect(plan.id)}
                     disabled={redirecting}
                     className="w-full mt-4 py-2 bg-[#10B981] hover:bg-[#0d9e6e] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
                   >
@@ -127,7 +163,7 @@ export default function Billing() {
         <div className="flex items-center justify-between mb-4 gap-3">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">{t('billing.paymentMethod')}</h3>
           <button
-            onClick={handleStripeRedirect}
+            onClick={handleManageBilling}
             disabled={redirecting}
             className="flex items-center gap-1.5 text-sm text-[#10B981] hover:underline disabled:opacity-60"
           >
