@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { Plus, Search, ArrowLeftRight, X, CheckCircle } from 'lucide-react';
+import { Plus, Search, ArrowLeftRight, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { Transaction, TransactionLine, Account } from '../../types';
+import { Transaction, Account } from '../../types';
 import { format } from 'date-fns';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
@@ -14,7 +13,6 @@ import { v4 as uuidv4 } from 'uuid';
 interface LineFormData { id: string; account_id: string; description: string; debit: number; credit: number; }
 
 export default function Transactions() {
-  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();

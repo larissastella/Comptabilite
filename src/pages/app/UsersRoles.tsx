@@ -38,7 +38,6 @@ export default function UsersRoles() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('accountant');
   const [newRoleName, setNewRoleName] = useState('');
-  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<Record<string, Record<string, boolean>>>({});
 
   const { data: members = [] } = useQuery({

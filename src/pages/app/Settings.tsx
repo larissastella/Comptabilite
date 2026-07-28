@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Settings as SettingsIcon, Building2, Scale, CreditCard, Shield, Globe, ChevronRight, Save, Eye, EyeOff, Clock } from 'lucide-react';
+import { Settings as SettingsIcon, Building2, Scale, CreditCard, Shield, Globe, ChevronRight, Save } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { AuditLog } from '../../types';
@@ -15,7 +15,6 @@ type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'lan
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const { tenant, refreshTenant } = useTenant();
-  const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState<SettingsTab>('company');
   const [form, setForm] = useState({
     name: '', vat_rate: 0, legal_rccm: '', legal_nif: '', legal_regime: '',

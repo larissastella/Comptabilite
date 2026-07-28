@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { CreditCard, Smartphone, Plus, ArrowDownRight, ArrowUpRight, Wallet, Building2, X } from 'lucide-react';
+import { Smartphone, Plus, ArrowDownRight, ArrowUpRight, Wallet, Building2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { format } from 'date-fns';

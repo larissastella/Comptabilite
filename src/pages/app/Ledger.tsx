@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { BookMarked, BookOpen, CheckSquare, Lock, Download, Search, Loader2 } from 'lucide-react';
+import { BookMarked, BookOpen, CheckSquare, Lock, Search, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { format } from 'date-fns';

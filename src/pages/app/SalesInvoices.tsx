@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, FileText, Download, MessageCircle, Printer, CheckCircle, X } from 'lucide-react';
+import { Plus, Search, FileText, MessageCircle, CheckCircle, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { SalesInvoice, SalesInvoiceItem, InvoiceStatus, Customer, Product, Warehouse } from '../../types';
+import { SalesInvoice, InvoiceStatus, Customer, Product, Warehouse } from '../../types';
 import { format, isAfter } from 'date-fns';
-import { fr } from 'date-fns/locale';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';

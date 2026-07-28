@@ -1,10 +1,9 @@
 import { useState, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { FileSpreadsheet, FileText, Scan, Users, Download, Plus, Eye, Loader2, X } from 'lucide-react';
+import { FileSpreadsheet, FileText, Scan, Users, Download, Loader2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
-import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import { uploadOcrDocument, validateDocumentFile } from '../../lib/upload';
 
@@ -13,25 +12,10 @@ type OhadaTab = 'reports' | 'payroll' | 'ocr';
 export default function Ohada() {
   const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
-  const qc = useQueryClient();
   const [tab, setTab] = useState<OhadaTab>('reports');
   const [ocrUploading, setOcrUploading] = useState(false);
   const [ocrUploaded, setOcrUploaded] = useState<{ name: string; url: string } | null>(null);
   const ocrInputRef = useRef<HTMLInputElement>(null);
-
-  // Real data: accounts by class for OHADA balance sheet
-  const { data: accounts = [] } = useQuery({
-    queryKey: ['ohada-accounts', tenant?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('accounts')
-        .select('code, name, account_class, account_type, is_system')
-        .eq('tenant_id', tenant!.id)
-        .order('account_class, code');
-      return data || [];
-    },
-    enabled: !!tenant?.id,
-  });
 
   // Real data: transactions for balance
   const { data: txLines = [] } = useQuery({

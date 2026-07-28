@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { BookOpen, Mail, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -9,7 +9,6 @@ export default function VerifyEmailPage() {
   const { t } = useTranslation();
   const { resendConfirmation } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const email = (location.state as { email?: string } | null)?.email || '';
   const [loading, setLoading] = useState(false);
 

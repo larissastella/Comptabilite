@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  BookOpen, BarChart3, Warehouse, FileText, Receipt, Building2,
+  BookOpen, BarChart3, FileText, Receipt, Building2,
   Smartphone, Wifi, Globe, Shield, Zap, CheckCircle, ChevronDown,
-  ArrowRight, Star, Quote, Menu, X, Lock, Sparkles, TrendingUp,
-  Users, Package, CreditCard, Bell, Bot, ScanLine, Languages,
-  Facebook, Twitter, Linkedin, Youtube, Mail, MapPin, Phone,
+  ArrowRight, Star, Quote, Menu, X, Sparkles,
+  Package, Bell, Bot, ScanLine, Languages,
+  Facebook, Twitter, Linkedin, Youtube, Mail, MapPin,
   Sun, Moon
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';

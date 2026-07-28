@@ -578,7 +578,6 @@ Deno.serve(async (req: Request) => {
         .eq("tenant_id", tenantId)
         .gte("created_at", since);
 
-      const userIds = [...new Set((invoices || []).map((inv: Record<string, unknown>) => inv.created_by).filter(Boolean))];
       const { data: users } = await serviceClient.auth.admin.listUsers();
       const userEmailMap: Record<string, string> = {};
       (users?.users || []).forEach((u: { id: string; email?: string }) => {

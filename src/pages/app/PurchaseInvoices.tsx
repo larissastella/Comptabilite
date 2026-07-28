@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 import { Plus, Search, ShoppingCart, X, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { PurchaseInvoice, PurchaseInvoiceItem, PurchaseStatus, Supplier, Product, Warehouse } from '../../types';
+import { PurchaseInvoice, PurchaseStatus, Supplier, Product, Warehouse } from '../../types';
 import { format, isAfter } from 'date-fns';
 import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
@@ -41,7 +40,6 @@ function calcLine(l: LineData, defaultVat: number) {
 }
 
 export default function PurchaseInvoices() {
-  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();

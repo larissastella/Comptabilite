@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, CheckCircle, ChevronRight, ChevronLeft, ArrowLeft, Upload, Loader2 } from 'lucide-react';
+import { BookOpen, CheckCircle, ChevronRight, ChevronLeft, ArrowLeft, Upload } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { COUNTRIES, getCountryByCode, COMMON_CURRENCIES, COMMON_TIMEZONES } from '../../lib/countryData';
 import { uploadTenantAsset, validateImageFile } from '../../lib/upload';
@@ -60,7 +60,6 @@ function BrandingUploader({ label, description, file, url, onFile, onUrl }: {
   onUrl: (u: string) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(url);
 
   function pick() { inputRef.current?.click(); }
@@ -102,7 +101,6 @@ function BrandingUploader({ label, description, file, url, onFile, onUrl }: {
             </p>
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{description}</p>
           </div>
-          {uploading && <Loader2 className="w-5 h-5 text-[#10B981] animate-spin" />}
         </div>
       </div>
       <details className="mt-2">

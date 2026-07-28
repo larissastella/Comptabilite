@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Lock, CheckCircle, Zap } from 'lucide-react';
 import { useTenant } from '../../contexts/TenantContext';
-import { PLAN_LIMITS } from '../../lib/countryData';
 
 const PLANS = [
   { id: 'starter', name: 'Starter', price: 9, features: ['Facturation illimitée', 'Gestion stocks', '2 utilisateurs', 'Support email'] },
@@ -13,7 +12,7 @@ const PLANS = [
 
 export default function PlanSelectionGate() {
   const { t } = useTranslation();
-  const { tenant, trialDaysLeft } = useTenant();
+  const { tenant } = useTenant();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-surface-0 flex flex-col items-center justify-center p-4 sm:p-6">

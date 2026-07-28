@@ -1,7 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Download, MessageCircle, Printer, CheckCircle, FileText } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Printer, CheckCircle, FileText } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { SalesInvoice, SalesInvoiceItem } from '../../types';
@@ -12,7 +11,6 @@ import toast from 'react-hot-toast';
 export default function InvoiceDetail() {
   const { id } = useParams<{ id: string }>();
   const { tenant, formatCurrency } = useTenant();
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const qc = useQueryClient();
 
