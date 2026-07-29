@@ -69,7 +69,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     }
   }
 
-  if (isPlanLocked && !isSuperAdmin) {
+  if (isPlanLocked && !isSuperAdmin && !staffInfo.isStaff) {
     const path = window.location.pathname;
     if (path !== '/app/billing') {
       return <PlanSelectionGate />;
