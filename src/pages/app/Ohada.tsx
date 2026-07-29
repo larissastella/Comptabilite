@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { FileSpreadsheet, FileText, Scan, Users, Download, Loader2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -53,34 +53,6 @@ export default function Ohada() {
     acc[cls].credit += (line as { credit: number }).credit || 0;
     return acc;
   }, {});
-
-  // Payroll: employees (use customers as proxy for staff in this minimal version)
-  const { data: employees = [] } = useQuery({
-    queryKey: ['ohada-employees', tenant?.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('customers')
-        .select('id, name, city')
-        .eq('tenant_id', tenant!.id)
-        .order('name')
-        .limit(20);
-      return data || [];
-    },
-    enabled: !!tenant?.id && tab === 'payroll',
-  });
-
-  const generatePayslip = useMutation({
-    mutationFn: async (employeeId: string) => {
-      await supabase.from('audit_logs').insert({
-        tenant_id: tenant!.id,
-        action: 'generate_payslip',
-        module: 'ohada',
-        record_id: employeeId,
-      });
-    },
-    onSuccess: () => toast.success('Bulletin de paie généré (PDF)'),
-    onError: (err: Error) => toast.error(err.message),
-  });
 
   const tabs: { key: OhadaTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { key: 'reports', label: 'États OHADA', icon: FileSpreadsheet },
@@ -265,43 +237,7 @@ export default function Ohada() {
         </div>
       )}
 
-      {tab === 'payroll' && (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold text-gray-900">Bulletins de paie</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Générez les bulletins SYSCOHADA pour vos employés</p>
-            </div>
-          </div>
-          {employees.length === 0 ? (
-            <div className="p-8 text-center">
-              <Users className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-              <p className="text-sm text-gray-500">Aucun employé enregistré.</p>
-              <p className="text-xs text-gray-400 mt-1">Ajoutez des employés dans le module Clients (catégorie "Personnel") pour générer leurs bulletins.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {employees.map((emp: Record<string, unknown>) => (
-                <div key={emp.id as string} className="flex items-center justify-between px-5 py-3.5 gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{emp.name as string}</p>
-                    <p className="text-xs text-gray-400">{emp.city as string || '—'}</p>
-                  </div>
-                  <button
-                    onClick={() => generatePayslip.mutate(emp.id as string)}
-                    disabled={generatePayslip.isPending}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-xs font-semibold rounded-lg disabled:opacity-60 transition-colors flex-shrink-0"
-                  >
-                    <FileText className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Générer le bulletin</span>
-                    <span className="sm:hidden">Générer</span>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {tab === 'payroll' && <PayrollPanel tenant={tenant} formatCurrency={formatCurrency} />}
 
       {tab === 'ocr' && (
         <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center">
@@ -394,6 +330,185 @@ export default function Ohada() {
               <p className="text-xs text-gray-400 mt-3">Vérifie ces données avant de créer la facture d'achat — l'IA peut se tromper.</p>
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface PayrollTenant { id: string; name: string; currency: string }
+
+function PayrollPanel({ tenant, formatCurrency }: { tenant: PayrollTenant | null; formatCurrency: (n: number) => string }) {
+  const qc = useQueryClient();
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newPosition, setNewPosition] = useState('');
+  const [newSalary, setNewSalary] = useState('');
+  const [runningId, setRunningId] = useState<string | null>(null);
+  const [salaryAccountId, setSalaryAccountId] = useState('');
+  const [netPayableAccountId, setNetPayableAccountId] = useState('');
+  const [socialPayableAccountId, setSocialPayableAccountId] = useState('');
+
+  const { data: employees = [] } = useQuery({
+    queryKey: ['employees', tenant?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from('employees').select('*').eq('tenant_id', tenant!.id).eq('is_active', true).order('full_name');
+      return data || [];
+    },
+    enabled: !!tenant?.id,
+  });
+
+  const { data: accounts = [] } = useQuery({
+    queryKey: ['accounts-for-payroll', tenant?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from('accounts').select('id, code, name').eq('tenant_id', tenant!.id).order('code');
+      return data || [];
+    },
+    enabled: !!tenant?.id,
+  });
+
+  const addEmployee = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from('employees').insert({
+        tenant_id: tenant!.id, full_name: newName, position: newPosition, gross_salary: Number(newSalary) || 0,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['employees'] });
+      toast.success('Employé ajouté');
+      setShowAddEmployee(false); setNewName(''); setNewPosition(''); setNewSalary('');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const generatePayslip = useMutation({
+    mutationFn: async (employeeId: string) => {
+      if (!salaryAccountId || !netPayableAccountId || !socialPayableAccountId) {
+        throw new Error('Sélectionne les 3 comptes comptables ci-dessus avant de générer un bulletin');
+      }
+      const now = new Date();
+      const { data, error } = await supabase.rpc('generate_payslip', {
+        p_employee_id: employeeId,
+        p_period_month: now.getMonth() + 1,
+        p_period_year: now.getFullYear(),
+        p_salary_expense_account_id: salaryAccountId,
+        p_net_payable_account_id: netPayableAccountId,
+        p_social_payable_account_id: socialPayableAccountId,
+      });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: async (payslipId, employeeId) => {
+      const emp = employees.find((e: Record<string, unknown>) => e.id === employeeId) as Record<string, unknown> | undefined;
+      const { data: payslip } = await supabase.from('payslips').select('*').eq('id', payslipId).maybeSingle();
+      if (payslip && emp) {
+        const { pdf } = await import('@react-pdf/renderer');
+        const { ReportPdfDocument } = await import('../../lib/reportPdf');
+        const doc = (
+          <ReportPdfDocument
+            tenantName={tenant?.name || ''}
+            title={`Bulletin de paie — ${emp.full_name}`}
+            period={`${payslip.period_month}/${payslip.period_year}`}
+            kpis={[
+              { label: 'Salaire brut', value: formatCurrency(payslip.gross_salary) },
+              { label: 'Retenues', value: formatCurrency(payslip.employee_contribution + payslip.income_tax) },
+              { label: 'Net à payer', value: formatCurrency(payslip.net_salary) },
+            ]}
+            columns={['Élément', 'Montant']}
+            rows={[
+              ['Salaire brut', formatCurrency(payslip.gross_salary)],
+              ['Cotisations salariales', `- ${formatCurrency(payslip.employee_contribution)}`],
+              ['Impôt sur le revenu (estimation)', `- ${formatCurrency(payslip.income_tax)}`],
+            ]}
+            totalRow={['Net à payer', formatCurrency(payslip.net_salary)]}
+            currency={tenant?.currency || 'XAF'}
+          />
+        );
+        const blob = await pdf(doc).toBlob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = `bulletin-${emp.full_name}-${payslip.period_month}-${payslip.period_year}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      toast.success('Bulletin de paie généré et téléchargé');
+      setRunningId(null);
+    },
+    onError: (err: Error) => { toast.error(err.message); setRunningId(null); },
+  });
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-800">
+        Sélectionne les comptes comptables à utiliser pour la paie (une seule fois). Les taux de cotisation/impôt par défaut sont estimatifs — vérifie-les dans <strong>Paramètres</strong> selon la réglementation de ton pays.
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <select value={salaryAccountId} onChange={e => setSalaryAccountId(e.target.value)} className="px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+          <option value="">Compte charges de personnel (66)</option>
+          {accounts.map((a: Record<string, unknown>) => <option key={a.id as string} value={a.id as string}>{a.code as string} — {a.name as string}</option>)}
+        </select>
+        <select value={netPayableAccountId} onChange={e => setNetPayableAccountId(e.target.value)} className="px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+          <option value="">Compte personnel à payer (42)</option>
+          {accounts.map((a: Record<string, unknown>) => <option key={a.id as string} value={a.id as string}>{a.code as string} — {a.name as string}</option>)}
+        </select>
+        <select value={socialPayableAccountId} onChange={e => setSocialPayableAccountId(e.target.value)} className="px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+          <option value="">Compte organismes sociaux (43)</option>
+          {accounts.map((a: Record<string, unknown>) => <option key={a.id as string} value={a.id as string}>{a.code as string} — {a.name as string}</option>)}
+        </select>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Employés & bulletins de paie</h2>
+            <p className="text-xs text-gray-400 mt-0.5">Générez de vrais bulletins SYSCOHADA avec écriture comptable automatique</p>
+          </div>
+          <button onClick={() => setShowAddEmployee(true)} className="px-3 py-1.5 bg-[#0057D9] text-white text-xs font-semibold rounded-lg hover:bg-[#003F9E]">+ Employé</button>
+        </div>
+        {employees.length === 0 ? (
+          <div className="p-8 text-center">
+            <Users className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-gray-500">Aucun employé enregistré.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {employees.map((emp: Record<string, unknown>) => (
+              <div key={emp.id as string} className="flex items-center justify-between px-5 py-3.5 gap-3">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 truncate">{emp.full_name as string}</p>
+                  <p className="text-xs text-gray-400">{emp.position as string || '—'} · {formatCurrency(emp.gross_salary as number)}/mois</p>
+                </div>
+                <button
+                  onClick={() => { setRunningId(emp.id as string); generatePayslip.mutate(emp.id as string); }}
+                  disabled={generatePayslip.isPending && runningId === emp.id}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-xs font-semibold rounded-lg disabled:opacity-60 transition-colors flex-shrink-0"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  {generatePayslip.isPending && runningId === emp.id ? 'Génération...' : 'Générer le bulletin'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {showAddEmployee && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Nouvel employé</h3>
+            <div className="space-y-3">
+              <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Nom complet" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />
+              <input value={newPosition} onChange={e => setNewPosition(e.target.value)} placeholder="Poste" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />
+              <input value={newSalary} onChange={e => setNewSalary(e.target.value)} type="number" placeholder="Salaire brut mensuel" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setShowAddEmployee(false)} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-sm">Annuler</button>
+                <button onClick={() => addEmployee.mutate()} disabled={!newName || addEmployee.isPending} className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
+                  {addEmployee.isPending ? 'Ajout...' : 'Ajouter'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
