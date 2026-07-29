@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Plus, Search, ShoppingCart, X, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
@@ -10,25 +11,17 @@ import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 
-const STATUS_TABS: { key: PurchaseStatus | 'all'; label: string }[] = [
-  { key: 'all', label: 'Toutes' },
-  { key: 'draft', label: 'Brouillon' },
-  { key: 'received', label: 'Reçue' },
-  { key: 'paid', label: 'Payée' },
-  { key: 'overdue', label: 'En retard' },
-];
-
-const statusBadge = (status: string, due?: string) => {
+function statusBadge(status: string, due: string | undefined, t: (key: string) => string) {
   const isOverdue = status === 'received' && due && isAfter(new Date(), new Date(due));
   const map: Record<string, { variant: 'gray' | 'info' | 'success' | 'danger'; label: string }> = {
-    draft: { variant: 'gray', label: 'Brouillon' },
-    received: { variant: 'info', label: 'Reçue' },
-    paid: { variant: 'success', label: 'Payée' },
-    overdue: { variant: 'danger', label: 'En retard' },
+    draft: { variant: 'gray', label: t('purchaseInvoices.statusDraft') },
+    received: { variant: 'info', label: t('purchaseInvoices.statusReceived') },
+    paid: { variant: 'success', label: t('purchaseInvoices.statusPaid') },
+    overdue: { variant: 'danger', label: t('purchaseInvoices.statusOverdue') },
   };
   const s = isOverdue ? map.overdue : (map[status] || { variant: 'gray' as const, label: status });
   return <Badge variant={s.variant}>{s.label}</Badge>;
-};
+}
 
 interface LineData { id: string; product_id: string; description: string; quantity: number; unit_price: number; vat_rate: number; }
 
@@ -40,9 +33,19 @@ function calcLine(l: LineData, defaultVat: number) {
 }
 
 export default function PurchaseInvoices() {
+  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();
+
+  const STATUS_TABS: { key: PurchaseStatus | 'all'; label: string }[] = [
+    { key: 'all', label: t('purchaseInvoices.tabAll') },
+    { key: 'draft', label: t('purchaseInvoices.tabDraft') },
+    { key: 'received', label: t('purchaseInvoices.tabReceived') },
+    { key: 'paid', label: t('purchaseInvoices.tabPaid') },
+    { key: 'overdue', label: t('purchaseInvoices.tabOverdue') },
+  ];
+
   const [statusFilter, setStatusFilter] = useState<PurchaseStatus | 'all'>('all');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -131,7 +134,7 @@ export default function PurchaseInvoices() {
         }
       }
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['purchase-invoices'] }); toast.success('Bon de commande créé'); setShowForm(false); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['purchase-invoices'] }); toast.success(t('purchaseInvoices.orderCreated')); setShowForm(false); },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -140,7 +143,7 @@ export default function PurchaseInvoices() {
       const { error } = await supabase.from('purchase_invoices').update({ status: 'paid', amount_paid: inv.total, paid_at: new Date().toISOString() }).eq('id', inv.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['purchase-invoices'] }); toast.success('Marqué payé'); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['purchase-invoices'] }); toast.success(t('purchaseInvoices.markedPaid')); },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -158,9 +161,9 @@ export default function PurchaseInvoices() {
   return (
     <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Factures Achats</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('purchaseInvoices.title')}</h1>
         <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
-          <Plus className="w-4 h-4" /> Nouveau bon de commande
+          <Plus className="w-4 h-4" /> {t('purchaseInvoices.newPurchase')}
         </button>
       </div>
 
@@ -175,7 +178,7 @@ export default function PurchaseInvoices() {
 
       <div className="relative mb-5">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Rechercher..."
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('purchaseInvoices.search')}
           className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
       </div>
 
@@ -184,9 +187,9 @@ export default function PurchaseInvoices() {
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <ShoppingCart className="w-14 h-14 text-gray-300 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-700 mb-1">Aucune facture achat</h3>
-          <p className="text-sm text-gray-400 mb-4">Enregistrez vos achats fournisseurs</p>
-          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl">Nouveau bon</button>
+          <h3 className="text-lg font-semibold text-gray-700 mb-1">{t('purchaseInvoices.empty')}</h3>
+          <p className="text-sm text-gray-400 mb-4">{t('purchaseInvoices.emptyDesc')}</p>
+          <button onClick={() => setShowForm(true)} className="px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl">{t('purchaseInvoices.newPurchaseShort')}</button>
         </div>
       ) : (
         <>
@@ -196,7 +199,7 @@ export default function PurchaseInvoices() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50">
-                    {['Numéro', 'Fournisseur', 'Date', 'Échéance', 'Statut', 'Total', 'Solde', ''].map(h => (
+                    {[t('purchaseInvoices.colNumber'), t('purchaseInvoices.colSupplier'), t('purchaseInvoices.colDate'), t('purchaseInvoices.colDueDate'), t('purchaseInvoices.colStatus'), t('purchaseInvoices.colTotal'), t('purchaseInvoices.colBalance'), ''].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -208,7 +211,7 @@ export default function PurchaseInvoices() {
                       <td className="px-4 py-3.5 text-sm text-gray-900">{inv.suppliers?.name || '—'}</td>
                       <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">{format(new Date(inv.invoice_date), 'dd/MM/yyyy')}</td>
                       <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">{inv.due_date ? format(new Date(inv.due_date), 'dd/MM/yyyy') : '—'}</td>
-                      <td className="px-4 py-3.5">{statusBadge(inv.status, inv.due_date)}</td>
+                      <td className="px-4 py-3.5">{statusBadge(inv.status, inv.due_date, t)}</td>
                       <td className="px-4 py-3.5 text-sm font-semibold text-gray-900 whitespace-nowrap">{formatCurrency(inv.total)}</td>
                       <td className="px-4 py-3.5 text-sm text-gray-600 whitespace-nowrap">{formatCurrency(inv.balance_due)}</td>
                       <td className="px-4 py-3.5">
@@ -235,18 +238,18 @@ export default function PurchaseInvoices() {
                     <p className="text-sm text-gray-900 mt-0.5">{inv.suppliers?.name || '—'}</p>
                     <p className="text-xs text-gray-400 mt-0.5">
                       {format(new Date(inv.invoice_date), 'dd/MM/yyyy')}
-                      {inv.due_date && ` · Échéance ${format(new Date(inv.due_date), 'dd/MM/yyyy')}`}
+                      {inv.due_date && ` · ${t('purchaseInvoices.dueDate')} ${format(new Date(inv.due_date), 'dd/MM/yyyy')}`}
                     </p>
                   </div>
-                  {statusBadge(inv.status, inv.due_date)}
+                  {statusBadge(inv.status, inv.due_date, t)}
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
                   <div>
-                    <p className="text-xs text-gray-400">Total</p>
+                    <p className="text-xs text-gray-400">{t('purchaseInvoices.total')}</p>
                     <p className="text-sm font-semibold text-gray-900">{formatCurrency(inv.total)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Solde dû</p>
+                    <p className="text-xs text-gray-400">{t('purchaseInvoices.balanceDue')}</p>
                     <p className="text-sm text-gray-600">{formatCurrency(inv.balance_due)}</p>
                   </div>
                   {inv.status !== 'paid' && (
@@ -266,39 +269,39 @@ export default function PurchaseInvoices() {
         <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center overflow-y-auto p-0 sm:p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl sm:my-8 min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl">
             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900">Nouveau bon de commande</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('purchaseInvoices.newOrderModalTitle')}</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="p-5 sm:p-6 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fournisseur</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('purchaseInvoices.supplier')}</label>
                   <select value={formData.supplier_id} onChange={e => setFormData(p => ({ ...p, supplier_id: e.target.value }))}
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
-                    <option value="">Aucun</option>
+                    <option value="">{t('purchaseInvoices.none')}</option>
                     {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('purchaseInvoices.date')}</label>
                   <input type="date" value={formData.invoice_date} onChange={e => setFormData(p => ({ ...p, invoice_date: e.target.value }))}
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Échéance</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('purchaseInvoices.dueDate')}</label>
                   <input type="date" value={formData.due_date} onChange={e => setFormData(p => ({ ...p, due_date: e.target.value }))}
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Magasin</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('purchaseInvoices.warehouse')}</label>
                   <select value={formData.warehouse_id} onChange={e => setFormData(p => ({ ...p, warehouse_id: e.target.value }))}
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]">
-                    <option value="">Sélectionner</option>
+                    <option value="">{t('purchaseInvoices.select')}</option>
                     {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Réf fournisseur</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('purchaseInvoices.supplierRef')}</label>
                   <input value={formData.supplier_ref} onChange={e => setFormData(p => ({ ...p, supplier_ref: e.target.value }))}
                     className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                 </div>
@@ -307,10 +310,10 @@ export default function PurchaseInvoices() {
               {/* Line items — desktop grid */}
               <div className="hidden sm:block border border-gray-200 rounded-xl overflow-hidden">
                 <div className="grid grid-cols-12 bg-gray-50 px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider gap-2">
-                  <div className="col-span-3">Produit</div>
-                  <div className="col-span-4">Description</div>
-                  <div className="col-span-1 text-right">Qté</div>
-                  <div className="col-span-2 text-right">Prix</div>
+                  <div className="col-span-3">{t('purchaseInvoices.product')}</div>
+                  <div className="col-span-4">{t('purchaseInvoices.description')}</div>
+                  <div className="col-span-1 text-right">{t('purchaseInvoices.qty')}</div>
+                  <div className="col-span-2 text-right">{t('purchaseInvoices.price')}</div>
                   <div className="col-span-1 text-right">TVA%</div>
                   <div className="col-span-1"></div>
                 </div>
@@ -321,12 +324,12 @@ export default function PurchaseInvoices() {
                       <div className="col-span-3">
                         <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
-                          <option value="">Saisie libre</option>
+                          <option value="">{t('purchaseInvoices.freeEntry')}</option>
                           {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                         </select>
                       </div>
                       <div className="col-span-4">
-                        <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
+                        <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder={t('purchaseInvoices.description')}
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       </div>
                       <div className="col-span-1">
@@ -361,7 +364,7 @@ export default function PurchaseInvoices() {
                   return (
                     <div key={line.id} className="border border-gray-200 rounded-xl p-3 space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-xs font-semibold text-gray-500 uppercase">Ligne {idx + 1}</p>
+                        <p className="text-xs font-semibold text-gray-500 uppercase">{t('purchaseInvoices.line')} {idx + 1}</p>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-gray-700">{formatCurrency(total)}</span>
                           {lines.length > 1 && (
@@ -373,19 +376,19 @@ export default function PurchaseInvoices() {
                       </div>
                       <select value={line.product_id} onChange={e => updateLine(line.id, 'product_id', e.target.value)}
                         className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]">
-                        <option value="">Saisie libre</option>
+                        <option value="">{t('purchaseInvoices.freeEntry')}</option>
                         {products.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                       </select>
-                      <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder="Description"
+                      <input value={line.description} onChange={e => updateLine(line.id, 'description', e.target.value)} placeholder={t('purchaseInvoices.description')}
                         className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                       <div className="grid grid-cols-3 gap-2">
                         <div>
-                          <label className="text-xs text-gray-400">Qté</label>
+                          <label className="text-xs text-gray-400">{t('purchaseInvoices.qty')}</label>
                           <input type="number" min="0" step="0.001" value={line.quantity} onChange={e => updateLine(line.id, 'quantity', parseFloat(e.target.value) || 0)}
                             className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
                         <div>
-                          <label className="text-xs text-gray-400">Prix</label>
+                          <label className="text-xs text-gray-400">{t('purchaseInvoices.price')}</label>
                           <input type="number" min="0" step="0.01" value={line.unit_price} onChange={e => updateLine(line.id, 'unit_price', parseFloat(e.target.value) || 0)}
                             className="w-full px-2 py-2 border border-gray-200 rounded-lg text-sm text-right focus:outline-none focus:ring-1 focus:ring-[#0057D9]" />
                         </div>
@@ -401,23 +404,23 @@ export default function PurchaseInvoices() {
               </div>
               <button onClick={() => setLines(prev => [...prev, { id: uuidv4(), product_id: '', description: '', quantity: 1, unit_price: 0, vat_rate: tenant?.vat_rate || 0 }])}
                 className="flex items-center gap-1.5 text-sm text-[#0057D9] hover:underline">
-                <Plus className="w-4 h-4" /> Ajouter une ligne
+                <Plus className="w-4 h-4" /> {t('purchaseInvoices.addLine')}
               </button>
 
               <div className="flex justify-end">
                 <div className="w-full sm:w-64 space-y-2">
-                  <div className="flex justify-between text-sm"><span className="text-gray-500">Sous-total</span><span>{formatCurrency(totals.subtotal)}</span></div>
-                  <div className="flex justify-between text-sm"><span className="text-gray-500">TVA</span><span>{formatCurrency(totals.vat)}</span></div>
-                  <div className="flex justify-between font-bold border-t border-gray-200 pt-2"><span>Total</span><span className="text-[#0057D9]">{formatCurrency(totals.total)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-gray-500">{t('purchaseInvoices.subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="text-gray-500">{t('purchaseInvoices.vat')}</span><span>{formatCurrency(totals.vat)}</span></div>
+                  <div className="flex justify-between font-bold border-t border-gray-200 pt-2"><span>{t('purchaseInvoices.total')}</span><span className="text-[#0057D9]">{formatCurrency(totals.total)}</span></div>
                 </div>
               </div>
             </div>
 
             <div className="flex gap-3 px-5 sm:px-6 pb-5 sm:pb-6">
-              <button onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">Annuler</button>
+              <button onClick={() => setShowForm(false)} className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl text-sm">{t('purchaseInvoices.cancel')}</button>
               <button onClick={() => createInvoice.mutate()} disabled={createInvoice.isPending}
                 className="flex-1 px-4 py-2.5 bg-[#0057D9] text-white rounded-xl text-sm font-semibold disabled:opacity-60">
-                {createInvoice.isPending ? 'Création...' : 'Créer le bon'}
+                {createInvoice.isPending ? t('purchaseInvoices.creating') : t('purchaseInvoices.createOrder')}
               </button>
             </div>
           </div>
