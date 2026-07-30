@@ -174,7 +174,7 @@ export default function Banking() {
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('nav.banking')}</h1>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('nav.banking')}</h1>
           <p className="text-sm text-gray-400 dark:text-gray-400 mt-1">Banques & Mobile Money — rapprochement automatique</p>
         </div>
         <button
@@ -190,7 +190,7 @@ export default function Banking() {
       {accounts.length > 0 && (
         <div className="bg-gradient-to-br from-[#0F2A3D] to-[#1a3f5c] rounded-2xl p-6 mb-6">
           <p className="text-sm text-white/70">Solde total (tous comptes)</p>
-          <p className="text-3xl font-bold text-white mt-1">{formatCurrency(totalBalance)}</p>
+          <p className="text-3xl font-medium text-white mt-1">{formatCurrency(totalBalance)}</p>
         </div>
       )}
 
@@ -221,7 +221,7 @@ export default function Banking() {
                 </div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{acc.name}</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 font-mono mt-0.5">{acc.code}</p>
-                <p className={`text-xl font-bold mt-3 ${bal >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(bal)}</p>
+                <p className={`text-xl font-medium mt-3 ${bal >= 0 ? 'text-gray-900 dark:text-white' : 'text-red-600 dark:text-red-400'}`}>{formatCurrency(bal)}</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Solde actuel</p>
               </div>
             );
@@ -266,7 +266,7 @@ export default function Banking() {
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white dark:bg-surface-1 rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ajouter un compte</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ajouter un compte</h2>
               <button onClick={() => setShowAdd(false)} className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"><X className="w-5 h-5" /></button>
             </div>
 

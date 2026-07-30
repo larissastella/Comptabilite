@@ -131,14 +131,14 @@ export default function InvoiceDetail() {
             {tenant?.logo_url && (
               <img src={tenant.logo_url} alt="Logo" className="h-16 object-contain mb-3" />
             )}
-            <h1 className="text-2xl font-bold text-[#0F2A3D]">{tenant?.name}</h1>
+            <h1 className="text-2xl font-medium text-[#0F2A3D]">{tenant?.name}</h1>
             {tenant?.legal_nif && <p className="text-sm text-gray-500">NIF: {tenant.legal_nif}</p>}
             {tenant?.legal_rccm && <p className="text-sm text-gray-500">RCCM: {tenant.legal_rccm}</p>}
             {tenant?.legal_regime && <p className="text-sm text-gray-500">Régime: {tenant.legal_regime}</p>}
           </div>
           <div className="text-right">
             <div className="flex items-center justify-end gap-2 mb-2">
-              <h2 className="text-3xl font-bold text-[#0F2A3D]">{t('invoiceDetail.invoiceTitle')}</h2>
+              <h2 className="text-3xl font-medium text-[#0F2A3D]">{t('invoiceDetail.invoiceTitle')}</h2>
               <Badge variant={st.variant}>{st.label}</Badge>
             </div>
             <p className="text-xl font-mono font-semibold text-[#0057D9]">{invoice.invoice_number}</p>
@@ -235,7 +235,7 @@ export default function InvoiceDetail() {
               <span className="text-gray-500">{t('invoiceDetail.vatLabel')}</span>
               <span className="font-medium">{formatCurrency(invoice.vat_amount)}</span>
             </div>
-            <div className="flex justify-between font-bold text-lg border-t-2 border-[#0F2A3D] pt-2">
+            <div className="flex justify-between font-medium text-lg border-t-2 border-[#0F2A3D] pt-2">
               <span className="text-[#0F2A3D]">{t('invoiceDetail.totalTtc')}</span>
               <span className="text-[#0057D9]">{formatCurrency(invoice.total)}</span>
             </div>

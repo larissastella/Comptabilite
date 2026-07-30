@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#0057D9]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
+            <span className="font-medium text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -29,7 +29,7 @@ export default function AboutPage() {
             <Sparkles className="w-4 h-4" />
             Notre histoire
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white mb-4">
             La comptabilité africaine, réinventée.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -45,7 +45,7 @@ export default function AboutPage() {
             <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
               <Target className="w-5 h-5 text-[#0057D9]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Notre mission</h2>
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Notre mission</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
             Rendre la comptabilité accessible à toutes les entreprises africaines, de la micro-entreprise
@@ -62,7 +62,7 @@ export default function AboutPage() {
             <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
               <Heart className="w-5 h-5 text-[#0057D9]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Nos valeurs</h2>
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">Nos valeurs</h2>
           </div>
           <div className="grid sm:grid-cols-2 gap-4 mt-4">
             {[
@@ -88,7 +88,7 @@ export default function AboutPage() {
             <div className="w-10 h-10 bg-[#0057D9]/10 dark:bg-[#0057D9]/20 rounded-xl flex items-center justify-center">
               <Globe2 className="w-5 h-5 text-[#0057D9]" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">LiAfrik — l'éditeur</h2>
+            <h2 className="text-xl font-medium text-gray-900 dark:text-white">LiAfrik — l'éditeur</h2>
           </div>
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-surface-1 dark:to-surface-2 rounded-2xl p-6 border border-gray-100 dark:border-surface-3">
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
@@ -121,7 +121,7 @@ export default function AboutPage() {
               { value: 'SYSCOHADA', label: 'Conformité OHADA' },
             ].map(s => (
               <div key={s.label} className="text-center p-4 bg-gray-50 dark:bg-surface-1 rounded-xl border border-gray-100 dark:border-surface-3">
-                <p className="text-2xl font-bold text-[#0057D9]">{s.value}</p>
+                <p className="text-2xl font-medium text-[#0057D9]">{s.value}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{s.label}</p>
               </div>
             ))}
@@ -144,9 +144,9 @@ export default function AboutPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-medium text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© {new Date().getFullYear()} LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

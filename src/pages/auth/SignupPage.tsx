@@ -71,14 +71,14 @@ export default function SignupPage() {
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 text-white">
         <Link to="/" className="flex items-center gap-2.5">
           <BookOpen className="w-8 h-8 text-[#0057D9]" />
-          <span className="text-2xl font-bold">Li<span className="text-[#0057D9]">Books</span></span>
+          <span className="text-2xl font-medium">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
 
         <div>
           <div className="inline-block bg-[#0057D9]/20 text-[#0057D9] text-sm font-medium px-4 py-1.5 rounded-full mb-4">
             {t('auth.trialBadge')}
           </div>
-          <h2 className="text-4xl font-bold mb-4 leading-tight">
+          <h2 className="text-4xl font-medium mb-4 leading-tight">
             Commencez gratuitement,<br />
             <span className="text-[#0057D9]">sans carte bancaire.</span>
           </h2>
@@ -96,7 +96,7 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <p className="text-slate-400 text-sm">© 2026 LiBooks. Tous droits réservés.</p>
+        <p className="text-slate-400 text-sm">© {new Date().getFullYear()} LiBooks. Tous droits réservés.</p>
       </div>
 
       {/* Right panel */}
@@ -112,12 +112,12 @@ export default function SignupPage() {
         <div className="w-full max-w-md">
           <Link to="/" className="flex items-center gap-2 mb-8 lg:hidden justify-center">
             <BookOpen className="w-7 h-7 text-[#0057D9]" />
-            <span className="text-xl font-bold text-[#0F2A3D] dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
+            <span className="text-xl font-medium text-[#0F2A3D] dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('auth.signup')}</h1>
+              <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('auth.signup')}</h1>
               <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{t('auth.signupSubtitle')}</p>
             </div>
 

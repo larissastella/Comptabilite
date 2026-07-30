@@ -133,7 +133,7 @@ export default function UsersRoles() {
 
   return (
     <div className="p-4 sm:p-6">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('users.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-900 mb-6">{t('users.title')}</h1>
 
       <div className="flex gap-2 mb-6">
         {(['members', 'roles'] as UsersTab[]).map(t => (
@@ -232,7 +232,7 @@ export default function UsersRoles() {
           {showInviteForm && (
             <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center p-0 sm:p-4 overflow-y-auto">
               <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-5 sm:p-6 sm:my-8 min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl">
-                <h2 className="text-lg font-bold text-gray-900 mb-4">{t('users.invite')}</h2>
+                <h2 className="text-lg font-medium text-gray-900 mb-4">{t('users.invite')}</h2>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -319,7 +319,7 @@ export default function UsersRoles() {
             <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center overflow-y-auto p-0 sm:p-4">
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl sm:my-8 min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl">
                 <div className="px-5 sm:px-6 py-4 border-b border-gray-100">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('users.newRole')}</h2>
+                  <h2 className="text-lg sm:text-xl font-medium text-gray-900">{t('users.newRole')}</h2>
                 </div>
                 <div className="p-5 sm:p-6 space-y-5">
                   <div>

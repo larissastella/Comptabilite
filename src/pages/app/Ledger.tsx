@@ -161,7 +161,7 @@ export default function Ledger() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('nav.ledger')}</h1>
+        <h1 className="text-2xl font-medium text-gray-900">{t('nav.ledger')}</h1>
         <p className="text-sm text-gray-400 mt-1">Grand livre, journal, lettrage et clôture d'exercice</p>
       </div>
 
@@ -449,7 +449,7 @@ export default function Ledger() {
               <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                 <Lock className="w-5 h-5 text-red-600" />
               </div>
-              <h2 className="text-lg font-bold text-gray-900">Confirmation de clôture</h2>
+              <h2 className="text-lg font-medium text-gray-900">Confirmation de clôture</h2>
             </div>
             <p className="text-sm text-gray-600 mb-4">
               Vous êtes sur le point de clôturer l'exercice <strong>{closingYear}</strong>. Cette action est irréversible :

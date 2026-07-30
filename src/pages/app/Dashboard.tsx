@@ -41,7 +41,7 @@ function StatCard({ title, value, icon: Icon, trend, trendUp, color, to }: {
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white truncate">{value}</p>
+      <p className="text-2xl font-medium text-gray-900 dark:text-white truncate">{value}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{title}</p>
       {to && <div className="flex items-center gap-1 mt-2 text-xs text-gray-400 dark:text-gray-500">
         <ArrowUpRight className="w-3 h-3" /> Voir détails
@@ -326,7 +326,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
           <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
             {user?.email} · {tenant?.name}
           </p>
@@ -380,7 +380,7 @@ export default function Dashboard() {
               <s.icon className={`w-5 h-5 ${s.color}`} />
             </div>
             <div className="min-w-0">
-              <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{s.value}</p>
+              <p className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">{s.value}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{s.label}</p>
             </div>
           </div>
@@ -456,7 +456,7 @@ export default function Dashboard() {
                   <div key={s.name} className="flex items-center gap-2">
                     <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: s.color }} />
                     <span className="text-xs text-gray-600 dark:text-gray-400">{s.name}</span>
-                    <span className="text-xs font-bold text-gray-900 dark:text-white ml-auto">{s.value}</span>
+                    <span className="text-xs font-medium text-gray-900 dark:text-white ml-auto">{s.value}</span>
                   </div>
                 ))}
               </div>
@@ -577,7 +577,7 @@ export default function Dashboard() {
                   <div key={bucket.name}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm text-gray-700 dark:text-gray-300">{bucket.name}</span>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(bucket.value)}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{formatCurrency(bucket.value)}</span>
                     </div>
                     <div className="w-full h-2.5 bg-gray-100 dark:bg-surface-3 rounded-full overflow-hidden">
                       <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, backgroundColor: bucket.color }} />
@@ -588,7 +588,7 @@ export default function Dashboard() {
               <div className="pt-3 mt-2 border-t border-gray-100 dark:border-surface-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total créances</span>
-                  <span className="text-base font-bold text-gray-900 dark:text-white">{formatCurrency(arAging.reduce((s, b) => s + b.value, 0))}</span>
+                  <span className="text-base font-medium text-gray-900 dark:text-white">{formatCurrency(arAging.reduce((s, b) => s + b.value, 0))}</span>
                 </div>
               </div>
             </div>
@@ -633,14 +633,14 @@ export default function Dashboard() {
                     <tr key={member.user_id} className="hover:bg-gray-50 dark:hover:bg-surface-2">
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-gray-100 text-gray-500 dark:bg-surface-2 dark:text-gray-400'}`}>
+                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium ${i === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-gray-100 text-gray-500 dark:bg-surface-2 dark:text-gray-400'}`}>
                             {i + 1}
                           </span>
                           <span className="text-sm font-medium text-gray-900 dark:text-white">{member.email}</span>
                         </div>
                       </td>
                       <td className="px-3 py-3 text-sm text-gray-700 dark:text-gray-300">{member.invoice_count}</td>
-                      <td className="px-3 py-3 text-sm font-bold text-gray-900 dark:text-white">{formatCurrency(member.total_revenue)}</td>
+                      <td className="px-3 py-3 text-sm font-medium text-gray-900 dark:text-white">{formatCurrency(member.total_revenue)}</td>
                       <td className="px-3 py-3">
                         <div className="w-24 h-2 bg-gray-100 dark:bg-surface-3 rounded-full overflow-hidden">
                           <div className="h-full bg-emerald-500 rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (member.total_revenue / (teamData[0]?.total_revenue || 1)) * 100)}%` }} />

@@ -183,7 +183,7 @@ export default function WhatsApp() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('nav.whatsapp')}</h1>
+        <h1 className="text-2xl font-medium text-gray-900">{t('nav.whatsapp')}</h1>
         <p className="text-sm text-gray-400 mt-1">Envoi automatique des factures via WhatsApp et portail client</p>
       </div>
 
@@ -317,7 +317,7 @@ export default function WhatsApp() {
       {showConnect && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Connecter WhatsApp Business</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">Connecter WhatsApp Business</h2>
             <p className="text-sm text-gray-500 mb-4">
               Renseignez votre numéro WhatsApp Business. Vous recevrez un code de vérification via l'API WhatsApp pour confirmer la connexion.
             </p>

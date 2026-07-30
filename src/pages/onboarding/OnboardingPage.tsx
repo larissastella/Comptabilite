@@ -324,7 +324,7 @@ export default function OnboardingPage() {
       <header className="bg-[#0F2A3D] px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
-          <span className="text-white font-bold">Li<span className="text-[#0057D9]">Books</span></span>
+          <span className="text-white font-medium">Li<span className="text-[#0057D9]">Books</span></span>
         </Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">
@@ -351,7 +351,7 @@ export default function OnboardingPage() {
               <ChevronRight className="w-3 h-3" />
               <span className="text-[#0057D9] font-medium">{stepTitles[step - 1]}</span>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{stepTitles[step - 1]}</h2>
+            <h2 className="text-2xl font-medium text-gray-900 dark:text-white">{stepTitles[step - 1]}</h2>
           </div>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-sm border border-gray-100 dark:border-surface-3 p-5 sm:p-8">
@@ -624,9 +624,9 @@ export default function OnboardingPage() {
                         {data.plan === plan.id && (
                           <CheckCircle className="absolute top-3 right-3 w-5 h-5 text-[#0057D9]" />
                         )}
-                        <span className="text-base font-bold text-gray-900 dark:text-white">{plan.name}</span>
+                        <span className="text-base font-medium text-gray-900 dark:text-white">{plan.name}</span>
                         <span className="text-xs text-gray-400 dark:text-gray-500 mb-2">{plan.desc}</span>
-                        <span className="text-2xl font-bold text-[#0F2A3D] dark:text-white">${price}<span className="text-sm font-normal text-gray-400 dark:text-gray-500">/mois</span></span>
+                        <span className="text-2xl font-medium text-[#0F2A3D] dark:text-white">${price}<span className="text-sm font-normal text-gray-400 dark:text-gray-500">/mois</span></span>
                         <ul className="mt-3 space-y-1">
                           {plan.features.map(f => (
                             <li key={f} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">

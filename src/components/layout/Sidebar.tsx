@@ -137,8 +137,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           <NavLink to="/app/dashboard" className="flex items-center gap-2.5">
             <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
             <div className="flex items-baseline gap-0.5">
-              <span className="text-white font-bold text-[17px] leading-none">Li</span>
-              <span className="text-[#0057D9] font-bold text-[17px] leading-none">Books</span>
+              <span className="text-white font-medium text-[17px] leading-none">Li</span>
+              <span className="text-[#0057D9] font-medium text-[17px] leading-none">Books</span>
             </div>
           </NavLink>
           <button onClick={onClose} className="text-slate-400 hover:text-white lg:hidden">
@@ -318,7 +318,7 @@ function AddCompanyModal({ onClose, onCreated }: { onClose: () => void; onCreate
   return (
     <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-1">Ajouter une société</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">Ajouter une société</h3>
         <p className="text-sm text-gray-500 mb-4">Chaque société a sa propre comptabilité, totalement séparée des autres.</p>
         <div className="space-y-4">
           <input value={name} onChange={e => setName(e.target.value)} placeholder="Nom de la société" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />

@@ -9,7 +9,7 @@ export default function TermsPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#0057D9]" />
-            <span className="font-bold text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
+            <span className="font-medium text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -22,12 +22,12 @@ export default function TermsPage() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">Conditions d'utilisation & CGV</h1>
+        <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white mb-3">Conditions d'utilisation & CGV</h1>
         <p className="text-sm text-gray-400 mb-10">Dernière mise à jour : janvier 2026</p>
 
         <div className="space-y-8 text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">1. Objet</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">1. Objet</h2>
             <p>
               Les présentes Conditions Générales d'Utilisation (CGU) et Conditions Générales de Vente (CGV)
               régissent l'utilisation de la plateforme LiBooks, éditée par LiAfrik (Dubaï, EAU &
@@ -36,7 +36,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">2. Définitions</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">2. Définitions</h2>
             <ul className="space-y-1 list-disc list-inside">
               <li><strong className="text-gray-900 dark:text-white">Plateforme</strong> : l'application LiBooks accessible via le web.</li>
               <li><strong className="text-gray-900 dark:text-white">Utilisateur</strong> : toute personne physique ou morale ayant créé un compte.</li>
@@ -46,7 +46,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">3. Compte utilisateur</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">3. Compte utilisateur</h2>
             <p>
               La création de compte nécessite une adresse email valide et un mot de passe. L'utilisateur est
               responsable de la confidentialité de ses identifiants. LiAfrik se réserve le droit de
@@ -55,7 +55,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">4. Forfaits et tarifs</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">4. Forfaits et tarifs</h2>
             <p>LiBooks propose 4 forfaits d'abonnement :</p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
               <li><strong className="text-gray-900 dark:text-white">Starter</strong> — 9 $/mois : facturation, stock de base, 2 utilisateurs.</li>
@@ -70,7 +70,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">5. Essai gratuit</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">5. Essai gratuit</h2>
             <p>
               Tout nouvel utilisateur bénéficie d'un essai gratuit de 7 jours, donnant accès à l'ensemble des
               fonctionnalités du forfait sélectionné. Aucune carte bancaire n'est requise pour s'inscrire.
@@ -81,7 +81,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">6. Souscription et paiement</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">6. Souscription et paiement</h2>
             <p>
               Le paiement de l'abonnement s'effectue via Stripe, prestataire de paiement sécurisé. Les
               moyens de paiement acceptés sont les cartes bancaires (Visa, Mastercard, Amex) et, selon la
@@ -91,7 +91,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">7. Résiliation</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">7. Résiliation</h2>
             <p>
               L'utilisateur peut résilier son abonnement à tout moment depuis l'espace Paramètres → Facturation.
               La résiliation prend effet à la fin de la période de facturation en cours. Aucun remboursement
@@ -101,7 +101,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">8. Responsabilités de l'utilisateur</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">8. Responsabilités de l'utilisateur</h2>
             <ul className="space-y-1 list-disc list-inside">
               <li>L'utilisateur s'engage à saisir des données comptables exactes et conformes à la législation applicable.</li>
               <li>L'utilisateur est responsable de la sauvegarde de ses données (LiBooks fournit un export complet).</li>
@@ -111,7 +111,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">9. Responsabilités de LiAfrik</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">9. Responsabilités de LiAfrik</h2>
             <p>
               LiAfrik s'engage à fournir un service disponible à 99,9 % (hors maintenance planifiée).
               En cas de panne, le support est joignable à <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>.
@@ -121,7 +121,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">10. Propriété intellectuelle</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">10. Propriété intellectuelle</h2>
             <p>
               La plateforme, son code, son design et le plan comptable SYSCOHADA intégré sont la propriété
               de LiAfrik. Les données saisies par l'utilisateur restent sa propriété exclusive.
@@ -130,7 +130,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">11. Confidentialité</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">11. Confidentialité</h2>
             <p>
               Le traitement des données personnelles est décrit dans notre
               <Link to="/privacy" className="text-[#0057D9] hover:underline"> Politique de confidentialité</Link>.
@@ -138,7 +138,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">12. Modification des conditions</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">12. Modification des conditions</h2>
             <p>
               LiAfrik se réserve le droit de modifier les présentes conditions. Les utilisateurs seront
               notifiés par email au moins 30 jours avant l'entrée en vigueur des modifications substantielles.
@@ -146,7 +146,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">13. Droit applicable</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">13. Droit applicable</h2>
             <p>
               Les présentes conditions sont régies par le droit camerounais. En cas de litige, les parties
               s'efforceront de trouver une solution amiable. À défaut, les tribunaux de Yaoundé (Cameroun)
@@ -155,7 +155,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-2">14. Contact</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">14. Contact</h2>
             <p>
               Informations générales : <a href="mailto:info@liafrik.com" className="text-[#0057D9] hover:underline">info@liafrik.com</a><br />
               Support technique : <a href="mailto:support@liafrik.com" className="text-[#0057D9] hover:underline">support@liafrik.com</a>
@@ -167,9 +167,9 @@ export default function TermsPage() {
       <footer className="border-t border-gray-100 dark:border-surface-3 py-8">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm text-gray-400">
-            LiBooks est développé par <span className="font-bold text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
+            LiBooks est développé par <span className="font-medium text-gray-600 dark:text-gray-300">LiAfrik</span> — Dubaï & Yaoundé
           </p>
-          <p className="text-xs text-gray-400 mt-1">© 2026 LiAfrik. Tous droits réservés.</p>
+          <p className="text-xs text-gray-400 mt-1">© {new Date().getFullYear()} LiAfrik. Tous droits réservés.</p>
         </div>
       </footer>
     </div>

@@ -195,7 +195,7 @@ export default function Reports() {
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-gray-900">{t('reports.title')}</h1>
+        <h1 className="text-2xl font-medium text-gray-900">{t('reports.title')}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-500">Du</label>
@@ -245,7 +245,7 @@ export default function Reports() {
                 <div className={`w-9 h-9 ${card.color} rounded-xl flex items-center justify-center mb-3`}>
                   <card.icon className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-xl font-bold text-gray-900">{card.label2 || formatCurrency(card.value!)}</p>
+                <p className="text-xl font-medium text-gray-900">{card.label2 || formatCurrency(card.value!)}</p>
                 <p className="text-sm text-gray-500 mt-1">{card.label}</p>
               </div>
             ))}
@@ -301,7 +301,7 @@ export default function Reports() {
               { label: 'TVA à reverser', value: vatDue, color: vatDue > 0 ? 'text-orange-600' : 'text-green-600' },
             ].map(item => (
               <div key={item.label} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 text-center">
-                <p className={`text-xl sm:text-2xl font-bold ${item.color}`}>{formatCurrency(item.value)}</p>
+                <p className={`text-xl sm:text-2xl font-medium ${item.color}`}>{formatCurrency(item.value)}</p>
                 <p className="text-sm text-gray-500 mt-1">{item.label}</p>
               </div>
             ))}
@@ -314,7 +314,7 @@ export default function Reports() {
                 <tbody>
                   <tr className="border-b border-gray-50"><td className="py-2 text-sm text-gray-900">Ventes</td><td className="py-2 text-sm text-right">{formatCurrency((salesData || []).reduce((s, i) => s + (i.total || 0) - (i.vat_amount || 0), 0))}</td><td className="py-2 text-sm text-right font-medium text-red-600">{formatCurrency(vatCollected)}</td></tr>
                   <tr className="border-b border-gray-50"><td className="py-2 text-sm text-gray-900">Achats</td><td className="py-2 text-sm text-right">{formatCurrency((purchasesData || []).reduce((s, i) => s + (i.total || 0) - (i.vat_amount || 0), 0))}</td><td className="py-2 text-sm text-right font-medium text-green-600">-{formatCurrency(vatDeductible)}</td></tr>
-                  <tr><td className="py-2 font-semibold text-gray-900">Net à verser</td><td className="py-2"></td><td className="py-2 text-right font-bold text-orange-600">{formatCurrency(vatDue)}</td></tr>
+                  <tr><td className="py-2 font-semibold text-gray-900">Net à verser</td><td className="py-2"></td><td className="py-2 text-right font-medium text-orange-600">{formatCurrency(vatDue)}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -352,7 +352,7 @@ export default function Reports() {
                       <td className={`px-4 py-2.5 text-sm font-semibold text-right ${row.debit - row.credit >= 0 ? 'text-blue-600' : 'text-red-600'}`}>{formatCurrency(row.debit - row.credit)}</td>
                     </tr>
                   ))}
-                  <tr className="bg-gray-50 font-bold border-t-2 border-gray-200">
+                  <tr className="bg-gray-50 font-medium border-t-2 border-gray-200">
                     <td colSpan={3} className="px-4 py-3 text-sm">TOTAL</td>
                     <td className="px-4 py-3 text-sm text-right">{formatCurrency(tbRows.reduce((s, r) => s + r.debit, 0))}</td>
                     <td className="px-4 py-3 text-sm text-right">{formatCurrency(tbRows.reduce((s, r) => s + r.credit, 0))}</td>
@@ -375,7 +375,7 @@ export default function Reports() {
               { label: 'Capitaux propres', value: balanceData.equity, color: 'text-green-600' },
             ].map(item => (
               <div key={item.label} className="bg-white rounded-2xl border border-gray-100 p-5 sm:p-6 text-center">
-                <p className={`text-xl sm:text-2xl font-bold ${item.color}`}>{formatCurrency(item.value)}</p>
+                <p className={`text-xl sm:text-2xl font-medium ${item.color}`}>{formatCurrency(item.value)}</p>
                 <p className="text-sm text-gray-500 mt-1">{item.label}</p>
               </div>
             ))}

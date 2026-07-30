@@ -76,7 +76,7 @@ export default function Billing() {
 
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('billing.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">{t('billing.title')}</h1>
 
       {/* Current plan card */}
       <div className={`rounded-2xl border-2 p-5 sm:p-6 mb-8 ${isTrialing ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-500/10' : 'border-[#0057D9] dark:border-[#0057D9] bg-[#0057D9]/5 dark:bg-[#0057D9]/10'}`}>
@@ -86,7 +86,7 @@ export default function Billing() {
               <Zap className="w-5 h-5 text-[#0057D9]" />
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('billing.currentPlan')}</h2>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{currentPlan?.name || tenant?.plan}</p>
+            <p className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white mt-1">{currentPlan?.name || tenant?.plan}</p>
             {isTrialing && (
               <div className="flex items-center gap-2 mt-2">
                 <Calendar className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
@@ -104,7 +104,7 @@ export default function Billing() {
           </div>
           <div className="sm:text-right">
             <p className="text-sm text-gray-400">Prix actuel</p>
-            <p className="text-xl sm:text-2xl font-bold text-gray-900">${currentPlan?.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+            <p className="text-xl sm:text-2xl font-medium text-gray-900">${currentPlan?.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
           </div>
         </div>
 
@@ -117,7 +117,7 @@ export default function Billing() {
 
       {/* Plans */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Choisissez votre forfait</h2>
+        <h2 className="text-lg font-medium text-gray-900 mb-4">Choisissez votre forfait</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANS.map(plan => {
             const isCurrent = plan.id === tenant?.plan;
@@ -134,8 +134,8 @@ export default function Billing() {
                 {isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-[#0057D9] text-white px-3 py-1 rounded-full">Actuel</span>
                 )}
-                <h3 className="text-base font-bold text-gray-900">{plan.name}</h3>
-                <p className="text-2xl font-bold text-gray-900 mt-1">${plan.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+                <h3 className="text-base font-medium text-gray-900">{plan.name}</h3>
+                <p className="text-2xl font-medium text-gray-900 mt-1">${plan.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
                 <ul className="mt-3 space-y-1.5">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
@@ -182,7 +182,7 @@ export default function Billing() {
       {pickingPlanFor && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setPickingPlanFor(null)}>
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold text-gray-900 mb-1">Choisis ton moyen de paiement</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">Choisis ton moyen de paiement</h3>
             <p className="text-sm text-gray-500 mb-5">Comment veux-tu payer ton abonnement {PLANS.find(p => p.id === pickingPlanFor)?.name} ?</p>
             <div className="space-y-3">
               <button

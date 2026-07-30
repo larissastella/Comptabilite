@@ -10,6 +10,7 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import AcceptInvitePage, { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
 import OnboardingPage from './pages/onboarding/OnboardingPage';
 import AppLayout from './components/layout/AppLayout';
+import CursorEffect from './components/ui/CursorEffect';
 import Dashboard from './pages/app/Dashboard';
 import ChartOfAccounts from './pages/app/ChartOfAccounts';
 import Inventory from './pages/app/Inventory';
@@ -120,7 +121,7 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
     <div className="flex flex-col items-center justify-center h-96 text-center gap-4 px-4">
       <span className="text-5xl">{icon}</span>
       <div>
-        <p className="text-xl font-bold text-gray-800">{title}</p>
+        <p className="text-xl font-medium text-gray-800">{title}</p>
         <p className="text-sm text-gray-500 mt-2 max-w-sm">{desc}</p>
       </div>
       <Link to="/app/billing" className="mt-2 px-6 py-2.5 bg-[#0057D9] text-white text-sm font-semibold rounded-xl hover:bg-[#003F9E] transition-colors">
@@ -133,6 +134,7 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
 export default function App() {
   return (
     <BrowserRouter>
+      <CursorEffect />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />

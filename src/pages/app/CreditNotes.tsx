@@ -198,7 +198,7 @@ export default function CreditNotes() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{t('creditNotes.title')}</h1>
+          <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">{t('creditNotes.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">{t('creditNotes.subtitle')}</p>
         </div>
         <button
@@ -264,7 +264,7 @@ export default function CreditNotes() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('creditNotes.newCreditNoteModalTitle')}</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">{t('creditNotes.newCreditNoteModalTitle')}</h2>
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
 
@@ -353,7 +353,7 @@ export default function CreditNotes() {
             <div className="border-t border-gray-100 dark:border-surface-3 pt-3 space-y-1 text-sm">
               <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>{t('creditNotes.subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
               <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>{t('creditNotes.vatLabel')}</span><span>{formatCurrency(totals.vat)}</span></div>
-              <div className="flex justify-between font-bold text-gray-900 dark:text-white text-base"><span>{t('creditNotes.totalCreditNote')}</span><span>{formatCurrency(totals.total)}</span></div>
+              <div className="flex justify-between font-medium text-gray-900 dark:text-white text-base"><span>{t('creditNotes.totalCreditNote')}</span><span>{formatCurrency(totals.total)}</span></div>
             </div>
 
             <button

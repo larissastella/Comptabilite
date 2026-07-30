@@ -69,7 +69,7 @@ export default function Customers() {
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('customers.title')}</h1>
+        <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('customers.title')}</h1>
         <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> {t('customers.new')}
         </button>
@@ -168,7 +168,7 @@ export default function Customers() {
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center p-0 sm:p-4 overflow-y-auto">
           <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl w-full max-w-lg p-5 sm:p-6 sm:my-8 min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-5">{editCustomer ? 'Modifier client' : t('customers.new')}</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-5">{editCustomer ? 'Modifier client' : t('customers.new')}</h2>
             <form onSubmit={e => { e.preventDefault(); save.mutate(form); }} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom / Raison sociale *</label>

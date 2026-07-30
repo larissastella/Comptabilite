@@ -107,7 +107,7 @@ export default function Settings() {
 
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('settings.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">{t('settings.title')}</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar — horizontal on mobile, vertical on desktop */}
@@ -271,7 +271,7 @@ export default function Settings() {
                     {auditLogs.map(log => (
                       <div key={log.id} className="flex items-center justify-between py-2.5 border-b border-gray-50">
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
                             log.action === 'create' ? 'bg-green-100 text-green-700' :
                             log.action === 'update' ? 'bg-blue-100 text-blue-700' :
                             log.action === 'delete' ? 'bg-red-100 text-red-700' :
@@ -401,7 +401,7 @@ function ApiKeysPanel({ tenantId }: { tenantId: string }) {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
             {newKey ? (
               <>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">Clé créée</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Clé créée</h3>
                 <p className="text-sm text-gray-500 mb-4">Copie-la maintenant — elle ne sera plus jamais affichée en entier.</p>
                 <div className="flex items-center gap-2 mb-4">
                   <input readOnly value={newKey} className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-xs font-mono text-gray-600 bg-gray-50" />
@@ -411,7 +411,7 @@ function ApiKeysPanel({ tenantId }: { tenantId: string }) {
               </>
             ) : (
               <>
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Nouvelle clé API</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Nouvelle clé API</h3>
                 <div className="space-y-4">
                   <input value={keyName} onChange={e => setKeyName(e.target.value)} placeholder="Nom (ex: Intégration comptable)" className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm" />
                   <select value={scope} onChange={e => setScope(e.target.value as 'read' | 'write')} className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">

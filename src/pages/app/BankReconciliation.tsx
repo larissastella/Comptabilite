@@ -136,7 +136,7 @@ export default function BankReconciliation() {
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Rapprochement bancaire</h1>
+        <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">Rapprochement bancaire</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">Importez votre relevé bancaire et faites correspondre chaque ligne à une écriture comptable</p>
       </div>
 
@@ -233,11 +233,11 @@ export default function BankReconciliation() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setMatchingLine(null)}>
           <div className="bg-white dark:bg-surface-1 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto p-5 sm:p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Rapprocher</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Rapprocher</h2>
               <button onClick={() => setMatchingLine(null)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{matchingLine.description}</p>
-            <p className="text-lg font-bold text-gray-900 dark:text-white mb-4">{formatCurrency(matchingLine.amount)}</p>
+            <p className="text-lg font-medium text-gray-900 dark:text-white mb-4">{formatCurrency(matchingLine.amount)}</p>
 
             {suggestedMatches.length === 0 ? (
               <p className="text-sm text-gray-400">Aucune écriture non rapprochée avec exactement ce montant sur ce compte.</p>

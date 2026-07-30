@@ -11,15 +11,15 @@ export default function NotFoundPage() {
         <div className="flex items-center justify-center gap-2 mb-8">
           <BookOpen className="w-8 h-8 text-[#0057D9]" />
           <div className="flex items-baseline gap-0.5">
-            <span className="text-slate-800 dark:text-white font-bold text-xl leading-none">LiBooks</span>
-            <span className="text-[#0057D9] font-bold text-xl leading-none"> Books</span>
+            <span className="text-slate-800 dark:text-white font-medium text-xl leading-none">LiBooks</span>
+            <span className="text-[#0057D9] font-medium text-xl leading-none"> Books</span>
           </div>
         </div>
 
-        <p className="text-[7rem] sm:text-[9rem] font-bold leading-none tracking-tight bg-gradient-to-br from-[#0057D9] to-emerald-700 bg-clip-text text-transparent">
+        <p className="text-[7rem] sm:text-[9rem] font-medium leading-none tracking-tight bg-gradient-to-br from-[#0057D9] to-emerald-700 bg-clip-text text-transparent">
           404
         </p>
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-4">
+        <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mt-4">
           {t('common.pageNotFound', 'Page introuvable')}
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs mx-auto">

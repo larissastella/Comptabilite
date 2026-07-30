@@ -136,7 +136,7 @@ export default function FixedAssets() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Immobilisations</h1>
+          <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">Immobilisations</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Registre des immobilisations et amortissements linéaires</p>
         </div>
         <div className="flex gap-2">
@@ -207,7 +207,7 @@ export default function FixedAssets() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
           <div className="bg-white dark:bg-surface-1 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Nouvelle immobilisation</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Nouvelle immobilisation</h2>
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
 

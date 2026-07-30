@@ -161,7 +161,7 @@ export default function PurchaseInvoices() {
   return (
     <div className="p-4 sm:p-6">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t('purchaseInvoices.title')}</h1>
+        <h1 className="text-2xl font-medium text-gray-900">{t('purchaseInvoices.title')}</h1>
         <button onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> {t('purchaseInvoices.newPurchase')}
         </button>
@@ -269,7 +269,7 @@ export default function PurchaseInvoices() {
         <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center overflow-y-auto p-0 sm:p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl sm:my-8 min-h-screen sm:min-h-0 rounded-none sm:rounded-2xl">
             <div className="flex items-center justify-between px-5 sm:px-6 py-4 border-b border-gray-100">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900">{t('purchaseInvoices.newOrderModalTitle')}</h2>
+              <h2 className="text-lg sm:text-xl font-medium text-gray-900">{t('purchaseInvoices.newOrderModalTitle')}</h2>
               <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
             <div className="p-5 sm:p-6 space-y-6">
@@ -411,7 +411,7 @@ export default function PurchaseInvoices() {
                 <div className="w-full sm:w-64 space-y-2">
                   <div className="flex justify-between text-sm"><span className="text-gray-500">{t('purchaseInvoices.subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
                   <div className="flex justify-between text-sm"><span className="text-gray-500">{t('purchaseInvoices.vat')}</span><span>{formatCurrency(totals.vat)}</span></div>
-                  <div className="flex justify-between font-bold border-t border-gray-200 pt-2"><span>{t('purchaseInvoices.total')}</span><span className="text-[#0057D9]">{formatCurrency(totals.total)}</span></div>
+                  <div className="flex justify-between font-medium border-t border-gray-200 pt-2"><span>{t('purchaseInvoices.total')}</span><span className="text-[#0057D9]">{formatCurrency(totals.total)}</span></div>
                 </div>
               </div>
             </div>

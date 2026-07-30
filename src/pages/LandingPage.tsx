@@ -106,7 +106,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />
-            <span className={`text-lg font-bold tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
+            <span className={`text-lg font-medium tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
               Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}>Books</span>
             </span>
           </Link>
@@ -199,7 +199,7 @@ export default function LandingPage() {
               <span className="text-sm text-white/90 font-medium">{t('landing.heroBadge')}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-white leading-[1.1] tracking-tight mb-6">
               {t('landing.heroTitle')}<br />
               <span style={{ color: GREEN }}>{t('landing.heroTitleAccent')}</span>
             </h1>
@@ -241,7 +241,7 @@ export default function LandingPage() {
                   {[['Chiffre d\'affaires', '12.4M FCFA', GREEN], ['Achats', '5.1M FCFA', '#F97316'], ['Créances', '2.3M FCFA', '#3B82F6'], ['Dettes', '1.8M FCFA', '#EF4444']].map(([label, val, c]) => (
                     <div key={label as string} className="bg-white dark:bg-surface-1 rounded-xl p-4 border border-gray-100 dark:border-surface-3">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{label}</p>
-                      <p className="text-lg font-bold" style={{ color: c as string }}>{val}</p>
+                      <p className="text-lg font-medium" style={{ color: c as string }}>{val}</p>
                     </div>
                   ))}
                 </div>
@@ -262,7 +262,7 @@ export default function LandingPage() {
                 <Wifi className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Mode offline</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Mode offline</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">Synchronisé automatiquement</p>
               </div>
             </div>
@@ -286,7 +286,7 @@ export default function LandingPage() {
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 100}>
               <div className="text-center">
-                <p className="text-3xl lg:text-4xl font-bold" style={{ color: NAVY }}>{s.value}</p>
+                <p className="text-3xl lg:text-4xl font-medium" style={{ color: NAVY }}>{s.value}</p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{s.label}</p>
               </div>
             </Reveal>
@@ -302,7 +302,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${GREEN}15`, color: GREEN }}>
                 Pensé pour l'Afrique
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
                 Conçu sur le terrain, pas en Silicon Valley
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -326,7 +326,7 @@ export default function LandingPage() {
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${GREEN}15` }}>
                     <f.icon className="w-6 h-6" style={{ color: GREEN }} />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{f.title}</h3>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{f.title}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
                 </div>
               </Reveal>
@@ -343,7 +343,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${NAVY}10`, color: NAVY }}>
                 Modules
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
                 Tout ce dont votre entreprise a besoin
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -364,7 +364,7 @@ export default function LandingPage() {
                   <div className={`w-12 h-12 ${m.color} rounded-xl flex items-center justify-center mb-4`}>
                     <m.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">{m.title}</h3>
+                  <h3 className="text-base font-medium text-gray-900 dark:text-white mb-2">{m.title}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{m.desc}</p>
                 </div>
               </Reveal>
@@ -381,7 +381,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${GREEN}15`, color: GREEN }}>
                 Tarifs
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
                 Des forfaits pour chaque taille
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
@@ -412,9 +412,9 @@ export default function LandingPage() {
                         Populaire
                       </span>
                     )}
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{plan.name}</h3>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">{plan.name}</h3>
                     <div className="mb-4">
-                      <span className="text-4xl font-bold" style={{ color: NAVY }}>${price}</span>
+                      <span className="text-4xl font-medium" style={{ color: NAVY }}>${price}</span>
                       <span className="text-sm text-gray-400">/{annual ? t('onboarding.perYear').replace('/', '') : t('onboarding.perMonth').replace('/', '')}</span>
                     </div>
                     <ul className="space-y-2.5 mb-6 flex-1">
@@ -447,7 +447,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${NAVY}10`, color: NAVY }}>
                 Témoignages
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
                 Ils gèrent leur entreprise avec LiBooks
               </h2>
             </div>
@@ -460,11 +460,11 @@ export default function LandingPage() {
                   <Quote className="w-8 h-8 mb-4 opacity-20" style={{ color: NAVY }} />
                   <p className="text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 italic">"{tm.text}"</p>
                   <div className="flex items-center gap-3">
-                    <div className={`w-12 h-12 ${tm.color} rounded-full flex items-center justify-center text-white font-bold`}>
+                    <div className={`w-12 h-12 ${tm.color} rounded-full flex items-center justify-center text-white font-medium`}>
                       {tm.avatar}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">{tm.name}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{tm.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{tm.role}</p>
                     </div>
                     <div className="ml-auto flex gap-0.5">
@@ -486,7 +486,7 @@ export default function LandingPage() {
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${GREEN}15`, color: GREEN }}>
                 FAQ
               </span>
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+              <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
                 Questions fréquentes
               </h2>
             </div>
@@ -514,7 +514,7 @@ export default function LandingPage() {
       <section className="py-20" style={{ background: NAVY }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <Reveal>
-            <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl lg:text-5xl font-medium text-white mb-6">
               {t('landing.ctaTitle')}
             </h2>
             <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
@@ -536,7 +536,7 @@ export default function LandingPage() {
             <div>
               <Link to="/" className="flex items-center gap-2 mb-4">
                 <BookOpen className="w-7 h-7 text-[#0057D9]" />
-                <span className="text-lg font-bold">Li<span className="text-[#0057D9]">Books</span></span>
+                <span className="text-lg font-medium">Li<span className="text-[#0057D9]">Books</span></span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
                 {t('landing.footerTagline')}
@@ -584,7 +584,7 @@ export default function LandingPage() {
           <div className="py-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-gray-300 font-medium">
-                LiBooks est développé par <span className="text-white font-bold">LiAfrik</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
+                LiBooks est développé par <span className="text-white font-medium">LiAfrik</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
               </p>
               <p className="text-xs text-gray-500">
                 Un pont entre l'innovation internationale et l'ancrage africain.

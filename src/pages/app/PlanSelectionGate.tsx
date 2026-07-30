@@ -21,7 +21,7 @@ export default function PlanSelectionGate() {
           <div className="w-16 h-16 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-amber-600 dark:text-amber-400" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white mb-2">
             {t('billing.choosePlan', 'Choisissez votre forfait')}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base max-w-md mx-auto">
@@ -55,8 +55,8 @@ export default function PlanSelectionGate() {
                     Forfait actuel
                   </span>
                 )}
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">{plan.name}</h3>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                <h3 className="text-base font-medium text-gray-900 dark:text-white">{plan.name}</h3>
+                <p className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white mt-1">
                   ${plan.price}<span className="text-xs font-normal text-gray-400 dark:text-gray-500">/mois</span>
                 </p>
                 <ul className="mt-3 space-y-1.5">

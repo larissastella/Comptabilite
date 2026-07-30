@@ -404,7 +404,7 @@ export default function SuperAdmin() {
           <Shield className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Super Admin</h1>
+          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Super Admin</h1>
           <p className="text-sm text-gray-400 dark:text-gray-500">Accès restreint — Toutes les actions sont journalisées</p>
         </div>
       </div>
@@ -430,7 +430,7 @@ export default function SuperAdmin() {
               <s.icon className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.value}</p>
+              <p className="text-2xl font-medium text-gray-900 dark:text-white">{s.value}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">{s.label}</p>
             </div>
           </div>
@@ -455,7 +455,7 @@ export default function SuperAdmin() {
       {/* ---- OVERVIEW ---- */}
       {tab === 'overview' && platformStats && (
         <div className="space-y-6">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Plateforme LiBooks — Vue globale</h2>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white">Plateforme LiBooks — Vue globale</h2>
 
           {/* Growth trend + activity */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -548,7 +548,7 @@ export default function SuperAdmin() {
                   {platformStats.byCountry.sort((a, b) => b.count - a.count).map(c => (
                     <div key={c.country} className="flex items-center justify-between py-2 border-b border-gray-50 dark:border-surface-3 last:border-0">
                       <span className="text-sm text-gray-700 dark:text-gray-300">{COUNTRY_NAMES[c.country] || c.country}</span>
-                      <span className="text-sm font-bold text-gray-900 dark:text-white">{c.count}</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">{c.count}</span>
                     </div>
                   ))}
                 </div>
@@ -586,28 +586,28 @@ export default function SuperAdmin() {
                 <Users className="w-4 h-4 text-gray-400" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Utilisateurs</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.totalUsers}</p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{platformStats.totalUsers}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <UserCheck className="w-4 h-4 text-emerald-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Tenants actifs</p>
               </div>
-              <p className="text-3xl font-bold text-emerald-600">{platformStats.activeTenants}</p>
+              <p className="text-3xl font-medium text-emerald-600">{platformStats.activeTenants}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <DollarSign className="w-4 h-4 text-blue-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">MRR estimé</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.mrr} <span className="text-base font-normal text-gray-400">$/mois</span></p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{platformStats.mrr} <span className="text-base font-normal text-gray-400">$/mois</span></p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="w-4 h-4 text-red-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Taux de churn</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{platformStats.churnRate}%</p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{platformStats.churnRate}%</p>
             </div>
           </div>
         </div>
@@ -699,7 +699,7 @@ export default function SuperAdmin() {
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl w-full max-w-md p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ajouter un Super Admin</h2>
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ajouter un Super Admin</h2>
                   <button onClick={() => setShowAddAdmin(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
                 </div>
                 <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl mb-4">
@@ -867,7 +867,7 @@ export default function SuperAdmin() {
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl w-full max-w-md p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Ajouter un membre du staff</h2>
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white">Ajouter un membre du staff</h2>
                   <button onClick={() => setShowAddStaff(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
                 </div>
                 <div className="space-y-4">
@@ -901,7 +901,7 @@ export default function SuperAdmin() {
             <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
               <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl w-full max-w-md p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Nouveau rôle interne</h2>
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white">Nouveau rôle interne</h2>
                   <button onClick={() => setShowAddRole(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
                 </div>
                 <div>
@@ -927,7 +927,7 @@ export default function SuperAdmin() {
       {tab === 'commercial' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Suivi Commercial & Tracking</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">Suivi Commercial & Tracking</h2>
             <select
               value={commercialStaffFilter}
               onChange={e => setCommercialStaffFilter(e.target.value)}
@@ -947,28 +947,28 @@ export default function SuperAdmin() {
                 <Ticket className="w-4 h-4 text-blue-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Codes actifs</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{staffUsers.filter(s => s.staff_code && s.is_active).length}</p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{staffUsers.filter(s => s.staff_code && s.is_active).length}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <UserPlus className="w-4 h-4 text-emerald-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Tenants référés</p>
               </div>
-              <p className="text-3xl font-bold text-emerald-600">{referredTenants.length}</p>
+              <p className="text-3xl font-medium text-emerald-600">{referredTenants.length}</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-4 h-4 text-amber-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Taux conversion</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{funnelConversionRate}%</p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{funnelConversionRate}%</p>
             </div>
             <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
               <div className="flex items-center gap-2 mb-2">
                 <TrendingDown className="w-4 h-4 text-red-500" />
                 <p className="text-sm text-gray-500 dark:text-gray-400">Taux de churn</p>
               </div>
-              <p className="text-3xl font-bold text-gray-900 dark:text-white">{churnRate || 0}%</p>
+              <p className="text-3xl font-medium text-gray-900 dark:text-white">{churnRate || 0}%</p>
             </div>
           </div>
 
@@ -1150,7 +1150,7 @@ export default function SuperAdmin() {
                     {staffPerformance.map((sp, i) => (
                       <tr key={sp.staff_code || sp.email} className="hover:bg-gray-50 dark:hover:bg-surface-2">
                         <td className="px-4 py-3.5">
-                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${i === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : i === 1 ? 'bg-gray-200 text-gray-600 dark:bg-surface-3 dark:text-gray-300' : i === 2 ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300' : 'text-gray-400'}`}>
+                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-medium ${i === 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' : i === 1 ? 'bg-gray-200 text-gray-600 dark:bg-surface-3 dark:text-gray-300' : i === 2 ? 'bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300' : 'text-gray-400'}`}>
                             {i + 1}
                           </span>
                         </td>
@@ -1163,7 +1163,7 @@ export default function SuperAdmin() {
                             {sp.conversion_rate.toFixed(0)}%
                           </span>
                         </td>
-                        <td className="px-4 py-3.5 text-sm font-bold text-gray-900 dark:text-white">{sp.revenue} USD</td>
+                        <td className="px-4 py-3.5 text-sm font-medium text-gray-900 dark:text-white">{sp.revenue} USD</td>
                       </tr>
                     ))}
                   </tbody>
