@@ -4,7 +4,7 @@ import {
   Shield, Users, Building2, UserCheck, Plus, Trash2, AlertTriangle,
   Globe, TrendingUp, Award, UserCog, BarChart3, MapPin, CreditCard, X,
   DollarSign, Activity, Target, GitBranch, Search, RefreshCw,
-  Ticket, UserPlus, TrendingDown, Zap,
+  Ticket, UserPlus, TrendingDown, Zap, Headset, Send,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -23,7 +23,7 @@ import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router-dom';
 
-type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs';
+type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs' | 'support';
 
 const ADMIN_MODULES = ['tenants', 'subscriptions', 'support', 'commercial', 'statistics', 'staff'];
 
@@ -370,6 +370,7 @@ export default function SuperAdmin() {
     { key: 'admins', label: 'Super Admins', icon: Shield },
     { key: 'staff', label: 'Équipe interne', icon: UserCog },
     { key: 'commercial', label: 'Commercial', icon: Target },
+    { key: 'support', label: 'Support', icon: Headset },
     { key: 'performance', label: 'Performance', icon: TrendingUp },
     { key: 'logs', label: 'Journaux', icon: BarChart3 },
   ];
@@ -1285,6 +1286,144 @@ export default function SuperAdmin() {
           <p className="text-xs text-gray-400">{filteredLogs.length} entrées affichées sur {auditLogs.length}</p>
         </div>
       )}
+
+      {tab === 'support' && <SupportPanel />}
+    </div>
+  );
+}
+
+function SupportPanel() {
+  const qc = useQueryClient();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [reply, setReply] = useState('');
+
+  const { data: conversations = [] } = useQuery({
+    queryKey: ['sa-support-conversations'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('support_conversations')
+        .select('*, tenants(name)')
+        .order('last_message_at', { ascending: false })
+        .limit(100);
+      return data || [];
+    },
+    refetchInterval: 10000,
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ['sa-support-messages', selectedId],
+    queryFn: async () => {
+      const { data } = await supabase.from('support_messages').select('*').eq('conversation_id', selectedId!).order('created_at');
+      return data || [];
+    },
+    enabled: !!selectedId,
+    refetchInterval: 5000,
+  });
+
+  const claimConversation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.rpc('escalate_conversation_to_staff', { p_conversation_id: id });
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sa-support-conversations'] }),
+  });
+
+  const sendReply = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase.from('support_messages').insert({
+        conversation_id: selectedId, sender: 'staff', staff_id: user?.id, content: reply,
+      });
+      if (error) throw error;
+      await supabase.from('support_conversations').update({ last_message_at: new Date().toISOString(), status: 'escalated' }).eq('id', selectedId);
+    },
+    onSuccess: () => { setReply(''); qc.invalidateQueries({ queryKey: ['sa-support-messages'] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const resolveConversation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('support_conversations').update({ status: 'resolved' }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['sa-support-conversations'] }),
+  });
+
+  const escalatedCount = conversations.filter((c: Record<string, unknown>) => c.status === 'escalated').length;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-220px)]">
+      <div className="lg:col-span-1 bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col">
+        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-gray-900">Conversations</h3>
+          {escalatedCount > 0 && (
+            <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">{escalatedCount} en attente</span>
+          )}
+        </div>
+        <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
+          {conversations.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-10">Aucune conversation</p>
+          ) : conversations.map((c: Record<string, unknown>) => (
+            <button
+              key={c.id as string}
+              onClick={() => setSelectedId(c.id as string)}
+              className={`w-full text-left px-4 py-3 hover:bg-gray-50 ${selectedId === c.id ? 'bg-blue-50' : ''}`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {(c.tenants as { name?: string } | null)?.name || (c.visitor_name as string) || 'Visiteur anonyme'}
+                </p>
+                {c.status === 'escalated' && <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0" />}
+                {c.status === 'resolved' && <span className="w-2 h-2 bg-gray-300 rounded-full flex-shrink-0" />}
+              </div>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {c.status === 'ai' ? 'IA en charge' : c.status === 'escalated' ? 'Escaladée' : 'Résolue'} · {new Date(c.last_message_at as string).toLocaleString('fr-FR')}
+              </p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 flex flex-col overflow-hidden">
+        {!selectedId ? (
+          <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+            <Headset className="w-8 h-8 mr-2 opacity-40" /> Sélectionne une conversation
+          </div>
+        ) : (
+          <>
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+              <p className="text-sm font-semibold text-gray-900">Conversation</p>
+              <div className="flex gap-2">
+                <button onClick={() => claimConversation.mutate(selectedId)} className="text-xs px-3 py-1.5 bg-[#0057D9] text-white rounded-lg font-medium">Prendre en charge</button>
+                <button onClick={() => resolveConversation.mutate(selectedId)} className="text-xs px-3 py-1.5 border border-gray-200 rounded-lg font-medium">Marquer résolu</button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+              {messages.map((m: Record<string, unknown>) => (
+                <div key={m.id as string} className={`flex ${m.sender === 'staff' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm ${
+                    m.sender === 'staff' ? 'bg-[#0057D9] text-white' : m.sender === 'ai' ? 'bg-blue-50 text-gray-800' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    <p className="whitespace-pre-wrap">{m.content as string}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="p-3 border-t border-gray-100 flex items-center gap-2">
+              <input
+                value={reply}
+                onChange={e => setReply(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && reply.trim()) sendReply.mutate(); }}
+                placeholder="Répondre au client..."
+                className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
+              />
+              <button onClick={() => sendReply.mutate()} disabled={!reply.trim() || sendReply.isPending} className="w-10 h-10 bg-[#0057D9] text-white rounded-xl flex items-center justify-center disabled:opacity-40">
+                <Send className="w-4 h-4" />
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

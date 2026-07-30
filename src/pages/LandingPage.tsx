@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import ChatWidget from '../components/ui/ChatWidget';
 import {
   BookOpen, BarChart3, FileText, Receipt, Building2,
   Smartphone, Wifi, Globe, Shield, Zap, CheckCircle, ChevronDown,
@@ -608,6 +609,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <ChatWidget />
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPendingCount } from '../../lib/db';
 import { useTranslation } from 'react-i18next';
+import ChatWidget from '../ui/ChatWidget';
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -94,6 +95,7 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <ChatWidget />
     </div>
   );
 }
