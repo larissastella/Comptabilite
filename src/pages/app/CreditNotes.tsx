@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Plus, Search, Receipt, X, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
@@ -37,18 +38,19 @@ function calcLine(l: LineFormData) {
   return { subtotal, vatAmount, total: subtotal + vatAmount };
 }
 
-const statusBadge = (status: string) => {
+function statusBadge(status: string, t: (key: string) => string) {
   const map: Record<string, { variant: 'gray' | 'info' | 'success' | 'danger'; label: string }> = {
-    draft: { variant: 'gray', label: 'Brouillon' },
-    issued: { variant: 'info', label: 'Émis' },
-    applied: { variant: 'success', label: 'Appliqué' },
-    cancelled: { variant: 'danger', label: 'Annulé' },
+    draft: { variant: 'gray', label: t('creditNotes.statusDraft') },
+    issued: { variant: 'info', label: t('creditNotes.statusIssued') },
+    applied: { variant: 'success', label: t('creditNotes.statusApplied') },
+    cancelled: { variant: 'danger', label: t('creditNotes.statusCancelled') },
   };
   const s = map[status] || { variant: 'gray' as const, label: status };
   return <Badge variant={s.variant}>{s.label}</Badge>;
-};
+}
 
 export default function CreditNotes() {
+  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -117,8 +119,8 @@ export default function CreditNotes() {
 
   const createCreditNote = useMutation({
     mutationFn: async () => {
-      if (!formData.customer_id) throw new Error('Sélectionnez un client');
-      if (lines.every(l => !l.description)) throw new Error('Ajoutez au moins une ligne');
+      if (!formData.customer_id) throw new Error(t('creditNotes.selectCustomerError'));
+      if (lines.every(l => !l.description)) throw new Error(t('creditNotes.addLineError'));
 
       const { data: cnNumber, error: numErr } = await supabase.rpc('next_credit_note_number', { p_tenant_id: tenant!.id });
       if (numErr) throw numErr;
@@ -171,11 +173,11 @@ export default function CreditNotes() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['credit-notes'] });
       qc.invalidateQueries({ queryKey: ['transactions'] });
-      toast.success('Avoir créé et comptabilisé');
+      toast.success(t('creditNotes.createdAndPosted'));
       setShowForm(false);
       resetForm();
     },
-    onError: (e: Error) => toast.error(e.message || "Erreur lors de la création de l'avoir"),
+    onError: (e: Error) => toast.error(e.message || t('creditNotes.createError')),
   });
 
   const updateLine = (id: string, patch: Partial<LineFormData>) => {
@@ -188,7 +190,7 @@ export default function CreditNotes() {
     const inv = invoices.find(i => i.id === invoiceId);
     setFormData(prev => ({ ...prev, original_invoice_id: invoiceId }));
     if (inv) {
-      setLines([{ id: uuidv4(), description: `Annulation facture ${inv.invoice_number}`, quantity: 1, unit_price: inv.total, vat_rate: 0 }]);
+      setLines([{ id: uuidv4(), description: `${t('creditNotes.cancelInvoice')} ${inv.invoice_number}`, quantity: 1, unit_price: inv.total, vat_rate: 0 }]);
     }
   };
 
@@ -196,14 +198,14 @@ export default function CreditNotes() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Notes de crédit</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Avoirs clients — annulation ou correction de factures déjà émises</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{t('creditNotes.title')}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('creditNotes.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors"
         >
-          <Plus className="w-4 h-4" /> Nouvel avoir
+          <Plus className="w-4 h-4" /> {t('creditNotes.newCreditNote')}
         </button>
       </div>
 
@@ -212,30 +214,30 @@ export default function CreditNotes() {
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Rechercher un avoir ou un client..."
+          placeholder={t('creditNotes.search')}
           className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-1 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0057D9]"
         />
       </div>
 
       <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-200 dark:border-surface-3 overflow-hidden">
         {isLoading ? (
-          <div className="p-10 text-center text-gray-400 text-sm">Chargement...</div>
+          <div className="p-10 text-center text-gray-400 text-sm">{t('creditNotes.loading')}</div>
         ) : filtered.length === 0 ? (
           <div className="p-10 text-center text-gray-400">
             <Receipt className="w-10 h-10 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">Aucune note de crédit pour le moment</p>
+            <p className="text-sm">{t('creditNotes.empty')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-surface-2 text-gray-500 dark:text-gray-400 text-xs uppercase">
                 <tr>
-                  <th className="text-left px-4 py-3">N°</th>
-                  <th className="text-left px-4 py-3">Client</th>
-                  <th className="text-left px-4 py-3">Facture liée</th>
-                  <th className="text-left px-4 py-3">Date</th>
-                  <th className="text-right px-4 py-3">Montant</th>
-                  <th className="text-left px-4 py-3">Statut</th>
+                  <th className="text-left px-4 py-3">{t('creditNotes.colNumber')}</th>
+                  <th className="text-left px-4 py-3">{t('creditNotes.colCustomer')}</th>
+                  <th className="text-left px-4 py-3">{t('creditNotes.colRelatedInvoice')}</th>
+                  <th className="text-left px-4 py-3">{t('creditNotes.colDate')}</th>
+                  <th className="text-right px-4 py-3">{t('creditNotes.colAmount')}</th>
+                  <th className="text-left px-4 py-3">{t('creditNotes.colStatus')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-surface-3">
@@ -246,7 +248,7 @@ export default function CreditNotes() {
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-500">{cn.sales_invoices?.invoice_number || '—'}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-500">{format(new Date(cn.issue_date), 'dd/MM/yyyy')}</td>
                     <td className="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">{formatCurrency(cn.total)}</td>
-                    <td className="px-4 py-3">{statusBadge(cn.status)}</td>
+                    <td className="px-4 py-3">{statusBadge(cn.status, t)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -262,35 +264,35 @@ export default function CreditNotes() {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Nouvel avoir</h2>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('creditNotes.newCreditNoteModalTitle')}</h2>
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Client</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('creditNotes.customer')}</label>
                 <select
                   value={formData.customer_id}
                   onChange={e => setFormData(prev => ({ ...prev, customer_id: e.target.value, original_invoice_id: '' }))}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">{t('creditNotes.selectCustomer')}</option>
                   {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Facture d'origine (optionnel)</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('creditNotes.originalInvoice')}</label>
                 <select
                   value={formData.original_invoice_id}
                   onChange={e => applyInvoiceTotal(e.target.value)}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 >
-                  <option value="">Aucune (avoir libre)</option>
+                  <option value="">{t('creditNotes.noneFreeCredit')}</option>
                   {invoices.map(i => <option key={i.id} value={i.id}>{i.invoice_number} — {formatCurrency(i.total)}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Date d'émission</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('creditNotes.issueDate')}</label>
                 <input
                   type="date"
                   value={formData.issue_date}
@@ -299,44 +301,44 @@ export default function CreditNotes() {
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Motif</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('creditNotes.reason')}</label>
                 <input
                   value={formData.reason}
                   onChange={e => setFormData(prev => ({ ...prev, reason: e.target.value }))}
-                  placeholder="Erreur de facturation, retour marchandise..."
+                  placeholder={t('creditNotes.reasonPlaceholder')}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 />
               </div>
             </div>
 
             <div className="space-y-2 mb-3">
-              <label className="text-xs text-gray-500 dark:text-gray-400">Lignes</label>
+              <label className="text-xs text-gray-500 dark:text-gray-400">{t('creditNotes.lines')}</label>
               {lines.map(line => (
                 <div key={line.id} className="grid grid-cols-12 gap-2 items-center">
                   <input
                     className="col-span-5 px-2 py-1.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
-                    placeholder="Description"
+                    placeholder={t('creditNotes.description')}
                     value={line.description}
                     onChange={e => updateLine(line.id, { description: e.target.value })}
                   />
                   <input
                     type="number"
                     className="col-span-2 px-2 py-1.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
-                    placeholder="Qté"
+                    placeholder={t('creditNotes.qty')}
                     value={line.quantity}
                     onChange={e => updateLine(line.id, { quantity: Number(e.target.value) })}
                   />
                   <input
                     type="number"
                     className="col-span-2 px-2 py-1.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
-                    placeholder="Prix U."
+                    placeholder={t('creditNotes.unitPrice')}
                     value={line.unit_price}
                     onChange={e => updateLine(line.id, { unit_price: Number(e.target.value) })}
                   />
                   <input
                     type="number"
                     className="col-span-2 px-2 py-1.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
-                    placeholder="TVA %"
+                    placeholder={t('creditNotes.vat')}
                     value={line.vat_rate}
                     onChange={e => updateLine(line.id, { vat_rate: Number(e.target.value) })}
                   />
@@ -345,13 +347,13 @@ export default function CreditNotes() {
                   </button>
                 </div>
               ))}
-              <button onClick={addLine} className="text-xs text-[#0057D9] font-medium hover:underline">+ Ajouter une ligne</button>
+              <button onClick={addLine} className="text-xs text-[#0057D9] font-medium hover:underline">{t('creditNotes.addLine')}</button>
             </div>
 
             <div className="border-t border-gray-100 dark:border-surface-3 pt-3 space-y-1 text-sm">
-              <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>Sous-total</span><span>{formatCurrency(totals.subtotal)}</span></div>
-              <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>TVA</span><span>{formatCurrency(totals.vat)}</span></div>
-              <div className="flex justify-between font-bold text-gray-900 dark:text-white text-base"><span>Total avoir</span><span>{formatCurrency(totals.total)}</span></div>
+              <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>{t('creditNotes.subtotal')}</span><span>{formatCurrency(totals.subtotal)}</span></div>
+              <div className="flex justify-between text-gray-500 dark:text-gray-400"><span>{t('creditNotes.vatLabel')}</span><span>{formatCurrency(totals.vat)}</span></div>
+              <div className="flex justify-between font-bold text-gray-900 dark:text-white text-base"><span>{t('creditNotes.totalCreditNote')}</span><span>{formatCurrency(totals.total)}</span></div>
             </div>
 
             <button
@@ -360,7 +362,7 @@ export default function CreditNotes() {
               className="w-full mt-5 flex items-center justify-center gap-2 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
             >
               <CheckCircle className="w-4 h-4" />
-              {createCreditNote.isPending ? 'Création...' : "Créer et comptabiliser l'avoir"}
+              {createCreditNote.isPending ? t('creditNotes.creating') : t('creditNotes.createAndPost')}
             </button>
           </div>
         </div>
