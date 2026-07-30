@@ -1,10 +1,14 @@
-// Bilingual (FR/EN) support chatbot for LiBooks. Handles both anonymous
-// landing-page visitors and logged-in app users. Detects when the
-// visitor wants a human, or when the AI genuinely can't help, and
-// escalates the conversation -- visible in Super Admin > Support for
-// staff to pick up and reply to in real time.
+// Bilingual (FR/EN) support chatbot for LiBooks -- FREE, keyword/FAQ
+// based, zero external API cost. No Anthropic/OpenAI key required.
 //
-// Requires the Edge Function secret: ANTHROPIC_API_KEY
+// How it works: matches the visitor's message against a small FAQ
+// knowledge base (French + English) using simple keyword scoring. If no
+// confident match is found, it doesn't guess -- it escalates to a human
+// immediately rather than giving a bad automated answer.
+//
+// Handles both anonymous landing-page visitors and logged-in app users.
+// Escalated conversations are visible in Super Admin > Support for
+// staff to pick up and reply to in real time.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
@@ -14,36 +18,109 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const SYSTEM_PROMPT = `Tu es l'assistant support de LiBooks, un logiciel de comptabilité SaaS pour PME africaines (conforme OHADA/SYSCOHADA).
+interface FaqEntry {
+  keywords: { fr: string[]; en: string[] };
+  answer: { fr: string; en: string };
+}
 
-Réponds TOUJOURS dans la langue du visiteur (français ou anglais selon sa dernière question). Reste bref (2-4 phrases sauf si une explication détaillée est vraiment nécessaire), chaleureux et professionnel.
+// Add/edit entries here any time -- no redeploy of any AI model needed,
+// just this static list.
+const FAQ: FaqEntry[] = [
+  {
+    keywords: { fr: ["prix", "tarif", "combien", "cout", "coûte", "abonnement", "forfait"], en: ["price", "pricing", "cost", "how much", "plan", "subscription"] },
+    answer: {
+      fr: "LiBooks propose 4 forfaits : Starter (9$/mois), Pro (19$/mois), Premium (69$/mois) et Enterprise (189$/mois). Chaque forfait supérieur inclut tout l'inférieur, plus des fonctionnalités avancées. Tu peux voir le détail complet sur notre page tarifs.",
+      en: "LiBooks has 4 plans: Starter ($9/mo), Pro ($19/mo), Premium ($69/mo) and Enterprise ($189/mo). Each higher plan includes everything from the one below, plus more features. Full details are on our pricing page.",
+    },
+  },
+  {
+    keywords: { fr: ["essai", "gratuit", "gratuitement", "tester"], en: ["free trial", "trial", "try", "free"] },
+    answer: {
+      fr: "Oui ! Tu peux essayer LiBooks gratuitement, sans carte bancaire. Clique sur \"Essai gratuit\" en haut de la page pour démarrer.",
+      en: "Yes! You can try LiBooks for free, no credit card required. Click \"Free trial\" at the top of the page to get started.",
+    },
+  },
+  {
+    keywords: { fr: ["inscri", "compte", "commencer", "demarrer", "créer un compte"], en: ["sign up", "signup", "register", "create account", "get started"] },
+    answer: {
+      fr: "Pour t'inscrire, clique sur \"Commencer\" ou \"Essai gratuit\" en haut de la page. Ça prend moins de 2 minutes, aucune carte bancaire n'est nécessaire pour démarrer.",
+      en: "To sign up, click \"Get started\" or \"Free trial\" at the top of the page. It takes less than 2 minutes, no credit card needed to start.",
+    },
+  },
+  {
+    keywords: { fr: ["facture", "facturation", "devis"], en: ["invoice", "invoicing", "billing document", "quote"] },
+    answer: {
+      fr: "LiBooks te permet de créer des factures professionnelles illimitées, avec suivi des paiements, envoi par WhatsApp, et export PDF. C'est disponible dès le forfait Starter.",
+      en: "LiBooks lets you create unlimited professional invoices, with payment tracking, WhatsApp sending, and PDF export. Available from the Starter plan.",
+    },
+  },
+  {
+    keywords: { fr: ["stock", "inventaire", "entrepot", "magasin"], en: ["inventory", "stock", "warehouse"] },
+    answer: {
+      fr: "La gestion de stock multi-magasin est incluse dès le forfait Starter : suivi des entrées/sorties, alertes de stock bas, et valorisation automatique.",
+      en: "Multi-warehouse inventory management is included from the Starter plan: stock movement tracking, low-stock alerts, and automatic valuation.",
+    },
+  },
+  {
+    keywords: { fr: ["paiement", "payer", "carte bancaire", "mobile money", "orange money", "momo"], en: ["payment", "pay", "credit card", "mobile money"] },
+    answer: {
+      fr: "Tu peux payer ton abonnement par carte bancaire (Stripe) ou par Mobile Money / carte locale (Flutterwave) -- au choix, directement depuis la page Facturation de ton compte.",
+      en: "You can pay for your subscription by credit card (Stripe) or Mobile Money / local card (Flutterwave) -- your choice, right from your account's Billing page.",
+    },
+  },
+  {
+    keywords: { fr: ["ohada", "syscohada", "comptabilite", "comptable"], en: ["ohada", "syscohada", "accounting"] },
+    answer: {
+      fr: "LiBooks est conforme aux normes SYSCOHADA/OHADA : plan comptable pré-configuré, comptabilité en partie double, et états financiers OHADA générés automatiquement.",
+      en: "LiBooks is SYSCOHADA/OHADA compliant: pre-configured chart of accounts, double-entry bookkeeping, and automatically generated OHADA financial statements.",
+    },
+  },
+  {
+    keywords: { fr: ["utilisateur", "equipe", "inviter", "collaborateur"], en: ["user", "team", "invite", "collaborator"] },
+    answer: {
+      fr: "Tu peux inviter des membres de ton équipe avec des rôles personnalisés. Le nombre d'utilisateurs inclus dépend de ton forfait (2 en Starter, 5 en Pro, illimité en Premium/Enterprise).",
+      en: "You can invite team members with custom roles. The number of included users depends on your plan (2 on Starter, 5 on Pro, unlimited on Premium/Enterprise).",
+    },
+  },
+  {
+    keywords: { fr: ["annuler", "resilier", "desabonner"], en: ["cancel", "unsubscribe", "cancel subscription"] },
+    answer: {
+      fr: "Tu peux gérer ou annuler ton abonnement à tout moment depuis la page Facturation de ton compte, section \"Gérer mon paiement\".",
+      en: "You can manage or cancel your subscription any time from your account's Billing page, under \"Manage payment\".",
+    },
+  },
+];
 
-Ce que tu sais sur LiBooks :
-- 4 forfaits : Starter (9$/mois, 2 utilisateurs, facturation, stocks, avoirs), Pro (19$/mois, 5 utilisateurs, + Banque, WhatsApp), Premium (69$/mois, utilisateurs illimités, + IA Trésorerie, OHADA complet, OCR, Paie), Enterprise (189$/mois, + Multi-société, API, support dédié).
-- Fonctionnalités : facturation, gestion de stock multi-magasin, comptabilité en partie double SYSCOHADA, rapprochement bancaire, immobilisations, factures récurrentes, multi-devise, 2FA, invitations d'équipe, paiement par carte (Stripe) ou Mobile Money (Flutterwave).
-- Essai gratuit disponible, pas de carte bancaire requise pour démarrer.
-- L'inscription se fait sur la page d'accueil, bouton "Commencer" ou "Essai gratuit".
+function scoreMatch(message: string, keywords: string[]): number {
+  const lower = message.toLowerCase();
+  return keywords.reduce((score, kw) => (lower.includes(kw.toLowerCase()) ? score + 1 : score), 0);
+}
 
-RÈGLES IMPORTANTES :
-- Si le visiteur demande explicitement à parler à un humain, ou à un agent, ou dit qu'il veut un support humain -> réponds brièvement que tu transmets sa demande à l'équipe, puis termine ta réponse par exactement ce marqueur sur sa propre ligne : [ESCALATE]
-- Si la question sort largement de ton champ (bug technique précis nécessitant un accès à son compte, litige de facturation, demande commerciale complexe) -> propose de transmettre à un humain et termine par [ESCALATE]
-- Ne réponds JAMAIS à des questions sans rapport avec LiBooks, la comptabilité, ou l'utilisation du logiciel.
-- N'invente jamais de fonctionnalité qui n'existe pas.`;
+function findBestAnswer(message: string, lang: "fr" | "en"): string | null {
+  let best: { score: number; answer: string } | null = null;
+  for (const entry of FAQ) {
+    const score = scoreMatch(message, entry.keywords[lang]);
+    if (score > 0 && (!best || score > best.score)) {
+      best = { score, answer: entry.answer[lang] };
+    }
+  }
+  return best?.answer ?? null;
+}
+
+const GREETINGS_FR = ["bonjour", "salut", "bonsoir", "hello", "coucou"];
+const HUMAN_REQUEST_FR = ["humain", "agent", "personne", "quelqu'un", "conseiller"];
+const HUMAN_REQUEST_EN = ["human", "agent", "someone", "person", "representative"];
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
 
   try {
-    const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not configured");
-
     const { conversation_id, message, visitor_id, visitor_name, visitor_email, language } = await req.json();
     if (!message) throw new Error("message is required");
+    const lang: "fr" | "en" = language === "en" ? "en" : "fr";
 
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    // Identify the caller, if logged in (optional -- anonymous visitors
-    // have no Authorization header at all, which is fine for pre-sale chat).
     let userId: string | null = null;
     let tenantId: string | null = null;
     const authHeader = req.headers.get("Authorization");
@@ -59,7 +136,6 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Find or create the conversation.
     let conversation;
     if (conversation_id) {
       const { data } = await serviceClient.from("support_conversations").select("*").eq("id", conversation_id).maybeSingle();
@@ -72,18 +148,15 @@ Deno.serve(async (req: Request) => {
         visitor_id: userId ? null : visitor_id,
         visitor_name: visitor_name || null,
         visitor_email: visitor_email || null,
-        language: language === "en" ? "en" : "fr",
+        language: lang,
         status: "ai",
       }).select().single();
       if (error) throw error;
       conversation = data;
     }
 
-    // Save the visitor's message.
     await serviceClient.from("support_messages").insert({ conversation_id: conversation.id, sender: "visitor", content: message });
 
-    // If a human already took over, don't let the bot answer -- just
-    // store the message and let staff see it in real time.
     if (conversation.status === "escalated") {
       await serviceClient.from("support_conversations").update({ last_message_at: new Date().toISOString() }).eq("id", conversation.id);
       return new Response(JSON.stringify({ conversation_id: conversation.id, escalated: true, reply: null }), {
@@ -91,36 +164,33 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Build history for context (last 10 messages).
-    const { data: history } = await serviceClient
-      .from("support_messages").select("sender, content").eq("conversation_id", conversation.id)
-      .order("created_at", { ascending: true }).limit(20);
+    const lowerMsg = message.toLowerCase();
+    const wantsHuman = (lang === "fr" ? HUMAN_REQUEST_FR : HUMAN_REQUEST_EN).some(w => lowerMsg.includes(w));
+    const isGreeting = GREETINGS_FR.some(w => lowerMsg.includes(w)) && message.length < 30;
 
-    const claudeMessages = (history || [])
-      .filter(m => m.sender !== "staff")
-      .map(m => ({ role: m.sender === "visitor" ? "user" : "assistant", content: m.content }));
+    let reply: string;
+    let shouldEscalate = false;
 
-    const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-5",
-        max_tokens: 500,
-        system: SYSTEM_PROMPT,
-        messages: claudeMessages,
-      }),
-    });
-
-    if (!claudeRes.ok) throw new Error(`Claude API error: ${await claudeRes.text()}`);
-    const claudeData = await claudeRes.json();
-    let reply = claudeData.content?.find((b: { type: string }) => b.type === "text")?.text || "";
-
-    const shouldEscalate = reply.includes("[ESCALATE]");
-    reply = reply.replace("[ESCALATE]", "").trim();
+    if (wantsHuman) {
+      reply = lang === "fr"
+        ? "Bien sûr, je transmets ta demande à notre équipe -- quelqu'un te répondra ici même très bientôt."
+        : "Of course, I'm passing this along to our team -- someone will reply right here shortly.";
+      shouldEscalate = true;
+    } else if (isGreeting) {
+      reply = lang === "fr"
+        ? "Bonjour ! Je suis l'assistant LiBooks. Pose-moi une question sur nos forfaits, nos fonctionnalités, ou comment démarrer."
+        : "Hi! I'm the LiBooks assistant. Ask me about our plans, features, or how to get started.";
+    } else {
+      const faqAnswer = findBestAnswer(message, lang);
+      if (faqAnswer) {
+        reply = faqAnswer;
+      } else {
+        reply = lang === "fr"
+          ? "Je ne suis pas certain de pouvoir répondre précisément à ça -- je transmets ta question à notre équipe, qui te répondra ici même."
+          : "I'm not sure I can answer that precisely -- I'm passing your question to our team, who will reply right here.";
+        shouldEscalate = true;
+      }
+    }
 
     await serviceClient.from("support_messages").insert({ conversation_id: conversation.id, sender: "ai", content: reply });
 

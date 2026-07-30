@@ -102,7 +102,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0 transition-colors">
       {/* ===== NAVBAR ===== */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3' : 'bg-white/95 dark:bg-surface-1/95 backdrop-blur-md shadow-sm py-3 md:bg-transparent md:shadow-none md:py-5'}`}>
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white dark:bg-surface-1 shadow-sm py-3 ${scrolled ? '' : 'md:bg-transparent md:shadow-none md:py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />

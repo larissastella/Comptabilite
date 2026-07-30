@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, BookOpen, Package, Warehouse, FileText,
   ShoppingCart, ArrowLeftRight, BookMarked, BarChart3, CreditCard,
   Smartphone, Bot, FileSpreadsheet, Settings, Users, Shield,
-  LogOut, X, ChevronDown, ChevronRight, Globe, Lock, Landmark, Boxes, Receipt, Plus,
+  LogOut, X, ChevronDown, ChevronRight, Globe, Lock, Landmark, Boxes, Receipt, Plus, Truck,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -69,6 +69,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             { key: 'chart-of-accounts', label: t('nav.chartOfAccounts'), icon: BookOpen, to: '/app/chart-of-accounts', module: 'chart_of_accounts' },
             { key: 'inventory', label: t('nav.inventory'), icon: Package, to: '/app/inventory', module: 'inventory' },
             { key: 'warehouses', label: t('nav.warehouses'), icon: Warehouse, to: '/app/warehouses', module: 'warehouses' },
+            { key: 'customers', label: t('nav.customers'), icon: Users, to: '/app/customers', module: 'customers' },
+            { key: 'suppliers', label: t('nav.suppliers'), icon: Truck, to: '/app/suppliers', module: 'suppliers' },
             { key: 'sales-invoices', label: t('nav.salesInvoices'), icon: FileText, to: '/app/sales-invoices', module: 'sales_invoices' },
             { key: 'purchase-invoices', label: t('nav.purchaseInvoices'), icon: ShoppingCart, to: '/app/purchase-invoices', module: 'purchase_invoices' },
             { key: 'transactions', label: t('nav.transactions'), icon: ArrowLeftRight, to: '/app/transactions', module: 'transactions' },
