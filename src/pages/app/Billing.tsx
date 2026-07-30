@@ -18,6 +18,7 @@ export default function Billing() {
   const { t } = useTranslation();
   const { tenant } = useTenant();
   const [redirecting, setRedirecting] = useState(false);
+  const [pickingPlanFor, setPickingPlanFor] = useState<string | null>(null);
 
   const trialDaysLeft = tenant?.trial_ends_at
     ? Math.max(0, differenceInDays(new Date(tenant.trial_ends_at), new Date()))
@@ -27,12 +28,14 @@ export default function Billing() {
   const isActive = tenant?.subscription_status === 'active';
   const currentPlan = PLANS.find(p => p.id === tenant?.plan);
 
-  async function handleStripeRedirect(planId: string) {
+  async function handleCheckout(planId: string, provider: 'stripe' | 'flutterwave') {
     if (!tenant?.id) return;
+    setPickingPlanFor(null);
     setRedirecting(true);
     try {
       const { data: session } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
+      const fn = provider === 'stripe' ? 'stripe-checkout' : 'flutterwave-checkout';
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +146,7 @@ export default function Billing() {
                 </ul>
                 {!isCurrent && (
                   <button
-                    onClick={() => handleStripeRedirect(plan.id)}
+                    onClick={() => setPickingPlanFor(plan.id)}
                     disabled={redirecting}
                     className="w-full mt-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
                   >
@@ -155,7 +158,7 @@ export default function Billing() {
             );
           })}
         </div>
-        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via Stripe.</p>
+        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via carte bancaire (Stripe) ou Mobile Money (Flutterwave).</p>
       </div>
 
       {/* Payment method */}
@@ -175,6 +178,38 @@ export default function Billing() {
           <p className="text-sm">Aucun moyen de paiement enregistré. Ajoutez une carte pour activer votre abonnement.</p>
         </div>
       </div>
+
+      {pickingPlanFor && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setPickingPlanFor(null)}>
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">Choisis ton moyen de paiement</h3>
+            <p className="text-sm text-gray-500 mb-5">Comment veux-tu payer ton abonnement {PLANS.find(p => p.id === pickingPlanFor)?.name} ?</p>
+            <div className="space-y-3">
+              <button
+                onClick={() => handleCheckout(pickingPlanFor, 'stripe')}
+                className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
+              >
+                <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
+                  <p className="text-xs text-gray-400">Visa, Mastercard — via Stripe</p>
+                </div>
+              </button>
+              <button
+                onClick={() => handleCheckout(pickingPlanFor, 'flutterwave')}
+                className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
+              >
+                <Zap className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
+                  <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — via Flutterwave</p>
+                </div>
+              </button>
+            </div>
+            <button onClick={() => setPickingPlanFor(null)} className="w-full mt-4 px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700">Annuler</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
