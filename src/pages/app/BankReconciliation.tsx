@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Upload, CheckCircle2, Landmark, Link2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
@@ -40,6 +41,7 @@ function parseCsv(text: string): { date: string; description: string; amount: nu
 }
 
 export default function BankReconciliation() {
+  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -90,7 +92,7 @@ export default function BankReconciliation() {
     mutationFn: async (file: File) => {
       const text = await file.text();
       const rows = parseCsv(text);
-      if (rows.length === 0) throw new Error('Aucune ligne valide trouvée dans le fichier (attendu: date,description,montant,reference)');
+      if (rows.length === 0) throw new Error(t('bankReconciliation.noValidRows'));
       const payload = rows.map(r => ({
         tenant_id: tenant!.id,
         account_id: selectedAccountId,
@@ -106,7 +108,7 @@ export default function BankReconciliation() {
     },
     onSuccess: (count) => {
       qc.invalidateQueries({ queryKey: ['bank-statement-lines'] });
-      toast.success(`${count} ligne(s) importée(s)`);
+      toast.success(`${count} ${t('bankReconciliation.importSuccess')}`);
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -122,10 +124,10 @@ export default function BankReconciliation() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['bank-statement-lines'] });
       qc.invalidateQueries({ queryKey: ['unreconciled-ledger-lines'] });
-      toast.success('Ligne rapprochée');
+      toast.success(t('bankReconciliation.matchSuccess'));
       setMatchingLine(null);
     },
-    onError: (e: Error) => toast.error(e.message || 'Le montant ne correspond pas exactement'),
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const unmatchedCount = statementLines.filter(l => l.status === 'unmatched').length;
@@ -136,8 +138,8 @@ export default function BankReconciliation() {
   return (
     <div className="p-4 sm:p-6 max-w-5xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">Rapprochement bancaire</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">Importez votre relevé bancaire et faites correspondre chaque ligne à une écriture comptable</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{t('bankReconciliation.title')}</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('bankReconciliation.subtitle')}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-5">
@@ -146,7 +148,7 @@ export default function BankReconciliation() {
           onChange={e => setSelectedAccountId(e.target.value)}
           className="px-3 py-2.5 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-1 dark:text-white rounded-xl"
         >
-          <option value="">Choisir un compte de trésorerie (classe 5)...</option>
+          <option value="">{t('bankReconciliation.chooseAccount')}</option>
           {bankAccounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
         </select>
 
@@ -165,9 +167,9 @@ export default function BankReconciliation() {
               className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-surface-2 hover:bg-gray-200 dark:hover:bg-surface-3 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
             >
               <Upload className="w-4 h-4" />
-              {importMutation.isPending ? 'Import...' : 'Importer un relevé CSV'}
+              {importMutation.isPending ? t('bankReconciliation.importing') : t('bankReconciliation.importCsv')}
             </button>
-            <span className="text-xs text-gray-400">Format : date,description,montant,référence</span>
+            <span className="text-xs text-gray-400">{t('bankReconciliation.formatHint')}</span>
           </>
         )}
       </div>
@@ -176,22 +178,22 @@ export default function BankReconciliation() {
         <>
           <div className="flex items-center gap-2 mb-3 text-sm">
             <Landmark className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-500 dark:text-gray-400">{unmatchedCount} ligne(s) non rapprochée(s) sur {statementLines.length}</span>
+            <span className="text-gray-500 dark:text-gray-400">{unmatchedCount} {t('bankReconciliation.unmatchedOf')} {statementLines.length}</span>
           </div>
 
           <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-200 dark:border-surface-3 overflow-hidden">
             {statementLines.length === 0 ? (
-              <div className="p-10 text-center text-gray-400 text-sm">Aucune ligne de relevé importée pour ce compte</div>
+              <div className="p-10 text-center text-gray-400 text-sm">{t('bankReconciliation.noLinesForAccount')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead className="bg-gray-50 dark:bg-surface-2 text-gray-500 dark:text-gray-400 text-xs uppercase">
                     <tr>
-                      <th className="text-left px-4 py-3">Date</th>
-                      <th className="text-left px-4 py-3">Description</th>
-                      <th className="text-right px-4 py-3">Montant</th>
-                      <th className="text-left px-4 py-3">Statut</th>
-                      <th className="text-right px-4 py-3">Action</th>
+                      <th className="text-left px-4 py-3">{t('bankReconciliation.date')}</th>
+                      <th className="text-left px-4 py-3">{t('bankReconciliation.description')}</th>
+                      <th className="text-right px-4 py-3">{t('bankReconciliation.amount')}</th>
+                      <th className="text-left px-4 py-3">{t('bankReconciliation.status')}</th>
+                      <th className="text-right px-4 py-3">{t('bankReconciliation.action')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-surface-3">
@@ -204,9 +206,9 @@ export default function BankReconciliation() {
                         </td>
                         <td className="px-4 py-3">
                           {l.status === 'matched' ? (
-                            <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium"><CheckCircle2 className="w-3.5 h-3.5" /> Rapproché</span>
+                            <span className="inline-flex items-center gap-1 text-green-600 text-xs font-medium"><CheckCircle2 className="w-3.5 h-3.5" /> {t('bankReconciliation.matched2')}</span>
                           ) : (
-                            <span className="text-xs text-gray-400">Non rapproché</span>
+                            <span className="text-xs text-gray-400">{t('bankReconciliation.unmatched2')}</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -215,7 +217,7 @@ export default function BankReconciliation() {
                               onClick={() => setMatchingLine(l)}
                               className="inline-flex items-center gap-1 text-xs text-[#0057D9] font-medium hover:underline"
                             >
-                              <Link2 className="w-3.5 h-3.5" /> Rapprocher
+                              <Link2 className="w-3.5 h-3.5" /> {t('bankReconciliation.match')}
                             </button>
                           )}
                         </td>
@@ -233,14 +235,14 @@ export default function BankReconciliation() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setMatchingLine(null)}>
           <div className="bg-white dark:bg-surface-1 rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto p-5 sm:p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Rapprocher</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">{t('bankReconciliation.matchModalTitle')}</h2>
               <button onClick={() => setMatchingLine(null)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{matchingLine.description}</p>
             <p className="text-lg font-medium text-gray-900 dark:text-white mb-4">{formatCurrency(matchingLine.amount)}</p>
 
             {suggestedMatches.length === 0 ? (
-              <p className="text-sm text-gray-400">Aucune écriture non rapprochée avec exactement ce montant sur ce compte.</p>
+              <p className="text-sm text-gray-400">{t('bankReconciliation.noCandidates')}</p>
             ) : (
               <div className="space-y-2">
                 {suggestedMatches.map(l => (

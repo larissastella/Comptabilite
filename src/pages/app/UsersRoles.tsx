@@ -133,7 +133,7 @@ export default function UsersRoles() {
 
   return (
     <div className="p-4 sm:p-6">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">{t('users.title')}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t('users.title')}</h1>
 
       <div className="flex gap-2 mb-6">
         {(['members', 'roles'] as UsersTab[]).map(t => (

@@ -19,7 +19,7 @@ export default function NotFoundPage() {
         <p className="text-[7rem] sm:text-[9rem] font-medium leading-none tracking-tight bg-gradient-to-br from-[#0057D9] to-emerald-700 bg-clip-text text-transparent">
           404
         </p>
-        <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mt-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-4">
           {t('common.pageNotFound', 'Page introuvable')}
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs mx-auto">

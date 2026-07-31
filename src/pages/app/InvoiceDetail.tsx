@@ -131,7 +131,7 @@ export default function InvoiceDetail() {
             {tenant?.logo_url && (
               <img src={tenant.logo_url} alt="Logo" className="h-16 object-contain mb-3" />
             )}
-            <h1 className="text-2xl font-semibold text-[#0F2A3D]">{tenant?.name}</h1>
+            <h1 className="text-2xl font-bold text-[#0F2A3D]">{tenant?.name}</h1>
             {tenant?.legal_nif && <p className="text-sm text-gray-500">NIF: {tenant.legal_nif}</p>}
             {tenant?.legal_rccm && <p className="text-sm text-gray-500">RCCM: {tenant.legal_rccm}</p>}
             {tenant?.legal_regime && <p className="text-sm text-gray-500">Régime: {tenant.legal_regime}</p>}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Plus, Package, X, PlayCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
@@ -25,17 +26,18 @@ interface FixedAsset {
 
 interface AccountOption { id: string; code: string; name: string; account_class: number }
 
-const statusBadge = (status: string) => {
+function statusBadge(status: string, t: (key: string) => string) {
   const map: Record<string, { variant: 'gray' | 'success' | 'danger'; label: string }> = {
-    active: { variant: 'success', label: 'En cours' },
-    fully_depreciated: { variant: 'gray', label: 'Totalement amorti' },
-    disposed: { variant: 'danger', label: 'Cédé' },
+    active: { variant: 'success', label: t('fixedAssets.statusActive') },
+    fully_depreciated: { variant: 'gray', label: t('fixedAssets.statusFullyDepreciated') },
+    disposed: { variant: 'danger', label: t('fixedAssets.statusDisposed') },
   };
   const s = map[status] || { variant: 'gray' as const, label: status };
   return <Badge variant={s.variant}>{s.label}</Badge>;
-};
+}
 
 export default function FixedAssets() {
+  const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -85,7 +87,7 @@ export default function FixedAssets() {
   const createAsset = useMutation({
     mutationFn: async () => {
       if (!form.name || !form.asset_account_id || !form.depreciation_account_id || !form.expense_account_id) {
-        throw new Error('Remplissez tous les champs, y compris les 3 comptes comptables');
+        throw new Error(t('fixedAssets.fillAllFields'));
       }
       const { error } = await supabase.from('fixed_assets').insert({
         tenant_id: tenant!.id,
@@ -103,7 +105,7 @@ export default function FixedAssets() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['fixed-assets'] });
-      toast.success('Immobilisation enregistrée');
+      toast.success(t('fixedAssets.created'));
       setShowForm(false);
       resetForm();
     },
@@ -121,9 +123,9 @@ export default function FixedAssets() {
       qc.invalidateQueries({ queryKey: ['fixed-assets'] });
       qc.invalidateQueries({ queryKey: ['transactions'] });
       if (!data || data.length === 0) {
-        toast('Aucune dotation à passer ce mois-ci (déjà fait, ou aucun actif actif)', { icon: 'ℹ️' });
+        toast(t('fixedAssets.noDepreciationThisMonth'), { icon: 'ℹ️' });
       } else {
-        toast.success(`${data.length} dotation(s) d'amortissement comptabilisée(s)`);
+        toast.success(`${data.length} ${t('fixedAssets.depreciationPosted')}`);
       }
     },
     onError: (e: Error) => toast.error(e.message),
@@ -136,8 +138,8 @@ export default function FixedAssets() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">Immobilisations</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Registre des immobilisations et amortissements linéaires</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{t('fixedAssets.title')}</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('fixedAssets.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -146,36 +148,36 @@ export default function FixedAssets() {
             className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 dark:bg-surface-2 hover:bg-gray-200 dark:hover:bg-surface-3 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl transition-colors disabled:opacity-50"
           >
             <PlayCircle className="w-4 h-4" />
-            {runDepreciation.isPending ? 'Calcul...' : 'Lancer la dotation du mois'}
+            {runDepreciation.isPending ? t('fixedAssets.calculating') : t('fixedAssets.runDepreciation')}
           </button>
           <button
             onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl transition-colors"
           >
-            <Plus className="w-4 h-4" /> Nouvelle immobilisation
+            <Plus className="w-4 h-4" /> {t('fixedAssets.newAsset')}
           </button>
         </div>
       </div>
 
       <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-200 dark:border-surface-3 overflow-hidden">
         {isLoading ? (
-          <div className="p-10 text-center text-gray-400 text-sm">Chargement...</div>
+          <div className="p-10 text-center text-gray-400 text-sm">{t('fixedAssets.loading')}</div>
         ) : assets.length === 0 ? (
           <div className="p-10 text-center text-gray-400">
             <Package className="w-10 h-10 mx-auto mb-3 opacity-50" />
-            <p className="text-sm">Aucune immobilisation enregistrée</p>
+            <p className="text-sm">{t('fixedAssets.empty')}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 dark:bg-surface-2 text-gray-500 dark:text-gray-400 text-xs uppercase">
                 <tr>
-                  <th className="text-left px-4 py-3">Actif</th>
-                  <th className="text-left px-4 py-3">Compte</th>
-                  <th className="text-right px-4 py-3">Valeur d'origine</th>
-                  <th className="text-right px-4 py-3">Amorti/mois</th>
-                  <th className="text-left px-4 py-3">Progression</th>
-                  <th className="text-left px-4 py-3">Statut</th>
+                  <th className="text-left px-4 py-3">{t('fixedAssets.colAsset')}</th>
+                  <th className="text-left px-4 py-3">{t('fixedAssets.colAccount')}</th>
+                  <th className="text-right px-4 py-3">{t('fixedAssets.colOriginalValue')}</th>
+                  <th className="text-right px-4 py-3">{t('fixedAssets.colMonthlyDepreciation')}</th>
+                  <th className="text-left px-4 py-3">{t('fixedAssets.colProgress')}</th>
+                  <th className="text-left px-4 py-3">{t('fixedAssets.colStatus')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-surface-3">
@@ -183,7 +185,7 @@ export default function FixedAssets() {
                   <tr key={a.id} className="hover:bg-gray-50 dark:hover:bg-surface-2">
                     <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                       {a.name}
-                      <div className="text-xs text-gray-400">Acquis le {format(new Date(a.acquisition_date), 'dd/MM/yyyy')}</div>
+                      <div className="text-xs text-gray-400">{t('fixedAssets.acquiredOn')} {format(new Date(a.acquisition_date), 'dd/MM/yyyy')}</div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-500">{a.accounts_asset?.code} {a.accounts_asset?.name}</td>
                     <td className="px-4 py-3 text-right text-gray-900 dark:text-white">{formatCurrency(a.acquisition_cost)}</td>
@@ -194,7 +196,7 @@ export default function FixedAssets() {
                       </div>
                       <span className="text-xs text-gray-400">{progressPct(a)}%</span>
                     </td>
-                    <td className="px-4 py-3">{statusBadge(a.status)}</td>
+                    <td className="px-4 py-3">{statusBadge(a.status, t)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -207,60 +209,60 @@ export default function FixedAssets() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setShowForm(false)}>
           <div className="bg-white dark:bg-surface-1 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5 sm:p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-medium text-gray-900 dark:text-white">Nouvelle immobilisation</h2>
+              <h2 className="text-lg font-medium text-gray-900 dark:text-white">{t('fixedAssets.newAssetModalTitle')}</h2>
               <button onClick={() => setShowForm(false)}><X className="w-5 h-5 text-gray-400" /></button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Désignation</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.name')}</label>
                 <input
                   value={form.name}
                   onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Ex : Véhicule de livraison Toyota Hilux"
+                  placeholder={t('fixedAssets.namePlaceholder')}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Compte d'actif (classe 2)</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.assetAccount')}</label>
                 <select
                   value={form.asset_account_id}
                   onChange={e => setForm(prev => ({ ...prev, asset_account_id: e.target.value }))}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">{t('fixedAssets.select')}</option>
                   {assetAccounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Compte d'amortissement cumulé (28x)</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.depreciationAccount')}</label>
                 <select
                   value={form.depreciation_account_id}
                   onChange={e => setForm(prev => ({ ...prev, depreciation_account_id: e.target.value }))}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">{t('fixedAssets.select')}</option>
                   {assetAccounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
                 </select>
               </div>
 
               <div>
-                <label className="text-xs text-gray-500 dark:text-gray-400">Compte de dotation (charge, classe 6 — ex. 681)</label>
+                <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.expenseAccount')}</label>
                 <select
                   value={form.expense_account_id}
                   onChange={e => setForm(prev => ({ ...prev, expense_account_id: e.target.value }))}
                   className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg"
                 >
-                  <option value="">Sélectionner...</option>
+                  <option value="">{t('fixedAssets.select')}</option>
                   {expenseAccounts.map(a => <option key={a.id} value={a.id}>{a.code} — {a.name}</option>)}
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-500 dark:text-gray-400">Date d'acquisition</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.purchaseDate')}</label>
                   <input
                     type="date"
                     value={form.acquisition_date}
@@ -269,7 +271,7 @@ export default function FixedAssets() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 dark:text-gray-400">Durée d'utilité (mois)</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.usefulLifeMonths')}</label>
                   <input
                     type="number"
                     value={form.useful_life_months}
@@ -278,7 +280,7 @@ export default function FixedAssets() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 dark:text-gray-400">Coût d'acquisition</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.acquisitionCost')}</label>
                   <input
                     type="number"
                     value={form.acquisition_cost}
@@ -287,7 +289,7 @@ export default function FixedAssets() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 dark:text-gray-400">Valeur résiduelle</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">{t('fixedAssets.residualValue')}</label>
                   <input
                     type="number"
                     value={form.residual_value}
@@ -299,7 +301,7 @@ export default function FixedAssets() {
 
               {form.acquisition_cost > 0 && form.useful_life_months > 0 && (
                 <p className="text-xs text-gray-400">
-                  Dotation mensuelle estimée : {formatCurrency((form.acquisition_cost - form.residual_value) / form.useful_life_months)}
+                  {t('fixedAssets.estimatedMonthly')} : {formatCurrency((form.acquisition_cost - form.residual_value) / form.useful_life_months)}
                 </p>
               )}
             </div>
@@ -309,7 +311,7 @@ export default function FixedAssets() {
               disabled={createAsset.isPending}
               className="w-full mt-5 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
             >
-              {createAsset.isPending ? 'Enregistrement...' : "Enregistrer l'immobilisation"}
+              {createAsset.isPending ? t('fixedAssets.saving') : t('fixedAssets.saveAsset')}
             </button>
           </div>
         </div>

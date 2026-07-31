@@ -1,46 +1,54 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { useTenant } from './contexts/TenantContext';
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/auth/LoginPage';
-import SignupPage from './pages/auth/SignupPage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/auth/ResetPasswordPage';
-import VerifyEmailPage from './pages/auth/VerifyEmailPage';
-import AcceptInvitePage, { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
-import OnboardingPage from './pages/onboarding/OnboardingPage';
 import AppLayout from './components/layout/AppLayout';
-import Dashboard from './pages/app/Dashboard';
-import ChartOfAccounts from './pages/app/ChartOfAccounts';
-import Inventory from './pages/app/Inventory';
-import Warehouses from './pages/app/Warehouses';
-import Customers from './pages/app/Customers';
-import Suppliers from './pages/app/Suppliers';
-import SalesInvoices from './pages/app/SalesInvoices';
-import InvoiceDetail from './pages/app/InvoiceDetail';
-import PurchaseInvoices from './pages/app/PurchaseInvoices';
-import Transactions from './pages/app/Transactions';
-import Reports from './pages/app/Reports';
-import Ledger from './pages/app/Ledger';
-import BankReconciliation from './pages/app/BankReconciliation';
-import CreditNotes from './pages/app/CreditNotes';
-import FixedAssets from './pages/app/FixedAssets';
-import Settings from './pages/app/Settings';
-import UsersRoles from './pages/app/UsersRoles';
-import Billing from './pages/app/Billing';
-import Banking from './pages/app/Banking';
-import WhatsApp from './pages/app/WhatsApp';
-import AICashflow from './pages/app/AICashflow';
-import Ohada from './pages/app/Ohada';
-import SuperAdmin from './pages/app/SuperAdmin';
 import PremiumGate from './components/ui/PremiumGate';
-import PlanSelectionGate from './pages/app/PlanSelectionGate';
-import AboutPage from './pages/footer/AboutPage';
-import ContactPage from './pages/footer/ContactPage';
-import LegalPage from './pages/footer/LegalPage';
-import PrivacyPage from './pages/footer/PrivacyPage';
-import TermsPage from './pages/footer/TermsPage';
-import NotFoundPage from './pages/NotFoundPage';
+import { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
+
+// Every page is loaded on demand (route-based code splitting) instead of
+// all being bundled into one giant chunk downloaded on first visit --
+// this is the single biggest lever for initial load speed. AppLayout,
+// PremiumGate and the INVITE_STORAGE_KEY constant stay eager since
+// they're small and needed immediately for routing/layout decisions.
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const SignupPage = lazy(() => import('./pages/auth/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/auth/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/auth/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('./pages/auth/VerifyEmailPage'));
+const AcceptInvitePage = lazy(() => import('./pages/auth/AcceptInvitePage'));
+const OnboardingPage = lazy(() => import('./pages/onboarding/OnboardingPage'));
+const Dashboard = lazy(() => import('./pages/app/Dashboard'));
+const ChartOfAccounts = lazy(() => import('./pages/app/ChartOfAccounts'));
+const Inventory = lazy(() => import('./pages/app/Inventory'));
+const Warehouses = lazy(() => import('./pages/app/Warehouses'));
+const Customers = lazy(() => import('./pages/app/Customers'));
+const Suppliers = lazy(() => import('./pages/app/Suppliers'));
+const SalesInvoices = lazy(() => import('./pages/app/SalesInvoices'));
+const InvoiceDetail = lazy(() => import('./pages/app/InvoiceDetail'));
+const PurchaseInvoices = lazy(() => import('./pages/app/PurchaseInvoices'));
+const Transactions = lazy(() => import('./pages/app/Transactions'));
+const Reports = lazy(() => import('./pages/app/Reports'));
+const Ledger = lazy(() => import('./pages/app/Ledger'));
+const BankReconciliation = lazy(() => import('./pages/app/BankReconciliation'));
+const CreditNotes = lazy(() => import('./pages/app/CreditNotes'));
+const FixedAssets = lazy(() => import('./pages/app/FixedAssets'));
+const Settings = lazy(() => import('./pages/app/Settings'));
+const UsersRoles = lazy(() => import('./pages/app/UsersRoles'));
+const Billing = lazy(() => import('./pages/app/Billing'));
+const Banking = lazy(() => import('./pages/app/Banking'));
+const WhatsApp = lazy(() => import('./pages/app/WhatsApp'));
+const AICashflow = lazy(() => import('./pages/app/AICashflow'));
+const Ohada = lazy(() => import('./pages/app/Ohada'));
+const SuperAdmin = lazy(() => import('./pages/app/SuperAdmin'));
+const PlanSelectionGate = lazy(() => import('./pages/app/PlanSelectionGate'));
+const AboutPage = lazy(() => import('./pages/footer/AboutPage'));
+const ContactPage = lazy(() => import('./pages/footer/ContactPage'));
+const LegalPage = lazy(() => import('./pages/footer/LegalPage'));
+const PrivacyPage = lazy(() => import('./pages/footer/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/footer/TermsPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function Spinner() {
   return (
@@ -133,6 +141,7 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
 export default function App() {
   return (
     <BrowserRouter>
+      <Suspense fallback={<Spinner />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -178,6 +187,7 @@ export default function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

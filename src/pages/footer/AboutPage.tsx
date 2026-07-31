@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className="w-7 h-7 text-[#0057D9]" />
-            <span className="font-medium text-lg text-gray-900 dark:text-white">Li<span className="text-[#0057D9]">Books</span></span>
+            <span className="text-lg text-gray-900 dark:text-white font-bold">Li</span><span className="text-[#0057D9] text-lg text-gray-900 dark:text-white font-medium">Books</span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
@@ -29,7 +29,7 @@ export default function AboutPage() {
             <Sparkles className="w-4 h-4" />
             Notre histoire
           </div>
-          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             La comptabilité africaine, réinventée.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">

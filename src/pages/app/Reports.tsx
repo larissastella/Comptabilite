@@ -7,8 +7,6 @@ import { useTenant } from '../../contexts/TenantContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LineChart, Line } from 'recharts';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ReportPdfDocument } from '../../lib/reportPdf';
-import { pdf } from '@react-pdf/renderer';
 import toast from 'react-hot-toast';
 
 type ReportTab = 'income' | 'balance' | 'vat' | 'trial';
@@ -157,6 +155,8 @@ export default function Reports() {
         ];
       }
 
+      const { pdf } = await import('@react-pdf/renderer');
+      const { ReportPdfDocument } = await import('../../lib/reportPdf');
       const doc = (
         <ReportPdfDocument
           tenantName={tenant?.name || 'Entreprise'}
@@ -195,7 +195,7 @@ export default function Reports() {
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-semibold text-gray-900">{t('reports.title')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('reports.title')}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-500">Du</label>

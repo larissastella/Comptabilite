@@ -145,7 +145,7 @@ export default function Ohada() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">{t('nav.ohada')}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('nav.ohada')}</h1>
         <p className="text-sm text-gray-400 mt-1">États financiers SYSCOHADA, paie et numérisation OCR</p>
       </div>
 

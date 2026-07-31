@@ -324,7 +324,7 @@ export default function OnboardingPage() {
       <header className="bg-[#0F2A3D] px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
-          <span className="text-white font-medium">Li<span className="text-[#0057D9]">Books</span></span>
+          <span className="text-white font-bold">Li</span><span className="text-[#0057D9] text-white font-medium">Books</span>
         </Link>
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-1.5 text-sm text-slate-300 hover:text-white transition-colors">

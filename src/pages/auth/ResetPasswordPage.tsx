@@ -57,12 +57,12 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
           <BookOpen className="w-8 h-8 text-[#0057D9]" />
-          <span className="text-2xl font-medium text-white">Li<span className="text-[#0057D9]">Books</span></span>
+          <span className="text-2xl text-white font-bold">Li</span><span className="text-[#0057D9] text-2xl text-white font-medium">Books</span>
         </Link>
 
         <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="mb-6">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('auth.updatePassword')}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('auth.updatePassword')}</h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Choisissez un nouveau mot de passe pour votre compte.</p>
           </div>
 

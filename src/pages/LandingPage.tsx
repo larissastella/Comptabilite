@@ -106,8 +106,8 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />
-            <span className={`text-lg font-medium tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
-              Li<span className={scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}>Books</span>
+            <span className={`text-lg tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
+              <span className="font-bold">Li</span><span className={`font-medium ${scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}`}>Books</span>
             </span>
           </Link>
 
@@ -199,7 +199,7 @@ export default function LandingPage() {
               <span className="text-sm text-white/90 font-medium">{t('landing.heroBadge')}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
               {t('landing.heroTitle')}<br />
               <span style={{ color: GREEN }}>{t('landing.heroTitleAccent')}</span>
             </h1>
@@ -536,7 +536,7 @@ export default function LandingPage() {
             <div>
               <Link to="/" className="flex items-center gap-2 mb-4">
                 <BookOpen className="w-7 h-7 text-[#0057D9]" />
-                <span className="text-lg font-medium">Li<span className="text-[#0057D9]">Books</span></span>
+                <span className="text-lg font-bold">Li</span><span className="text-[#0057D9] text-lg font-medium">Books</span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
                 {t('landing.footerTagline')}

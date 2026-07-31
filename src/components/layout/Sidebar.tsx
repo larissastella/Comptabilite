@@ -137,7 +137,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           <NavLink to="/app/dashboard" className="flex items-center gap-2.5">
             <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
             <div className="flex items-baseline gap-0.5">
-              <span className="text-white font-medium text-[17px] leading-none">Li</span>
+              <span className="text-white font-bold text-[17px] leading-none">Li</span>
               <span className="text-[#0057D9] font-medium text-[17px] leading-none">Books</span>
             </div>
           </NavLink>
