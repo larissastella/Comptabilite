@@ -198,7 +198,7 @@ export default function CreditNotes() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">{t('creditNotes.title')}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">{t('creditNotes.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">{t('creditNotes.subtitle')}</p>
         </div>
         <button

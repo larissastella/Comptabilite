@@ -107,7 +107,7 @@ export default function Settings() {
 
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
-      <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">{t('settings.title')}</h1>
+      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">{t('settings.title')}</h1>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar — horizontal on mobile, vertical on desktop */}

@@ -24,7 +24,7 @@ export default function PrivacyPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="flex items-center gap-3 mb-3">
           <Shield className="w-8 h-8 text-[#0057D9]" />
-          <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white">Politique de confidentialité</h1>
+          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white">Politique de confidentialité</h1>
         </div>
         <p className="text-sm text-gray-400 mb-10">Dernière mise à jour : janvier 2026</p>
 

@@ -199,7 +199,7 @@ export default function LandingPage() {
               <span className="text-sm text-white/90 font-medium">{t('landing.heroBadge')}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium text-white leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-[1.1] tracking-tight mb-6">
               {t('landing.heroTitle')}<br />
               <span style={{ color: GREEN }}>{t('landing.heroTitleAccent')}</span>
             </h1>

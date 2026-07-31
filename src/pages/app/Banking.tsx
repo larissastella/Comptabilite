@@ -174,7 +174,7 @@ export default function Banking() {
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('nav.banking')}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('nav.banking')}</h1>
           <p className="text-sm text-gray-400 dark:text-gray-400 mt-1">Banques & Mobile Money — rapprochement automatique</p>
         </div>
         <button

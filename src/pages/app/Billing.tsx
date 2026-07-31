@@ -76,7 +76,7 @@ export default function Billing() {
 
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
-      <h1 className="text-2xl font-medium text-gray-900 dark:text-white mb-6">{t('billing.title')}</h1>
+      <h1 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">{t('billing.title')}</h1>
 
       {/* Current plan card */}
       <div className={`rounded-2xl border-2 p-5 sm:p-6 mb-8 ${isTrialing ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-500/10' : 'border-[#0057D9] dark:border-[#0057D9] bg-[#0057D9]/5 dark:bg-[#0057D9]/10'}`}>

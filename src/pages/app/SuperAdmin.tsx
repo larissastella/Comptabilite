@@ -404,7 +404,7 @@ export default function SuperAdmin() {
           <Shield className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">Super Admin</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Super Admin</h1>
           <p className="text-sm text-gray-400 dark:text-gray-500">Accès restreint — Toutes les actions sont journalisées</p>
         </div>
       </div>

@@ -136,7 +136,7 @@ export default function FixedAssets() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white">Immobilisations</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">Immobilisations</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Registre des immobilisations et amortissements linéaires</p>
         </div>
         <div className="flex gap-2">

@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
               <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle className="w-8 h-8 text-[#0057D9]" />
               </div>
-              <h1 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{t('auth.checkYourEmail')}</h1>
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('auth.checkYourEmail')}</h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
                 {t('auth.resetEmailSent')} <strong>{email}</strong>
               </p>
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
           ) : (
             <>
               <div className="mb-6">
-                <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('auth.forgotPassword')}</h1>
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('auth.forgotPassword')}</h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
                   Saisissez votre email pour recevoir un lien de réinitialisation.
                 </p>

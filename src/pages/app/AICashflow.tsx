@@ -107,7 +107,7 @@ export default function AICashflow() {
           <Bot className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('nav.aiCashflow')}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('nav.aiCashflow')}</h1>
           <p className="text-sm text-gray-400 dark:text-gray-400 mt-0.5">Prévisions de trésorerie par IA et gestion du risque de change</p>
         </div>
       </div>

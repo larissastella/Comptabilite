@@ -46,7 +46,7 @@ export default function VerifyEmailPage() {
           <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Mail className="w-8 h-8 text-[#0057D9]" />
           </div>
-          <h1 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{t('auth.verifyEmail')}</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">{t('auth.verifyEmail')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
             {t('auth.verifyEmailDesc', { email: email || 'votre email' })}
           </p>

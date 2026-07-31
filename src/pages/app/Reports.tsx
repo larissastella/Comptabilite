@@ -195,7 +195,7 @@ export default function Reports() {
   return (
     <div className="p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-medium text-gray-900">{t('reports.title')}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t('reports.title')}</h1>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-500">Du</label>

@@ -183,7 +183,7 @@ export default function WhatsApp() {
   return (
     <div className="p-4 sm:p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-medium text-gray-900">{t('nav.whatsapp')}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t('nav.whatsapp')}</h1>
         <p className="text-sm text-gray-400 mt-1">Envoi automatique des factures via WhatsApp et portail client</p>
       </div>
 

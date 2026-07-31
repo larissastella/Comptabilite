@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
 
         <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-6 sm:p-8">
           <div className="mb-6">
-            <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('auth.updatePassword')}</h1>
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('auth.updatePassword')}</h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Choisissez un nouveau mot de passe pour votre compte.</p>
           </div>
 

@@ -69,7 +69,7 @@ export default function Customers() {
   return (
     <div className="p-4 sm:p-6 dark:bg-surface-0">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-medium text-gray-900 dark:text-white">{t('customers.title')}</h1>
+        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('customers.title')}</h1>
         <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl">
           <Plus className="w-4 h-4" /> {t('customers.new')}
         </button>

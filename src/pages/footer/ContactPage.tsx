@@ -51,7 +51,7 @@ export default function ContactPage() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white mb-3">Contactez-nous</h1>
+        <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-3">Contactez-nous</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-10">
           Une question, un besoin spécifique, ou simplement envie d'échanger ? Notre équipe vous répond sous 48h.
         </p>

@@ -21,7 +21,7 @@ export default function PlanSelectionGate() {
           <div className="w-16 h-16 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-amber-600 dark:text-amber-400" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-medium text-gray-900 dark:text-white mb-2">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white mb-2">
             {t('billing.choosePlan', 'Choisissez votre forfait')}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base max-w-md mx-auto">

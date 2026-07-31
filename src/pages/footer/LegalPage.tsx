@@ -22,7 +22,7 @@ export default function LegalPage() {
       </nav>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <h1 className="text-3xl sm:text-4xl font-medium text-gray-900 dark:text-white mb-3">Mentions légales</h1>
+        <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 dark:text-white mb-3">Mentions légales</h1>
         <p className="text-sm text-gray-400 mb-10">Dernière mise à jour : janvier 2026</p>
 
         <div className="prose prose-sm dark:prose-invert max-w-none space-y-8 text-gray-600 dark:text-gray-400">

@@ -10,7 +10,6 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 import AcceptInvitePage, { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
 import OnboardingPage from './pages/onboarding/OnboardingPage';
 import AppLayout from './components/layout/AppLayout';
-import CursorEffect from './components/ui/CursorEffect';
 import Dashboard from './pages/app/Dashboard';
 import ChartOfAccounts from './pages/app/ChartOfAccounts';
 import Inventory from './pages/app/Inventory';
@@ -134,7 +133,6 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
 export default function App() {
   return (
     <BrowserRouter>
-      <CursorEffect />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />

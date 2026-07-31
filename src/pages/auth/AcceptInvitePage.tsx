@@ -72,20 +72,20 @@ export default function AcceptInvitePage() {
         ) : error || !preview ? (
           <div className="py-4">
             <XCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
-            <h1 className="text-lg font-medium text-gray-900 mb-2">{t('invite.notFound')}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 mb-2">{t('invite.notFound')}</h1>
             <p className="text-sm text-gray-500 mb-6">{t('invite.notFoundDesc')}</p>
             <Link to="/" className="text-sm text-[#0057D9] font-medium hover:underline">{t('invite.backHome')}</Link>
           </div>
         ) : accepted ? (
           <div className="py-4">
             <CheckCircle className="w-12 h-12 text-[#0057D9] mx-auto mb-3" />
-            <h1 className="text-lg font-medium text-gray-900 mb-2">{t('invite.accepted')}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 mb-2">{t('invite.accepted')}</h1>
             <p className="text-sm text-gray-500">{t('invite.redirecting')}</p>
           </div>
         ) : preview.status !== 'pending' ? (
           <div className="py-4">
             <XCircle className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-            <h1 className="text-lg font-medium text-gray-900 mb-2">{t('invite.alreadyUsed')}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 mb-2">{t('invite.alreadyUsed')}</h1>
             <p className="text-sm text-gray-500">{t('invite.alreadyUsedDesc')}</p>
           </div>
         ) : (
@@ -93,7 +93,7 @@ export default function AcceptInvitePage() {
             <div className="w-14 h-14 bg-[#0057D9]/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <Users className="w-6 h-6 text-[#0057D9]" />
             </div>
-            <h1 className="text-lg font-medium text-gray-900 mb-1">{t('invite.joinTitle')} {preview.tenant_name}</h1>
+            <h1 className="text-lg font-semibold text-gray-900 mb-1">{t('invite.joinTitle')} {preview.tenant_name}</h1>
             <p className="text-sm text-gray-500 mb-6">
               {t('invite.invitedTo')} <strong>{preview.tenant_name}</strong> {t('invite.withRole')} <strong>{preview.role}</strong>.
             </p>
