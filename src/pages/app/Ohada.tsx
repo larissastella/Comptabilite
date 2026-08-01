@@ -81,6 +81,7 @@ export default function Ohada() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           Authorization: `Bearer ${session.session?.access_token}`,
         },
         body: JSON.stringify({ document_url: url, tenant_id: tenant!.id, media_type: file.type }),
