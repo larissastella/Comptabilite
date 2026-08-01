@@ -272,6 +272,25 @@ export default function SuperAdmin() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const updateTenantPlan = useMutation({
+    mutationFn: async ({ tenantId, plan }: { tenantId: string; plan: string }) => {
+      await callAdminFunction('update-tenant-plan', { tenantId, plan });
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['sa-tenants'] }); toast.success('Forfait mis à jour'); },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const toggleTenantStatus = useMutation({
+    mutationFn: async ({ tenantId, suspend }: { tenantId: string; suspend: boolean }) => {
+      await callAdminFunction('toggle-tenant-status', { tenantId, suspend });
+    },
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ['sa-tenants'] });
+      toast.success(vars.suspend ? 'Compte suspendu' : 'Compte réactivé');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
   const addStaff = useMutation({
     mutationFn: async () => {
       await callAdminFunction('add-staff', { email: newStaffEmail, roleId: newStaffRoleId });
@@ -619,7 +638,7 @@ export default function SuperAdmin() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead><tr className="border-b border-gray-100 dark:border-surface-3 bg-gray-50 dark:bg-surface-2">
-                {['Entreprise', 'Pays', 'Devise', 'Plan', 'Statut', 'Code commercial', 'Créé le'].map(h => (
+                {['Entreprise', 'Pays', 'Devise', 'Plan', 'Statut', 'Code commercial', 'Créé le', 'Actions'].map(h => (
                   <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
                 ))}
               </tr></thead>
@@ -632,7 +651,22 @@ export default function SuperAdmin() {
                     </td>
                     <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300">{COUNTRY_NAMES[t.country] || t.country}</td>
                     <td className="px-4 py-3.5 text-sm font-mono text-gray-600 dark:text-gray-300">{t.currency}</td>
-                    <td className="px-4 py-3.5">{planBadge(t.plan)}</td>
+                    <td className="px-4 py-3.5">
+                      <select
+                        value={t.plan}
+                        onChange={e => {
+                          if (confirm(`Changer le forfait de ${t.name} vers ${e.target.value} ?`)) {
+                            updateTenantPlan.mutate({ tenantId: t.id, plan: e.target.value });
+                          }
+                        }}
+                        className="text-xs border border-gray-200 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg px-2 py-1"
+                      >
+                        <option value="starter">Starter</option>
+                        <option value="pro">Pro</option>
+                        <option value="premium">Premium</option>
+                        <option value="enterprise">Enterprise</option>
+                      </select>
+                    </td>
                     <td className="px-4 py-3.5">{statusBadge(t.subscription_status)}</td>
                     <td className="px-4 py-3.5">
                       {t.referred_by_staff_code ? (
@@ -640,6 +674,23 @@ export default function SuperAdmin() {
                       ) : '—'}
                     </td>
                     <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(t.created_at), 'dd/MM/yyyy')}</td>
+                    <td className="px-4 py-3.5">
+                      {t.subscription_status === 'canceled' ? (
+                        <button
+                          onClick={() => toggleTenantStatus.mutate({ tenantId: t.id, suspend: false })}
+                          className="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100"
+                        >
+                          Réactiver
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => { if (confirm(`Suspendre le compte ${t.name} ?`)) toggleTenantStatus.mutate({ tenantId: t.id, suspend: true }); }}
+                          className="text-xs px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100"
+                        >
+                          Suspendre
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>

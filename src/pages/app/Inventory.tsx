@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Package, Edit2, Trash2, AlertTriangle, Filter } from 'lucide-react';
+import { Plus, Search, Package, Edit2, Trash2, AlertTriangle, Filter, Boxes, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { Product, ProductType } from '../../types';
@@ -24,6 +24,7 @@ export default function Inventory() {
   const [category, setCategory] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
+  const [adjustingProduct, setAdjustingProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductFormData>({
     sku: '', name: '', name_en: '', description: '', category: '',
     product_type: 'goods', unit_of_measure: 'pcs',
@@ -219,6 +220,9 @@ export default function Inventory() {
                         </td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {p.track_stock && (
+                              <button onClick={() => setAdjustingProduct(p)} title={t('inventory.adjust')} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100"><Boxes className="w-3.5 h-3.5" /></button>
+                            )}
                             <button onClick={() => openEdit(p)} className="p-1.5 text-gray-400 hover:text-[#0057D9] rounded-lg hover:bg-gray-100"><Edit2 className="w-3.5 h-3.5" /></button>
                             <button onClick={() => deleteProduct.mutate(p.id)} className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
                           </div>
@@ -271,6 +275,9 @@ export default function Inventory() {
                     </div>
                   </div>
                   <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50">
+                    {p.track_stock && (
+                      <button onClick={() => setAdjustingProduct(p)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#0057D9] bg-blue-50 rounded-lg"><Boxes className="w-3 h-3" />{t('inventory.adjust')}</button>
+                    )}
                     <button onClick={() => openEdit(p)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 bg-gray-50 rounded-lg"><Edit2 className="w-3 h-3" />Modifier</button>
                     <button onClick={() => deleteProduct.mutate(p.id)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-red-600 bg-red-50 rounded-lg"><Trash2 className="w-3 h-3" />Supprimer</button>
                   </div>
@@ -362,6 +369,109 @@ export default function Inventory() {
           </div>
         </div>
       )}
+
+      {adjustingProduct && (
+        <AdjustStockModal
+          product={adjustingProduct}
+          onClose={() => setAdjustingProduct(null)}
+          onDone={() => { qc.invalidateQueries({ queryKey: ['stock-levels'] }); setAdjustingProduct(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function AdjustStockModal({ product, onClose, onDone }: { product: Product; onClose: () => void; onDone: () => void }) {
+  const { t } = useTranslation();
+  const { tenant } = useTenant();
+  const [warehouseId, setWarehouseId] = useState('');
+  const [movementType, setMovementType] = useState<'adjustment' | 'opening' | 'transfer' | 'return'>('adjustment');
+  const [quantity, setQuantity] = useState('');
+  const [notes, setNotes] = useState('');
+
+  const { data: warehouses = [] } = useQuery({
+    queryKey: ['warehouses-for-adjust', tenant?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from('warehouses').select('id, name').eq('tenant_id', tenant!.id);
+      return (data || []) as { id: string; name: string }[];
+    },
+    enabled: !!tenant?.id,
+  });
+
+  const submit = useMutation({
+    mutationFn: async () => {
+      const qty = Number(quantity);
+      if (!warehouseId) throw new Error(t('inventory.selectWarehouseError'));
+      if (!qty) throw new Error(t('inventory.enterQuantityError'));
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase.from('stock_entries').insert({
+        tenant_id: tenant!.id,
+        product_id: product.id,
+        warehouse_id: warehouseId,
+        movement_type: movementType,
+        quantity: qty,
+        unit_cost: product.purchase_price,
+        reference_type: 'adjustment',
+        notes: notes || null,
+        created_by: user?.id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success(t('inventory.stockAdjusted')); onDone(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-md p-5 sm:p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-lg font-medium text-gray-900">{t('inventory.adjust')}</h2>
+          <button onClick={onClose}><X className="w-5 h-5 text-gray-400" /></button>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">{product.name}</p>
+
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs text-gray-500">{t('inventory.warehouse')}</label>
+            <select value={warehouseId} onChange={e => setWarehouseId(e.target.value)} className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-lg">
+              <option value="">{t('common.select')}</option>
+              {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500">{t('inventory.movementType')}</label>
+            <select value={movementType} onChange={e => setMovementType(e.target.value as typeof movementType)} className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-lg">
+              <option value="adjustment">{t('inventory.movementAdjustment')}</option>
+              <option value="opening">{t('inventory.movementOpening')}</option>
+              <option value="return">{t('inventory.movementReturn')}</option>
+              <option value="transfer">{t('inventory.movementTransfer')}</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-500">{t('inventory.quantityHint')}</label>
+            <input
+              type="number"
+              step="0.001"
+              value={quantity}
+              onChange={e => setQuantity(e.target.value)}
+              placeholder="+10 ou -3"
+              className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500">{t('inventory.notesOptional')}</label>
+            <input value={notes} onChange={e => setNotes(e.target.value)} className="w-full mt-1 px-3 py-2 text-sm border border-gray-200 rounded-lg" />
+          </div>
+        </div>
+
+        <button
+          onClick={() => submit.mutate()}
+          disabled={submit.isPending}
+          className="w-full mt-5 py-2.5 bg-[#0057D9] hover:bg-[#003F9E] disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors"
+        >
+          {submit.isPending ? '...' : t('inventory.confirmAdjustment')}
+        </button>
+      </div>
     </div>
   );
 }

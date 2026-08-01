@@ -229,6 +229,51 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // ---- UPDATE TENANT PLAN (manual override by a super admin) ----
+    if (action === "update-tenant-plan") {
+      const { tenantId, plan } = body;
+      if (!tenantId || !plan) throw new Error("tenantId and plan required");
+      if (!["starter", "pro", "premium", "enterprise"].includes(plan)) throw new Error("Invalid plan");
+
+      const { error: updateError } = await serviceClient.from("tenants").update({ plan }).eq("id", tenantId);
+      if (updateError) throw updateError;
+
+      await serviceClient.from("audit_logs").insert({
+        user_id: user.id,
+        tenant_id: tenantId,
+        action: "manual_plan_change",
+        module: "tenants",
+        after_data: { plan },
+      });
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- SUSPEND / REACTIVATE A TENANT ----
+    if (action === "toggle-tenant-status") {
+      const { tenantId, suspend } = body;
+      if (!tenantId) throw new Error("tenantId required");
+
+      const { error: updateError } = await serviceClient
+        .from("tenants")
+        .update({ subscription_status: suspend ? "canceled" : "active" })
+        .eq("id", tenantId);
+      if (updateError) throw updateError;
+
+      await serviceClient.from("audit_logs").insert({
+        user_id: user.id,
+        tenant_id: tenantId,
+        action: suspend ? "suspend_tenant" : "reactivate_tenant",
+        module: "tenants",
+      });
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // ---- ADD STAFF ROLE ----
     if (action === "add-role") {
       const { name } = body;
