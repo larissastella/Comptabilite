@@ -7,7 +7,7 @@ import {
   Smartphone, Wifi, Globe, Shield, Zap, CheckCircle, ChevronDown,
   ArrowRight, Star, Quote, Menu, X, Sparkles,
   Package, Bell, Bot, ScanLine, Languages,
-  Facebook, Twitter, Linkedin, Youtube, Mail, MapPin,
+  Mail, MapPin,
   Sun, Moon
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
@@ -541,13 +541,6 @@ export default function LandingPage() {
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
                 {t('landing.footerTagline')}
               </p>
-              <div className="flex gap-3">
-                {[Facebook, Twitter, Linkedin, Youtube].map((Icon, i) => (
-                  <a key={i} href="#" className="w-9 h-9 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
-                    <Icon className="w-4 h-4 text-gray-400" />
-                  </a>
-                ))}
-              </div>
             </div>
 
             <div>
