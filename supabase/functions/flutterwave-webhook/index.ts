@@ -13,8 +13,10 @@
 //   FLUTTERWAVE_SECRET_KEY, FLUTTERWAVE_WEBHOOK_HASH
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
+import { logFunctionError } from "../_shared/errorLogger.ts";
 
 Deno.serve(async (req: Request) => {
+  try {
   const expectedHash = Deno.env.get("FLUTTERWAVE_WEBHOOK_HASH");
   const secretKey = Deno.env.get("FLUTTERWAVE_SECRET_KEY");
   if (!expectedHash || !secretKey) {
@@ -71,4 +73,9 @@ Deno.serve(async (req: Request) => {
   }).eq("id", tenantId);
 
   return new Response(JSON.stringify({ received: true, action: "activated" }), { status: 200, headers: { "Content-Type": "application/json" } });
+  } catch (err) {
+    console.error("flutterwave-webhook error", err);
+    await logFunctionError("flutterwave-webhook", err);
+    return new Response(JSON.stringify({ error: "Internal error" }), { status: 500, headers: { "Content-Type": "application/json" } });
+  }
 });

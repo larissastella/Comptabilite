@@ -13,6 +13,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 import Stripe from "npm:stripe@17";
+import { logFunctionError } from "../_shared/errorLogger.ts";
 
 const PLAN_BY_PRICE_ENV: Record<string, string> = {
   STRIPE_PRICE_STARTER: "starter",
@@ -105,6 +106,7 @@ Deno.serve(async (req: Request) => {
     }
   } catch (err) {
     console.error("Error handling webhook event", event.type, err);
+    await logFunctionError("stripe-webhook", err, { event_type: event.type });
     return new Response("Internal error handling event", { status: 500 });
   }
 

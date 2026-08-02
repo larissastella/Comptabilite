@@ -23,7 +23,7 @@ import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router-dom';
 
-type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs' | 'support';
+type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs' | 'support' | 'monitoring';
 
 const ADMIN_MODULES = ['tenants', 'subscriptions', 'support', 'commercial', 'statistics', 'staff'];
 
@@ -391,6 +391,7 @@ export default function SuperAdmin() {
     { key: 'staff', label: 'Équipe interne', icon: UserCog },
     { key: 'commercial', label: 'Commercial', icon: Target },
     { key: 'support', label: 'Support', icon: Headset },
+    { key: 'monitoring', label: 'Monitoring', icon: AlertTriangle },
     { key: 'performance', label: 'Performance', icon: TrendingUp },
     { key: 'logs', label: 'Journaux', icon: BarChart3 },
   ];
@@ -1340,6 +1341,7 @@ export default function SuperAdmin() {
       )}
 
       {tab === 'support' && <SupportPanel />}
+      {tab === 'monitoring' && <MonitoringPanel />}
     </div>
   );
 }
@@ -1476,6 +1478,89 @@ function SupportPanel() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function MonitoringPanel() {
+  const qc = useQueryClient();
+  const [source, setSource] = useState<'client' | 'function'>('function');
+
+  const { data: functionErrors = [] } = useQuery({
+    queryKey: ['sa-function-errors'],
+    queryFn: async () => {
+      const { data } = await supabase.from('function_errors').select('*').eq('resolved', false).order('created_at', { ascending: false }).limit(100);
+      return data || [];
+    },
+    refetchInterval: 30000,
+    enabled: source === 'function',
+  });
+
+  const { data: clientErrors = [] } = useQuery({
+    queryKey: ['sa-client-errors'],
+    queryFn: async () => {
+      const { data } = await supabase.from('client_errors').select('*').eq('resolved', false).order('created_at', { ascending: false }).limit(100);
+      return data || [];
+    },
+    refetchInterval: 30000,
+    enabled: source === 'client',
+  });
+
+  const resolve = useMutation({
+    mutationFn: async ({ table, id }: { table: 'function_errors' | 'client_errors'; id: string }) => {
+      const { error } = await supabase.from(table).update({ resolved: true }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['sa-function-errors'] }); qc.invalidateQueries({ queryKey: ['sa-client-errors'] }); toast.success('Marqué comme résolu'); },
+  });
+
+  const rows = source === 'function' ? functionErrors : clientErrors;
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex gap-1">
+          <button onClick={() => setSource('function')} className={`px-4 py-2 rounded-xl text-sm font-medium ${source === 'function' ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600'}`}>
+            Serveur ({functionErrors.length})
+          </button>
+          <button onClick={() => setSource('client')} className={`px-4 py-2 rounded-xl text-sm font-medium ${source === 'client' ? 'bg-[#0057D9] text-white' : 'bg-gray-100 text-gray-600'}`}>
+            Navigateur ({clientErrors.length})
+          </button>
+        </div>
+        {rows.length > 0 && (
+          <span className="px-2.5 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">{rows.length} non résolue(s)</span>
+        )}
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center text-gray-400">
+          <AlertTriangle className="w-10 h-10 mx-auto mb-3 opacity-40" />
+          <p className="text-sm">Aucune erreur non résolue — tout va bien.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {rows.map((e: Record<string, unknown>) => (
+            <div key={e.id as string} className="bg-white rounded-xl border border-gray-100 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {source === 'function' && <span className="text-xs font-mono px-2 py-0.5 bg-gray-100 rounded">{e.function_name as string}</span>}
+                    <span className="text-xs text-gray-400">{new Date(e.created_at as string).toLocaleString('fr-FR')}</span>
+                  </div>
+                  <p className="text-sm text-gray-900 break-words">{e.message as string}</p>
+                  {source === 'client' && (e.url as string) && <p className="text-xs text-gray-400 mt-1 truncate">{e.url as string}</p>}
+                </div>
+                <button
+                  onClick={() => resolve.mutate({ table: source === 'function' ? 'function_errors' : 'client_errors', id: e.id as string })}
+                  className="flex-shrink-0 text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium"
+                >
+                  Résolu
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

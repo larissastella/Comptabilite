@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { useTenant } from './contexts/TenantContext';
 import AppLayout from './components/layout/AppLayout';
+import { ErrorBoundary, GlobalErrorListener } from './components/ui/ErrorMonitoring';
 import PremiumGate from './components/ui/PremiumGate';
 import { INVITE_STORAGE_KEY } from './pages/auth/AcceptInvitePage';
 
@@ -140,7 +141,9 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
 
 export default function App() {
   return (
+    <ErrorBoundary>
     <BrowserRouter>
+      <GlobalErrorListener />
       <Suspense fallback={<Spinner />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -189,5 +192,6 @@ export default function App() {
       </Routes>
       </Suspense>
     </BrowserRouter>
+    </ErrorBoundary>
   );
 }
