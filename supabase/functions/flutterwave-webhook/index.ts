@@ -13,7 +13,21 @@
 //   FLUTTERWAVE_SECRET_KEY, FLUTTERWAVE_WEBHOOK_HASH
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
-import { logFunctionError } from "../_shared/errorLogger.ts";
+
+async function logFunctionError(functionName, error, context = {}) {
+  try {
+    const serviceClient = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
+    const message = error instanceof Error ? error.message : String(error);
+    await serviceClient.from("function_errors").insert({
+      function_name: functionName,
+      tenant_id: context.tenant_id ?? null,
+      message: message.slice(0, 2000),
+      context,
+    });
+  } catch {
+    // Never let error logging itself throw.
+  }
+}
 
 Deno.serve(async (req: Request) => {
   try {
