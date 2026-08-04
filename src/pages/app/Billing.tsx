@@ -1,7 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { CheckCircle, ArrowUpRight, CreditCard, Calendar, Zap, Loader2 } from 'lucide-react';
 import { useTenant } from '../../contexts/TenantContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { openFlutterwaveInline } from '../../lib/flutterwaveInline';
 import { format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useState } from 'react';
@@ -17,6 +19,7 @@ const PLANS = [
 export default function Billing() {
   const { t } = useTranslation();
   const { tenant } = useTenant();
+  const { user } = useAuth();
   const [redirecting, setRedirecting] = useState(false);
   const [pickingPlanFor, setPickingPlanFor] = useState<string | null>(null);
 
@@ -31,11 +34,58 @@ export default function Billing() {
   async function handleCheckout(planId: string, provider: 'stripe' | 'flutterwave') {
     if (!tenant?.id) return;
     setPickingPlanFor(null);
+
+    if (provider === 'flutterwave') {
+      // Inline checkout: opens as a modal over the current page, no
+      // redirect, no leaving LiBooks.
+      const plan = PLANS.find(p => p.id === planId);
+      if (!plan) return;
+      setRedirecting(true);
+      try {
+        await openFlutterwaveInline({
+          tx_ref: `libooks-${tenant.id}-${Date.now()}`,
+          amount: plan.price,
+          currency: 'USD',
+          customer: { email: user?.email || '', name: tenant.name },
+          customizations: { title: 'LiBooks', description: `Abonnement ${plan.name}` },
+          meta: { tenant_id: tenant.id, plan: planId },
+          callback: async (response) => {
+            try {
+              const { data: session } = await supabase.auth.getSession();
+              const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flutterwave-verify`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+                  Authorization: `Bearer ${session.session?.access_token}`,
+                },
+                body: JSON.stringify({ transaction_id: response.transaction_id, tenant_id: tenant.id }),
+              });
+              const json = await res.json();
+              if (!res.ok) throw new Error(json.error || 'Le paiement n\'a pas pu être vérifié');
+              toast.success('Paiement confirmé — ton forfait est activé !');
+              window.location.reload();
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : 'Erreur de vérification du paiement');
+            } finally {
+              setRedirecting(false);
+            }
+          },
+          onclose: () => setRedirecting(false),
+        });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
+        setRedirecting(false);
+      }
+      return;
+    }
+
+    // Stripe Checkout is a hosted page by design (required for Stripe's
+    // own PCI-compliance model) -- a real redirect is unavoidable here.
     setRedirecting(true);
     try {
       const { data: session } = await supabase.auth.getSession();
-      const fn = provider === 'stripe' ? 'stripe-checkout' : 'flutterwave-checkout';
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`, {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +254,7 @@ export default function Billing() {
                 <Zap className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
-                  <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — via Flutterwave</p>
+                  <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
                 </div>
               </button>
             </div>
