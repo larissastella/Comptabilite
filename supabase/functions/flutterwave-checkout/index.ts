@@ -1,3 +1,10 @@
+// ⚠️ DEAD CODE — kept only for reference, not deployed/wired to anything.
+// LiBooks switched to Flutterwave's INLINE checkout (see
+// flutterwaveInline.ts + flutterwave-init/flutterwave-verify), which opens
+// as a modal instead of redirecting to a hosted payment link. Nothing in
+// src/ calls this function. Safe to delete once confirmed unused in
+// production, or repurpose if a redirect-based flow is needed again.
+//
 // Creates a Flutterwave payment link so a tenant can subscribe to (or
 // upgrade) a plan using Mobile Money, local cards, or bank transfer —
 // the payment methods most used across Africa, which Stripe doesn't

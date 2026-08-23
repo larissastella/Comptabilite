@@ -16,6 +16,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
+// Source of truth for what each plan actually costs. The inline widget's
+// `amount` comes from the browser (see Billing.tsx), which is editable via
+// devtools before the payment is submitted -- so unlike the Stripe flow
+// (which references a server-defined Price ID and can't be tampered with
+// this way), we MUST re-check the amount Flutterwave actually confirms was
+// charged against this table before ever activating a plan. Keep in sync
+// with PLANS in src/pages/app/Billing.tsx.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 9,
+  pro: 19,
+  premium: 69,
+  enterprise: 189,
+};
+
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -75,6 +89,21 @@ Deno.serve(async (req: Request) => {
     const meta = verified.data.meta || {};
     if (meta.tenant_id !== tenant_id) {
       return new Response(JSON.stringify({ error: "Transaction does not match this account" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const { data: tenantRow } = await serviceClient.from("tenants").select("flutterwave_last_tx_ref").eq("id", tenant_id).maybeSingle();
+    if (!tenantRow || tenantRow.flutterwave_last_tx_ref !== verified.data.tx_ref) {
+      return new Response(JSON.stringify({ error: "This transaction was not initiated for this account" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const expectedPrice = PLAN_PRICE_USD[meta.plan as string];
+    const chargedAmount = Number(verified.data.charged_amount ?? verified.data.amount);
+    const chargedCurrency = String(verified.data.currency ?? "");
+    if (!expectedPrice || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
+      await logFunctionError("flutterwave-verify", new Error("Amount mismatch — refusing to activate plan"), {
+        tenant_id, transaction_id, meta_plan: meta.plan, expectedPrice, chargedAmount, chargedCurrency,
+      });
+      return new Response(JSON.stringify({ error: "Le montant du paiement ne correspond pas au forfait sélectionné. Contacte le support." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     await serviceClient.from("tenants").update({

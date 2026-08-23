@@ -29,6 +29,14 @@ async function logFunctionError(functionName, error, context = {}) {
   }
 }
 
+// Kept in sync with flutterwave-verify/index.ts and Billing.tsx PLANS.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 9,
+  pro: 19,
+  premium: 69,
+  enterprise: 189,
+};
+
 Deno.serve(async (req: Request) => {
   try {
   const expectedHash = Deno.env.get("FLUTTERWAVE_WEBHOOK_HASH");
@@ -78,6 +86,21 @@ Deno.serve(async (req: Request) => {
   const { data: tenant } = await serviceClient.from("tenants").select("flutterwave_last_tx_ref").eq("id", tenantId).maybeSingle();
   if (!tenant || tenant.flutterwave_last_tx_ref !== verified.data.tx_ref) {
     return new Response(JSON.stringify({ received: true, action: "tx_ref_mismatch" }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }
+
+  // The amount comes from the inline widget's client-side call (see
+  // Billing.tsx), which is editable via devtools before submission -- so
+  // it must be re-checked against the real plan price before activating
+  // anything, same as in flutterwave-verify (this webhook is the async
+  // safety-net path, must not be a bypass for that check).
+  const expectedPrice = PLAN_PRICE_USD[plan as string];
+  const chargedAmount = Number(verified.data.charged_amount ?? verified.data.amount);
+  const chargedCurrency = String(verified.data.currency ?? "");
+  if (!expectedPrice || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
+    await logFunctionError("flutterwave-webhook", new Error("Amount mismatch — refusing to activate plan"), {
+      tenant_id: tenantId, transactionId, plan, expectedPrice, chargedAmount, chargedCurrency,
+    });
+    return new Response(JSON.stringify({ received: true, action: "amount_mismatch" }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   await serviceClient.from("tenants").update({

@@ -42,8 +42,25 @@ export default function Billing() {
       if (!plan) return;
       setRedirecting(true);
       try {
+        // Ask the server to issue and stash the tx_ref first — this is
+        // what lets the webhook safety-net later confirm the payment was
+        // genuinely requested by this tenant's own admin, not just
+        // pointed at this tenant_id by anyone with a Flutterwave account.
+        const { data: session } = await supabase.auth.getSession();
+        const initRes = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/flutterwave-init`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ tenant_id: tenant.id, plan: planId }),
+        });
+        const initJson = await initRes.json();
+        if (!initRes.ok) throw new Error(initJson.error || "Impossible d'initialiser le paiement");
+
         await openFlutterwaveInline({
-          tx_ref: `libooks-${tenant.id}-${Date.now()}`,
+          tx_ref: initJson.tx_ref,
           amount: plan.price,
           currency: 'USD',
           customer: { email: user?.email || '', name: tenant.name },
