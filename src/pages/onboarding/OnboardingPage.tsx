@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, CheckCircle, ChevronRight, ChevronLeft, ArrowLeft, Upload } from 'lucide-react';
+import { CheckCircle, ChevronRight, ChevronLeft, ArrowLeft, Upload } from 'lucide-react';
+import logo from '../../assets/logo.png';
 import { supabase } from '../../lib/supabase';
 import { COUNTRIES, getCountryByCode, COMMON_CURRENCIES, COMMON_TIMEZONES } from '../../lib/countryData';
 import { uploadTenantAsset, validateImageFile } from '../../lib/upload';
@@ -323,7 +324,7 @@ export default function OnboardingPage() {
       {/* Header */}
       <header className="bg-[#0F2A3D] px-4 sm:px-6 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-          <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
+          <img src={logo} alt="LiBooks" className="w-8 h-8 flex-shrink-0" />
           <span className="text-white font-bold">Li</span><span className="text-[#0057D9] text-white font-medium">Books</span>
         </Link>
         <div className="flex items-center gap-3">

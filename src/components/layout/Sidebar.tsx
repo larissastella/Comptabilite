@@ -12,6 +12,7 @@ import { useTenant } from '../../contexts/TenantContext';
 import { PLAN_LIMITS } from '../../lib/countryData';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
+import logo from '../../assets/logo.png';
 
 interface NavItem {
   key: string;
@@ -135,7 +136,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/10">
           <NavLink to="/app/dashboard" className="flex items-center gap-2.5">
-            <BookOpen className="w-7 h-7 text-[#0057D9] flex-shrink-0" />
+            <img src={logo} alt="LiBooks" className="w-7 h-7 flex-shrink-0" />
             <div className="flex items-baseline gap-0.5">
               <span className="text-white font-bold text-[17px] leading-none">Li</span>
               <span className="text-[#0057D9] font-medium text-[17px] leading-none">Books</span>

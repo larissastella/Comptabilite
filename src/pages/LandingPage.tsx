@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '../components/ui/ChatWidget';
+import logo from '../assets/logo.png';
 import {
-  BookOpen, BarChart3, FileText, Receipt, Building2,
+  BarChart3, FileText, Receipt, Building2,
   Smartphone, Wifi, Globe, Shield, Zap, CheckCircle, ChevronDown,
   ArrowRight, Star, Quote, Menu, X, Sparkles,
   Package, Bell, Bot, ScanLine, Languages,
@@ -105,7 +106,7 @@ export default function LandingPage() {
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white dark:bg-surface-1 shadow-sm py-3 ${scrolled ? '' : 'md:bg-transparent md:shadow-none md:py-5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className={`w-7 h-7 flex-shrink-0 text-[#0057D9]`} />
+            <img src={logo} alt="LiBooks" className="w-8 h-8 flex-shrink-0" />
             <span className={`text-lg tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
               <span className="font-bold">Li</span><span className={`font-medium ${scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}`}>Books</span>
             </span>
@@ -535,7 +536,7 @@ export default function LandingPage() {
           <div className="grid md:grid-cols-4 gap-8 mb-12">
             <div>
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <BookOpen className="w-7 h-7 text-[#0057D9]" />
+                <img src={logo} alt="LiBooks" className="w-8 h-8" />
                 <span className="text-lg font-bold">Li</span><span className="text-[#0057D9] text-lg font-medium">Books</span>
               </Link>
               <p className="text-sm text-gray-400 leading-relaxed mb-4">
