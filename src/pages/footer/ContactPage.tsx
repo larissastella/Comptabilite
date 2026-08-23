@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Mail, MessageCircle, MapPin, ArrowLeft, Send, Loader2 } from 'lucide-react';
+import { Mail, MessageCircle, MapPin, ArrowLeft, Send, Loader2 } from 'lucide-react';
+import logo from '../../assets/logo.png';
 import ThemeToggle from '../../components/ui/ThemeToggle';
 import toast from 'react-hot-toast';
 
@@ -37,7 +38,7 @@ export default function ContactPage() {
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <BookOpen className="w-7 h-7 text-[#0057D9]" />
+            <img src={logo} alt="LiBooks" className="w-7 h-7 text-[#0057D9]" />
             <span className="text-lg text-gray-900 dark:text-white font-bold">Li</span><span className="text-[#0057D9] text-lg text-gray-900 dark:text-white font-medium">Books</span>
           </Link>
           <div className="flex items-center gap-3">

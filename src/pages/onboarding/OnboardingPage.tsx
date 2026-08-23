@@ -221,9 +221,15 @@ export default function OnboardingPage() {
         is_default: true,
       });
 
-      // Seed SYSCOHADA accounts if OHADA country
+      // Seed a chart of accounts: SYSCOHADA for OHADA countries, a generic
+      // international starter template otherwise. Previously, non-OHADA
+      // signups (France, UAE, Canada, Germany...) got an EMPTY chart of
+      // accounts — the accounting/ledger modules were effectively unusable
+      // for them despite being advertised as available internationally.
       if (countryInfo?.isOhada) {
         await seedSyscohadaAccounts(tenantId as string);
+      } else {
+        await seedGenericChartOfAccounts(tenantId as string);
       }
 
       // Upload logo and cachet if provided
@@ -303,6 +309,60 @@ export default function OnboardingPage() {
       { code: '706', name: 'Prestations de services', name_en: 'Services revenue', account_class: 7, account_type: 'revenue' },
       { code: '707', name: 'Rabais, remises et ristournes accordés', name_en: 'Sales discounts', account_class: 7, account_type: 'revenue' },
       { code: '761', name: 'Revenus des participations', name_en: 'Investment income', account_class: 7, account_type: 'revenue' },
+    ];
+
+    await supabase.from('accounts').insert(
+      accounts.map(a => ({ ...a, tenant_id: tenantId, is_system: true }))
+    );
+  }
+
+  // Generic starter chart of accounts for non-OHADA countries — a general
+  // small-business template (Assets 1xxx / Liabilities 2xxx / Equity 3xxx /
+  // Revenue 4xxx / Expenses 5xxx), the same numbering convention used by
+  // most Western accounting tools. This is a sensible, editable starting
+  // point, NOT a claim of statutory compliance with any specific country's
+  // GAAP/IFRS filing requirements — users with local statutory obligations
+  // should still have their local accountant review/adjust it.
+  async function seedGenericChartOfAccounts(tenantId: string) {
+    const accounts = [
+      // 1000s — Assets
+      { code: '1000', name: 'Caisse', name_en: 'Cash on hand', account_class: 1, account_type: 'asset' as const },
+      { code: '1010', name: 'Banque', name_en: 'Bank accounts', account_class: 1, account_type: 'asset' as const },
+      { code: '1020', name: 'Mobile Money / portefeuilles numériques', name_en: 'Mobile Money / digital wallets', account_class: 1, account_type: 'asset' as const },
+      { code: '1100', name: 'Clients', name_en: 'Accounts receivable', account_class: 1, account_type: 'asset' as const },
+      { code: '1200', name: 'Stocks', name_en: 'Inventory', account_class: 1, account_type: 'asset' as const },
+      { code: '1400', name: 'Charges payées d\'avance', name_en: 'Prepaid expenses', account_class: 1, account_type: 'asset' as const },
+      { code: '1450', name: 'TVA / taxe de vente récupérable', name_en: 'VAT / sales tax recoverable', account_class: 1, account_type: 'asset' as const },
+      { code: '1500', name: 'Immobilisations — Matériel', name_en: 'Fixed assets — Equipment', account_class: 1, account_type: 'asset' as const },
+      { code: '1510', name: 'Immobilisations — Véhicules', name_en: 'Fixed assets — Vehicles', account_class: 1, account_type: 'asset' as const },
+      { code: '1590', name: 'Amortissements cumulés', name_en: 'Accumulated depreciation', account_class: 1, account_type: 'asset' as const },
+      // 2000s — Liabilities
+      { code: '2000', name: 'Fournisseurs', name_en: 'Accounts payable', account_class: 2, account_type: 'liability' as const },
+      { code: '2100', name: 'Salaires à payer', name_en: 'Accrued payroll', account_class: 2, account_type: 'liability' as const },
+      { code: '2200', name: 'TVA / taxe de vente à payer', name_en: 'VAT / sales tax payable', account_class: 2, account_type: 'liability' as const },
+      { code: '2300', name: 'Impôt sur les sociétés à payer', name_en: 'Income tax payable', account_class: 2, account_type: 'liability' as const },
+      { code: '2400', name: 'Emprunts', name_en: 'Loans payable', account_class: 2, account_type: 'liability' as const },
+      { code: '2500', name: 'Produits constatés d\'avance', name_en: 'Deferred revenue', account_class: 2, account_type: 'liability' as const },
+      // 3000s — Equity
+      { code: '3000', name: 'Capital social', name_en: 'Share capital', account_class: 3, account_type: 'equity' as const },
+      { code: '3100', name: 'Résultats reportés', name_en: 'Retained earnings', account_class: 3, account_type: 'equity' as const },
+      { code: '3200', name: 'Résultat net de l\'exercice', name_en: 'Net income — current year', account_class: 3, account_type: 'equity' as const },
+      // 4000s — Revenue
+      { code: '4000', name: 'Ventes', name_en: 'Sales revenue', account_class: 4, account_type: 'revenue' as const },
+      { code: '4100', name: 'Prestations de services', name_en: 'Service revenue', account_class: 4, account_type: 'revenue' as const },
+      { code: '4200', name: 'Autres produits', name_en: 'Other income', account_class: 4, account_type: 'revenue' as const },
+      { code: '4900', name: 'Rabais et remises accordés', name_en: 'Sales discounts & returns', account_class: 4, account_type: 'revenue' as const },
+      // 5000s — Expenses
+      { code: '5000', name: 'Coût des marchandises vendues', name_en: 'Cost of goods sold', account_class: 5, account_type: 'expense' as const },
+      { code: '5100', name: 'Salaires et charges sociales', name_en: 'Salaries & wages', account_class: 5, account_type: 'expense' as const },
+      { code: '5200', name: 'Loyer', name_en: 'Rent expense', account_class: 5, account_type: 'expense' as const },
+      { code: '5300', name: 'Électricité, eau, internet', name_en: 'Utilities', account_class: 5, account_type: 'expense' as const },
+      { code: '5400', name: 'Fournitures de bureau', name_en: 'Office supplies', account_class: 5, account_type: 'expense' as const },
+      { code: '5500', name: 'Transport et déplacements', name_en: 'Travel & transport', account_class: 5, account_type: 'expense' as const },
+      { code: '5600', name: 'Communication', name_en: 'Communication', account_class: 5, account_type: 'expense' as const },
+      { code: '5700', name: 'Honoraires professionnels', name_en: 'Professional fees', account_class: 5, account_type: 'expense' as const },
+      { code: '5800', name: 'Dotations aux amortissements', name_en: 'Depreciation expense', account_class: 5, account_type: 'expense' as const },
+      { code: '5900', name: 'Frais bancaires et intérêts', name_en: 'Bank fees & interest', account_class: 5, account_type: 'expense' as const },
     ];
 
     await supabase.from('accounts').insert(

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Users, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { Users, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import logo from '../../assets/logo.png';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -60,7 +61,7 @@ export default function AcceptInvitePage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="flex items-center gap-2 mb-8">
-        <BookOpen className="w-7 h-7 text-[#0057D9]" />
+        <img src={logo} alt="LiBooks" className="w-7 h-7 text-[#0057D9]" />
         <span className="text-xl text-gray-900 font-bold">Li</span><span className="text-[#0057D9] text-xl text-gray-900 font-medium">Books</span>
       </div>
 

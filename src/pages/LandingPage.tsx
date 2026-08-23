@@ -12,6 +12,7 @@ import {
   Sun, Moon
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { PLAN_LIMITS, MODULES, ModuleKey } from '../lib/countryData';
 
 const NAVY = '#0F2A3D';
 const GREEN = '#0057D9';
@@ -36,11 +37,41 @@ const PLANS = [
   { id: 'enterprise', name: 'Entreprise', price: 189, features: ['Tout Premium', 'Multi-société', 'API & intégrations', 'Support dédié 24/7', 'SLA 99.9%'], color: 'border-purple-300 dark:border-purple-500/50' },
 ];
 
+// Libellés FR pour la matrice de comparaison. La liste des modules réellement
+// affichés est calculée plus bas à partir de PLAN_LIMITS (lib/countryData.ts)
+// — la même source que PremiumGate et les policies RLS (migration 023) — donc
+// impossible que cette matrice affiche une promesse que le produit ne tient
+// pas réellement.
+const MODULE_LABELS: Record<ModuleKey, string> = {
+  dashboard: 'Tableau de bord', companies: 'Multi-société', chart_of_accounts: 'Plan comptable',
+  inventory: 'Stocks', warehouses: 'Multi-magasins', sales_invoices: 'Factures de vente',
+  purchase_invoices: 'Factures d\'achat', transactions: 'Transactions', ledger: 'Grand livre',
+  reports: 'Rapports', banking: 'Banque & Mobile Money', whatsapp: 'WhatsApp & Portail client',
+  ai_cashflow: 'IA Trésorerie & FX', ohada: 'OHADA complet (bilan, résultat)', billing: 'Facturation abonnement',
+  settings: 'Paramètres', users: 'Gestion utilisateurs', roles: 'Rôles & permissions',
+  customers: 'Clients', suppliers: 'Fournisseurs', credit_notes: 'Avoirs',
+  bank_reconciliation: 'Rapprochement bancaire', fixed_assets: 'Immobilisations & amortissements',
+  api_access: 'Accès API',
+};
+
+const PLAN_ORDER = ['starter', 'pro', 'premium', 'enterprise'] as const;
+const MAX_USERS: Record<typeof PLAN_ORDER[number], string> = {
+  starter: '2', pro: '5', premium: 'Illimité', enterprise: 'Illimité',
+};
+
+// Un module n'est intéressant à afficher dans la matrice que s'il distingue
+// au moins deux forfaits — sinon (ex: "Factures de vente", inclus partout)
+// ça n'aide pas à choisir.
+const DIFFERENTIATING_MODULES = MODULES.filter((m) => {
+  const included = PLAN_ORDER.map((p) => PLAN_LIMITS[p].includes(m));
+  return new Set(included).size > 1;
+});
+
 const TESTIMONIALS = [
   { name: 'Aïssatou Diallo', role: 'Comptable, Dakar', text: 'LiBooks a transformé notre gestion. En 3 mois, nous avons divisé par 4 le temps de clôture mensuelle.', avatar: 'AD', color: 'bg-orange-500' },
-  { name: 'Jean-Pierre Mbarga', role: 'Directeur, Yaoundé', text: 'Enfin un outil qui parle notre langue comptable. SYSCOHADA est natif, plus besoin de tableurs.', avatar: 'JM', color: 'bg-green-500' },
+  { name: 'Karim El Fassi', role: 'CFO, Dubaï', text: 'On gère nos filiales sur plusieurs continents depuis un seul compte, avec une conformité locale qui suit à chaque fois.', avatar: 'KF', color: 'bg-teal-500' },
   { name: 'Fatou Ndiaye', role: 'Gérante, Abidjan', text: 'Le mode offline est un game-changer. Je facture même sans connexion, ça se synchronise tout seul.', avatar: 'FN', color: 'bg-blue-500' },
-  { name: 'Kwame Mensah', role: 'CFO, Accra', text: 'L\'IA de trésorerie nous a alertés d\'un risque de rupture 3 semaines avant qu\'il arrive. Inestimable.', avatar: 'KM', color: 'bg-purple-500' },
+  { name: 'Claire Dubosc', role: 'Directrice financière, Paris', text: 'Rare de trouver un outil aussi complet sur la conformité OHADA et aussi simple pour le reste de notre groupe.', avatar: 'CD', color: 'bg-purple-500' },
 ];
 
 const FAQS = [
@@ -93,6 +124,7 @@ export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false);
   const [annual, setAnnual] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [showMatrix, setShowMatrix] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -280,10 +312,10 @@ export default function LandingPage() {
       <section className="py-12 bg-white dark:bg-surface-0 border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { value: '2 500+', label: 'Entreprises' },
-            { value: '54', label: 'Pays supportés' },
-            { value: '1.2M+', label: 'Factures émises' },
-            { value: '99.9%', label: 'Disponibilité' },
+            { value: '62', label: t('landing.statCountries') },
+            { value: '24', label: t('landing.statModules') },
+            { value: '99.9%', label: t('landing.statSla') },
+            { value: '7j', label: t('landing.statTrial') },
           ].map((s, i) => (
             <Reveal key={s.label} delay={i * 100}>
               <div className="text-center">
@@ -301,24 +333,23 @@ export default function LandingPage() {
           <Reveal>
             <div className="text-center mb-14">
               <span className="inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-4" style={{ background: `${GREEN}15`, color: GREEN }}>
-                Pensé pour l'Afrique
+                {t('landing.sectionAfrica')}
               </span>
               <h2 className="text-3xl lg:text-4xl font-medium mb-4 text-gray-900 dark:text-white">
-                Conçu sur le terrain, pas en Silicon Valley
+                {t('landing.sectionAfricaTitle')}
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Chaque fonctionnalité est née d'un besoin réel d'entrepreneurs africains.
-                De Dakar à Nairobi, d'Abidjan à Accra.
+                {t('landing.sectionAfricaSub')}
               </p>
             </div>
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Globe, title: '29 pays, 54 supportés', desc: 'Cameroun, Sénégal, Côte d\'Ivoire, Nigeria, Kenya, Ghana, et plus. Régions, villes, devises, taux de TVA — tout est pré-configuré.' },
+              { icon: Globe, title: '62 pays supportés', desc: 'Cameroun, Sénégal, Côte d\'Ivoire, Nigeria, Kenya, Ghana, France, Émirats Arabes Unis, et plus. Régions, villes, devises, taux de TVA — tout est pré-configuré.' },
               { icon: Wifi, title: 'Offline-first', desc: 'Connexion instable ? Aucun problème. Créez factures et mouvements hors ligne. La synchronisation est automatique au retour du réseau.' },
               { icon: Smartphone, title: 'Mobile Money natif', desc: 'Orange Money, MTN MoMo, Wave, Moov Money. Encaissez, suivez, rapprochez — sans quitter l\'application.' },
-              { icon: Shield, title: 'OHADA natif', desc: 'Plan SYSCOHADA révisé pré-configuré. Bilan, compte de résultat, déclarations — conformes aux normes africaines.' },
+              { icon: Shield, title: 'OHADA natif', desc: 'Plan SYSCOHADA révisé pré-configuré. Bilan, compte de résultat, déclarations — conformes aux normes OHADA.' },
               { icon: Languages, title: 'Bilingue FR / EN', desc: 'Interface, emails, PDFs — tout en français et en anglais. Basculez en un clic, pour toute l\'équipe.' },
               { icon: Zap, title: 'Rapide & léger', desc: 'PWA installable, moins de 3MB. Fonctionne sur smartphone, tablette, ordinateur. Même sur un Samsung A10.' },
             ].map((f, i) => (
@@ -437,6 +468,71 @@ export default function LandingPage() {
           <p className="text-center text-sm text-gray-400 dark:text-gray-500 mt-6">
             Facturation annuelle avec 20% de réduction. Paiement sécurisé via Stripe.
           </p>
+
+          {/* ===== MATRICE DE COMPARAISON DÉTAILLÉE ===== */}
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => setShowMatrix(!showMatrix)}
+              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-xl border-2 transition-all hover:bg-gray-50 dark:hover:bg-surface-2"
+              style={{ borderColor: NAVY, color: NAVY }}
+            >
+              {showMatrix ? 'Masquer le détail des modules' : 'Voir le détail module par module'}
+              <ChevronDown className={`w-4 h-4 transition-transform ${showMatrix ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+
+          {showMatrix && (
+            <Reveal className="mt-8">
+              <div className="overflow-x-auto rounded-2xl border border-gray-200 dark:border-surface-3 bg-white dark:bg-surface-1 shadow-sm">
+                <table className="w-full text-sm min-w-[640px]">
+                  <thead>
+                    <tr className="border-b border-gray-100 dark:border-surface-3">
+                      <th className="text-left px-5 py-4 font-medium text-gray-500 dark:text-gray-400">Ce qui est inclus</th>
+                      {PLANS.map(plan => (
+                        <th key={plan.id} className="px-4 py-4 text-center">
+                          <span className={`font-semibold ${plan.popular ? '' : 'text-gray-900 dark:text-white'}`} style={plan.popular ? { color: GREEN } : {}}>
+                            {plan.name}
+                          </span>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-50 dark:border-surface-2">
+                      <td className="px-5 py-3.5 text-gray-700 dark:text-gray-300">Utilisateurs inclus</td>
+                      {PLAN_ORDER.map(p => (
+                        <td key={p} className="px-4 py-3.5 text-center font-medium text-gray-900 dark:text-white">{MAX_USERS[p]}</td>
+                      ))}
+                    </tr>
+                    <tr className="border-b border-gray-50 dark:border-surface-2 bg-gray-50/50 dark:bg-surface-2/30">
+                      <td className="px-5 py-3.5 text-gray-700 dark:text-gray-300">Sociétés gérées depuis un compte</td>
+                      <td className="px-4 py-3.5 text-center text-gray-900 dark:text-white">1</td>
+                      <td className="px-4 py-3.5 text-center text-gray-900 dark:text-white">1</td>
+                      <td className="px-4 py-3.5 text-center text-gray-900 dark:text-white">1</td>
+                      <td className="px-4 py-3.5 text-center font-medium text-gray-900 dark:text-white">Illimité</td>
+                    </tr>
+                    {DIFFERENTIATING_MODULES.map((m, idx) => (
+                      <tr key={m} className={`border-b border-gray-50 dark:border-surface-2 last:border-0 ${idx % 2 === 0 ? 'bg-gray-50/50 dark:bg-surface-2/30' : ''}`}>
+                        <td className="px-5 py-3.5 text-gray-700 dark:text-gray-300">{MODULE_LABELS[m]}</td>
+                        {PLAN_ORDER.map(p => (
+                          <td key={p} className="px-4 py-3.5 text-center">
+                            {PLAN_LIMITS[p].includes(m) ? (
+                              <CheckCircle className="w-5 h-5 mx-auto" style={{ color: GREEN }} />
+                            ) : (
+                              <span className="text-gray-300 dark:text-gray-600">—</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
+                Chaque module listé ci-dessus est verrouillé au niveau base de données selon votre forfait, pas seulement dans l'interface.
+              </p>
+            </Reveal>
+          )}
         </div>
       </section>
 
@@ -578,7 +674,7 @@ export default function LandingPage() {
           <div className="py-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <p className="text-sm text-gray-300 font-medium">
-                LiBooks est développé par <span className="text-white font-medium">LiAfrik</span> — Dubaï 🇦🇪 & Yaoundé 🇨🇲
+                LiBooks est développé par <span className="text-white font-medium">LiAfrik</span> — Dubaï 🇦🇪 & Afrique
               </p>
               <p className="text-xs text-gray-500">
                 Un pont entre l'innovation internationale et l'ancrage africain.

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Mail, ArrowLeft } from 'lucide-react';
+import { Mail, ArrowLeft } from 'lucide-react';
+import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -38,7 +39,7 @@ export default function VerifyEmailPage() {
 
       <div className="w-full max-w-md">
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
-          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <img src={logo} alt="LiBooks" className="w-8 h-8 text-[#0057D9]" />
           <span className="text-2xl text-white font-bold">Li</span><span className="text-[#0057D9] text-2xl text-white font-medium">Books</span>
         </Link>
 

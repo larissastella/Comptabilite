@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, BookOpen, ArrowLeft } from 'lucide-react';
+import { Home, ArrowLeft } from 'lucide-react';
+import logo from '../assets/logo.png';
 
 export default function NotFoundPage() {
   const { t } = useTranslation();
@@ -9,7 +10,7 @@ export default function NotFoundPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-emerald-50/40 dark:from-surface-0 dark:via-surface-1 dark:to-surface-2 px-4">
       <div className="max-w-md w-full text-center">
         <div className="flex items-center justify-center gap-2 mb-8">
-          <BookOpen className="w-8 h-8 text-[#0057D9]" />
+          <img src={logo} alt="LiBooks" className="w-8 h-8 text-[#0057D9]" />
           <div className="flex items-baseline gap-0.5">
             <span className="text-slate-800 dark:text-white font-medium text-xl leading-none">LiBooks</span>
             <span className="text-[#0057D9] font-medium text-xl leading-none"> Books</span>

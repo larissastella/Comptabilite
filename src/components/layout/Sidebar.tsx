@@ -9,7 +9,7 @@ import {
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTenant } from '../../contexts/TenantContext';
-import { PLAN_LIMITS } from '../../lib/countryData';
+import { PLAN_LIMITS, getCountryByCode } from '../../lib/countryData';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 import logo from '../../assets/logo.png';
@@ -44,6 +44,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   const plan = tenant?.plan || 'starter';
   const allowed = PLAN_LIMITS[plan] || [];
+  const isOhadaCountry = tenant?.country ? getCountryByCode(tenant.country)?.isOhada ?? true : true;
 
   // During an active trial, all premium modules are unlocked.
   const isAllowed = (mod: string) => !mod || isTrialActive || allowed.includes(mod as never);
@@ -88,7 +89,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             { key: 'fixed-assets', label: 'Immobilisations', icon: Boxes, to: '/app/fixed-assets', module: 'fixed_assets' },
             { key: 'whatsapp', label: t('nav.whatsapp'), icon: Smartphone, to: '/app/whatsapp', module: 'whatsapp' },
             { key: 'ai-cashflow', label: t('nav.aiCashflow'), icon: Bot, to: '/app/ai-cashflow', module: 'ai_cashflow' },
-            { key: 'ohada', label: t('nav.ohada'), icon: FileSpreadsheet, to: '/app/ohada', module: 'ohada' },
+            ...(isOhadaCountry ? [{ key: 'ohada', label: t('nav.ohada'), icon: FileSpreadsheet, to: '/app/ohada', module: 'ohada' }] : []),
           ],
         },
         {
