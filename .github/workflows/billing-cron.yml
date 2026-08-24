@@ -1,0 +1,30 @@
+name: Billing Cron (renouvellement auto + rappels)
+
+on:
+  schedule:
+    # Tous les jours à 07:00 UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  auto-renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Charge les renouvellements automatiques dus (Flutterwave)
+        run: |
+          curl -sf -X POST "https://zaagwcunjonxxbzwzlhs.supabase.co/functions/v1/flutterwave-auto-renew" \
+          -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"
+
+  reminders:
+    runs-on: ubuntu-latest
+    needs: auto-renew
+    # needs: attend que les renouvellements du jour soient traités
+    # d'abord, pour que les rappels "payment_failed" du même jour partent
+    # bien dans la même exécution.
+    steps:
+      - name: Envoie les rappels (essai, renouvellement à venir, échec de paiement)
+        run: |
+          curl -sf -X POST "https://zaagwcunjonxxbzwzlhs.supabase.co/functions/v1/billing-reminders" \
+          -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"
