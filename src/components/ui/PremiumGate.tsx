@@ -1,6 +1,7 @@
 import { Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useTenant } from '../../contexts/TenantContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { PLAN_LIMITS, ModuleKey } from '../../lib/countryData';
 import { Link } from 'react-router-dom';
 
@@ -11,10 +12,18 @@ interface PremiumGateProps {
 
 export default function PremiumGate({ module, children }: PremiumGateProps) {
   const { tenant, isTrialActive } = useTenant();
+  const { isSuperAdmin, staffInfo } = useAuth();
   const { t } = useTranslation();
   const plan = tenant?.plan || 'starter';
 
-  // During an active trial, all premium modules are unlocked (except super-admin, handled separately).
+  // Super admins and internal staff never pay for a plan and always have
+  // full platform access — matches the DB-level bypass already granted in
+  // RLS (is_super_admin() on every plan-tier policy, migration 023).
+  if (isSuperAdmin || staffInfo.isStaff) {
+    return <>{children}</>;
+  }
+
+  // During an active trial, all premium modules are unlocked.
   if (isTrialActive) {
     return <>{children}</>;
   }

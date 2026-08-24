@@ -109,10 +109,10 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">8. Législations africaines de protection des données</h2>
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">8. Conformité aux législations locales de protection des données</h2>
             <p>
-              LiBooks respecte également les lois de protection des données en vigueur dans les pays
-              africains où le service est disponible, notamment :
+              Au-delà du RGPD, LiBooks respecte les lois de protection des données en vigueur dans les pays
+              où le service est disponible, notamment :
             </p>
             <ul className="mt-2 space-y-1 list-disc list-inside">
               <li><strong className="text-gray-900 dark:text-white">Cameroun</strong> : Loi n° 2023/014 du 12 juillet 2023 relative à la protection des données personnelles.</li>

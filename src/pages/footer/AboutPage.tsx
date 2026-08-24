@@ -31,10 +31,10 @@ export default function AboutPage() {
             Notre histoire
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            La comptabilité africaine, réinventée.
+            La comptabilité, sans frontières.
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            LiBooks est né d'un constat simple : les entrepreneurs africains méritent des outils
+            LiBooks est né d'un constat simple : les entrepreneurs, où qu'ils soient, méritent des outils
             numériques aussi performants que ceux utilisés partout ailleurs dans le monde — pensés pour
             leurs réalités, leurs contraintes et leurs ambitions.
           </p>
@@ -49,7 +49,7 @@ export default function AboutPage() {
             <h2 className="text-xl font-medium text-gray-900 dark:text-white">Notre mission</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-            Rendre la comptabilité accessible à toutes les entreprises africaines, de la micro-entreprise
+            Rendre la comptabilité accessible à toutes les entreprises, de la micro-entreprise
             au grand groupe. Nous croyons que la gestion financière ne devrait pas être un obstacle à la
             croissance — c'est un levier. LiBooks combine facturation SYSCOHADA, gestion de stock
             multi-magasin, point de vente offline-first et reporting OHADA dans une seule plateforme,
@@ -67,7 +67,7 @@ export default function AboutPage() {
           </div>
           <div className="grid sm:grid-cols-2 gap-4 mt-4">
             {[
-              { title: 'Mobile-first', desc: "L'Afrique avance au smartphone. Notre interface est pensée pour les écrans tactiles et les connexions limitées." },
+              { title: 'Mobile-first', desc: "Beaucoup de nos marchés avancent au smartphone avant le desktop. Notre interface est pensée pour les écrans tactiles et les connexions limitées." },
               { title: 'Offline-first', desc: 'Pas de réseau ? Vos factures et ventes sont enregistrées localement et synchronisées dès le retour de la connexion.' },
               { title: 'Conformité OHADA', desc: 'Plan comptable SYSCOHADA intégré, formats de factures conformes, états financiers prêts pour le commissariat aux comptes.' },
               { title: 'Souveraineté des données', desc: 'Vos données restent les vôtres. Hébergement sécurisé, export complet à tout moment, aucune revente.' },
@@ -95,19 +95,19 @@ export default function AboutPage() {
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
               LiBooks est édité par <strong className="text-gray-900 dark:text-white">LiAfrik</strong>,
               un groupe technologique à la double présence <strong className="text-gray-900 dark:text-white">Dubaï (EAU)</strong> et
-              <strong className="text-gray-900 dark:text-white"> Yaoundé (Cameroun)</strong>. Cette double ancrage
+              <strong className="text-gray-900 dark:text-white"> Afrique</strong>. Cette double ancrage
               n'est pas un hasard — c'est notre identité.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
               De Dubaï, nous puisons dans l'écosystème d'innovation mondiale : standards techniques de pointe,
-              architectures cloud-native, pratiques de sécurité de niveau bancaire. De Yaoundé, nous restons
-              profondément connectés aux réalités du terrain africain : coupures de courant, connexions
+              architectures cloud-native, pratiques de sécurité de niveau bancaire. D'Afrique, nous restons
+              profondément connectés aux réalités du terrain : coupures de courant, connexions
               instables, besoins spécifiques de conformité fiscale, usage massif du Mobile Money et de WhatsApp.
             </p>
             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
               Ce pont entre l'innovation internationale et l'ancrage africain se reflète dans chaque ligne de
-              code de LiBooks. Nous sommes fiers de construire un produit africain de classe
-              internationale — et encore plus fiers qu'il serve les entrepreneurs de notre continent.
+              code de LiBooks. Nous sommes fiers de construire, depuis l'Afrique, un produit de classe
+              internationale — et encore plus fiers qu'il serve aujourd'hui des entrepreneurs partout dans le monde.
             </p>
           </div>
         </section>
@@ -116,8 +116,8 @@ export default function AboutPage() {
         <section className="mb-12">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { value: '54+', label: 'Pays africains supportés' },
-              { value: '15+', label: 'Devises africaines' },
+              { value: '62', label: 'Pays supportés' },
+              { value: '48', label: 'Devises supportées' },
               { value: '100%', label: 'Offline-first' },
               { value: 'SYSCOHADA', label: 'Conformité OHADA' },
             ].map(s => (

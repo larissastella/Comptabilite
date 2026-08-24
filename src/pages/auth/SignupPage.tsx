@@ -61,7 +61,7 @@ export default function SignupPage() {
     'Facturation SYSCOHADA automatique',
     'Gestion de stock multi-magasin',
     'POS offline-first',
-    '54 pays africains supportés',
+    '62 pays supportés dans le monde',
     'Exports PDF/WhatsApp',
     '7 jours d\'essai gratuit, sans CB',
   ];

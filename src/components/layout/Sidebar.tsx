@@ -46,8 +46,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const allowed = PLAN_LIMITS[plan] || [];
   const isOhadaCountry = tenant?.country ? getCountryByCode(tenant.country)?.isOhada ?? true : true;
 
-  // During an active trial, all premium modules are unlocked.
-  const isAllowed = (mod: string) => !mod || isTrialActive || allowed.includes(mod as never);
+  // Super admins and internal staff never pay for a plan and always have
+  // full platform access — matches the DB-level bypass in RLS.
+  const isAllowed = (mod: string) => !mod || isSuperAdmin || staffInfo.isStaff || isTrialActive || allowed.includes(mod as never);
 
   // Super admins and internal staff without a tenant see a simplified nav
   const isPlatformUser = isSuperAdmin || staffInfo.isStaff;

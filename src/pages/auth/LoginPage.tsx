@@ -52,18 +52,18 @@ export default function LoginPage() {
 
         <div>
           <h2 className="text-4xl font-medium mb-4 leading-tight">
-            La comptabilité africaine,<br />
-            <span className="text-[#0057D9]">réinventée.</span>
+            La comptabilité,<br />
+            <span className="text-[#0057D9]">sans frontières.</span>
           </h2>
           <p className="text-slate-300 text-lg leading-relaxed">
             Facturation, stock, POS — offline-first, mobile-first,
-            pensé pour les entrepreneurs africains.
+            pensé pour les entrepreneurs, où qu'ils soient.
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-4">
             {[
-              { label: 'Pays supportés', value: '54+' },
-              { label: 'Devises africaines', value: '15+' },
+              { label: 'Pays supportés', value: '62' },
+              { label: 'Devises supportées', value: '48' },
               { label: 'Offline-first', value: '100%' },
               { label: 'Plan comptable OHADA', value: 'Inclus' },
             ].map(stat => (
