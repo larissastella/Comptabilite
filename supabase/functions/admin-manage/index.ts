@@ -13,17 +13,27 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-    );
-
-    const authHeader = req.headers.get("Authorization");
+    const authHeader = req.headers.get("Authorization") ?? "";
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "No authorization header" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // BUG FIX: this client is used right below to check whether the
+    // caller is a super admin (RLS: `TO authenticated USING
+    // (is_super_admin())`). Without forwarding the caller's own JWT as
+    // this client's Authorization header, every request here runs under
+    // the anon role — RLS has no "TO anon" policy on super_admins, so the
+    // check below always returned zero rows and this endpoint rejected
+    // EVERY caller with 403, including legitimate super admins. Fails
+    // safe (nobody could exploit this to gain access), but the entire
+    // admin panel this function powers was effectively non-functional.
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(authHeader.replace("Bearer ", ""));
     if (authError || !user) {
