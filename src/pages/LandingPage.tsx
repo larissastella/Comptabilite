@@ -135,20 +135,20 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0 transition-colors">
       {/* ===== NAVBAR ===== */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white dark:bg-surface-1 shadow-sm py-3 ${scrolled ? '' : 'md:bg-transparent md:shadow-none md:py-5'}`}>
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white/90 dark:bg-surface-1/90 backdrop-blur-sm py-3 ${scrolled ? 'shadow-sm' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="LiBooks" className="w-8 h-8 flex-shrink-0" />
-            <span className={`text-lg tracking-tight text-[#0F2A3D] dark:text-white ${scrolled ? '' : 'md:text-white'}`}>
-              <span className="font-bold">Li</span><span className={`font-medium ${scrolled ? 'text-[#3B82F6]' : 'text-[#0057D9] md:text-[#0057D9]'}`}>Books</span>
+            <span className="text-lg tracking-tight text-[#0F2A3D] dark:text-white">
+              <span className="font-bold">Li</span><span className="font-medium text-[#0057D9]">Books</span>
             </span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="#modules" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navModules')}</a>
-            <a href="#pricing" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navPricing')}</a>
-            <a href="#testimonials" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navTestimonials')}</a>
-            <a href="#faq" className={`text-sm font-medium transition-colors hover:text-[#0057D9] ${scrolled ? 'text-gray-700 dark:text-gray-300' : 'text-white/80'}`}>{t('landing.navFaq')}</a>
+            <a href="#modules" className="text-sm font-medium transition-colors hover:text-[#0057D9] text-gray-700 dark:text-gray-300">{t('landing.navModules')}</a>
+            <a href="#pricing" className="text-sm font-medium transition-colors hover:text-[#0057D9] text-gray-700 dark:text-gray-300">{t('landing.navPricing')}</a>
+            <a href="#testimonials" className="text-sm font-medium transition-colors hover:text-[#0057D9] text-gray-700 dark:text-gray-300">{t('landing.navTestimonials')}</a>
+            <a href="#faq" className="text-sm font-medium transition-colors hover:text-[#0057D9] text-gray-700 dark:text-gray-300">{t('landing.navFaq')}</a>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -156,26 +156,26 @@ export default function LandingPage() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className={`p-2 rounded-lg transition-colors ${scrolled ? 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-2' : 'text-white/80 hover:bg-white/10'}`}
+              className="p-2 rounded-lg transition-colors text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-2"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             {/* Language selector */}
-            <div className={`flex items-center rounded-lg overflow-hidden border text-xs font-semibold ${scrolled ? 'border-gray-200 dark:border-surface-3' : 'border-white/20'}`}>
+            <div className="flex items-center rounded-lg overflow-hidden border text-xs font-semibold border-gray-200 dark:border-surface-3">
               {['fr', 'en'].map(lang => (
                 <button
                   key={lang}
                   onClick={() => i18n.changeLanguage(lang)}
                   className={`px-3 py-1.5 transition-all ${i18n.language === lang
                     ? 'bg-[#0057D9] text-white'
-                    : scrolled ? 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2' : 'text-white/60 hover:bg-white/10'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2'
                   }`}
                 >
                   {lang.toUpperCase()}
                 </button>
               ))}
             </div>
-            <Link to="/login" className={`text-sm font-medium px-4 py-2 rounded-lg transition-colors ${scrolled ? 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-2' : 'text-white/90 hover:bg-white/10'}`}>
+            <Link to="/login" className="text-sm font-medium px-4 py-2 rounded-lg transition-colors text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-2">
               {t('landing.navLogin')}
             </Link>
             <Link to="/signup" className="text-sm font-semibold px-5 py-2.5 rounded-xl text-white shadow-lg hover:shadow-xl transition-all hover:scale-105" style={{ background: GREEN }}>
@@ -215,29 +215,31 @@ export default function LandingPage() {
       </nav>
 
       {/* ===== HERO ===== */}
-      <section className="relative min-h-[auto] py-28 md:min-h-screen md:py-0 flex items-center overflow-hidden" style={{ background: NAVY }}>
-        {/* Animated gradient blobs */}
+      <section className="relative min-h-[auto] py-28 md:min-h-screen md:py-0 flex items-center overflow-hidden bg-white dark:bg-surface-0">
+        {/* Soft gradient wash */}
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-50/70 via-white to-white dark:from-surface-1 dark:via-surface-0 dark:to-surface-0" />
+        {/* Decorative blobs — soft pastel on light, brand-colored glow on dark */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 blur-3xl animate-pulse" style={{ background: GREEN }} />
-          <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full opacity-10 blur-3xl animate-pulse" style={{ background: '#3B82F6', animationDelay: '1s' }} />
-          <div className="absolute -bottom-40 right-1/3 w-96 h-96 rounded-full opacity-10 blur-3xl animate-pulse" style={{ background: GREEN, animationDelay: '2s' }} />
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-30 dark:opacity-20 blur-3xl animate-pulse" style={{ background: '#BFDBFE' }} />
+          <div className="absolute top-1/2 -left-40 w-96 h-96 rounded-full opacity-20 dark:opacity-10 blur-3xl animate-pulse" style={{ background: GREEN, animationDelay: '1s' }} />
+          <div className="absolute -bottom-40 right-1/3 w-96 h-96 rounded-full opacity-20 dark:opacity-10 blur-3xl animate-pulse" style={{ background: '#93C5FD', animationDelay: '2s' }} />
         </div>
         {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: `linear-gradient(${'white'} 1px, transparent 1px), linear-gradient(90deg, ${'white'} 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
+        <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03]" style={{ backgroundImage: `linear-gradient(${NAVY} 1px, transparent 1px), linear-gradient(90deg, ${NAVY} 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-0 grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 mb-6 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-white/10 backdrop-blur-sm border border-blue-100 dark:border-white/10 mb-6 animate-fade-in">
               <Sparkles className="w-4 h-4" style={{ color: GREEN }} />
-              <span className="text-sm text-white/90 font-medium">{t('landing.heroBadge')}</span>
+              <span className="text-sm font-medium" style={{ color: GREEN }}>{t('landing.heroBadge')}</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-[1.1] tracking-tight mb-6">
               {t('landing.heroTitle')}<br />
               <span style={{ color: GREEN }}>{t('landing.heroTitleAccent')}</span>
             </h1>
 
-            <p className="text-lg text-white/70 mb-8 max-w-lg leading-relaxed">
+            <p className="text-lg text-gray-600 dark:text-white/70 mb-8 max-w-lg leading-relaxed">
               {t('landing.heroSub')}
             </p>
 
@@ -246,12 +248,12 @@ export default function LandingPage() {
                 {t('landing.heroCta')}
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <a href="#modules" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white text-base font-semibold hover:bg-white/15 transition-all">
+              <a href="#modules" className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-white dark:bg-white/10 backdrop-blur-sm border border-gray-200 dark:border-white/20 text-gray-900 dark:text-white text-base font-semibold hover:bg-gray-50 dark:hover:bg-white/15 transition-all shadow-sm">
                 {t('landing.heroDiscover')}
               </a>
             </div>
 
-            <div className="flex items-center gap-6 text-sm text-white/60">
+            <div className="flex items-center gap-6 text-sm text-gray-500 dark:text-white/60">
               <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4" style={{ color: GREEN }} /> {t('landing.heroFree')}</div>
               <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4" style={{ color: GREEN }} /> {t('landing.heroNoCc')}</div>
               <div className="flex items-center gap-2"><CheckCircle className="w-4 h-4" style={{ color: GREEN }} /> FR / EN</div>
@@ -260,13 +262,13 @@ export default function LandingPage() {
 
           {/* Hero visual: Dashboard mockup */}
           <div className="relative hidden lg:block">
-            <div className="relative rounded-2xl bg-white dark:bg-surface-1 shadow-2xl overflow-hidden rotate-1 hover:rotate-0 transition-transform duration-500">
+            <div className="relative rounded-2xl bg-white dark:bg-surface-1 shadow-2xl ring-1 ring-gray-100 dark:ring-0 overflow-hidden rotate-1 hover:rotate-0 transition-transform duration-500">
               {/* Mock browser bar */}
               <div className="flex items-center gap-1.5 px-4 py-3 bg-gray-50 dark:bg-surface-2 border-b border-gray-100 dark:border-surface-3">
                 <div className="w-3 h-3 rounded-full bg-red-400" />
                 <div className="w-3 h-3 rounded-full bg-yellow-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <div className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-mono">app.liafrikbooks.com/dashboard</div>
+                <div className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-mono">app.libooks.com/dashboard</div>
               </div>
               {/* Mock content */}
               <div className="p-5 bg-gray-50 dark:bg-surface-0">
@@ -290,7 +292,7 @@ export default function LandingPage() {
               </div>
             </div>
             {/* Floating badge */}
-            <div className="absolute -bottom-4 -left-4 bg-white dark:bg-surface-1 rounded-2xl shadow-xl p-4 flex items-center gap-3 animate-bounce" style={{ animationDuration: '3s' }}>
+            <div className="absolute -bottom-4 -left-4 bg-white dark:bg-surface-1 rounded-2xl shadow-xl ring-1 ring-gray-100 dark:ring-0 p-4 flex items-center gap-3 animate-bounce" style={{ animationDuration: '3s' }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: GREEN }}>
                 <Wifi className="w-5 h-5 text-white" />
               </div>
@@ -304,7 +306,7 @@ export default function LandingPage() {
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-white/40" />
+          <ChevronDown className="w-6 h-6 text-gray-300 dark:text-white/40" />
         </div>
       </section>
 
