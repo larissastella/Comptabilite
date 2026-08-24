@@ -1,16 +1,10 @@
-// ⚠️ DEAD CODE — kept only for reference, not called from anywhere.
-// LiBooks replaced Stripe with PayUnit for card payments; PayUnit has no
-// documented self-service billing-portal API, so Billing.tsx's "Gérer"
-// button now opens a support mailto: instead. Safe to delete once
-// confirmed unused in production, or repurpose if Stripe is ever
-// reintroduced.
-//
-// Opens a Stripe Billing Portal session, so a tenant admin can update
-// their card, view invoices, or cancel — without us building any of that
-// UI ourselves. Requires STRIPE_SECRET_KEY and APP_URL secrets.
+// Lets a tenant admin cancel auto-renewal (the customer stays on their
+// current plan until next_billing_date, then simply isn't auto-charged
+// again — no partial refund logic here, matches how most SaaS "cancel
+// anytime" flows work: cancel now, keep access until the period you
+// already paid for runs out).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
-import Stripe from "npm:stripe@17";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,10 +16,6 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
 
   try {
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not configured");
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-06-20" });
-
     const authHeader = req.headers.get("Authorization") ?? "";
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -38,26 +28,18 @@ Deno.serve(async (req: Request) => {
     }
 
     const { tenant_id } = await req.json();
-    const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    if (!tenant_id) throw new Error("tenant_id is required");
 
+    const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const { data: membership } = await serviceClient
       .from("tenant_users").select("role, is_owner").eq("tenant_id", tenant_id).eq("user_id", user.id).maybeSingle();
     if (!membership || (membership.role !== "admin" && !membership.is_owner)) {
       return new Response(JSON.stringify({ error: "Only a tenant admin can manage billing" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { data: tenant } = await serviceClient.from("tenants").select("stripe_customer_id").eq("id", tenant_id).single();
-    if (!tenant?.stripe_customer_id) {
-      return new Response(JSON.stringify({ error: "Aucun abonnement Stripe actif pour cette entreprise" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-    }
+    await serviceClient.from("tenants").update({ auto_renew: false }).eq("id", tenant_id);
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: tenant.stripe_customer_id,
-      return_url: `${appUrl}/app/billing`,
-    });
-
-    return new Response(JSON.stringify({ url: portalSession.url }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return new Response(JSON.stringify({ error: message }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });

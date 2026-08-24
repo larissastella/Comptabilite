@@ -106,13 +106,29 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Le montant du paiement ne correspond pas au forfait sélectionné. Contacte le support." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // A card payment (not Mobile Money) returns a reusable token here —
+    // save it so flutterwave-auto-renew can charge future cycles without
+    // the customer re-entering card details. Mobile Money charges never
+    // have a card object/token: those stay manual-renewal + reminder
+    // email, since MoMo requires the customer's live phone authorization
+    // for every charge by design — there's no silent-recharge option.
+    const cardToken = verified.data.card?.token as string | undefined;
+
     await serviceClient.from("tenants").update({
       subscription_status: "active",
       flutterwave_customer_id: String(verified.data.customer?.id ?? ""),
       ...(meta.plan ? { plan: meta.plan } : {}),
+      ...(cardToken ? {
+        flutterwave_card_token: cardToken,
+        auto_renew: true,
+        next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      } : {
+        auto_renew: false,
+        next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      }),
     }).eq("id", tenant_id);
 
-    return new Response(JSON.stringify({ success: true, plan: meta.plan }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true, plan: meta.plan, auto_renew: !!cardToken }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     await logFunctionError("flutterwave-verify", err);

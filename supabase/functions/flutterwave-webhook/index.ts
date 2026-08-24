@@ -103,10 +103,20 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ received: true, action: "amount_mismatch" }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
+  const cardToken = verified.data.card?.token as string | undefined;
+
   await serviceClient.from("tenants").update({
     subscription_status: "active",
     flutterwave_customer_id: String(verified.data.customer?.id ?? ""),
     ...(plan ? { plan } : {}),
+    ...(cardToken ? {
+      flutterwave_card_token: cardToken,
+      auto_renew: true,
+      next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+    } : {
+      auto_renew: false,
+      next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+    }),
   }).eq("id", tenantId);
 
   return new Response(JSON.stringify({ received: true, action: "activated" }), { status: 200, headers: { "Content-Type": "application/json" } });

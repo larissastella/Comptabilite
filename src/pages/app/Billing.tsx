@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { openFlutterwaveInline } from '../../lib/flutterwaveInline';
 import { format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const PLANS = [
@@ -31,7 +31,38 @@ export default function Billing() {
   const isActive = tenant?.subscription_status === 'active';
   const currentPlan = PLANS.find(p => p.id === tenant?.plan);
 
-  async function handleCheckout(planId: string, provider: 'stripe' | 'flutterwave') {
+  // PayUnit is a hosted redirect — the customer leaves LiBooks and comes
+  // back to this exact URL. Confirm the payment server-side as soon as
+  // we land back here (webhook is the async backup for closed tabs).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const transactionId = params.get('transaction_id');
+    if (params.get('payunit_return') !== '1' || !transactionId || !tenant?.id) return;
+
+    window.history.replaceState({}, '', '/app/billing');
+    (async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/payunit-verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ transaction_id: transactionId, tenant_id: tenant.id }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Le paiement n\'a pas pu être vérifié');
+        toast.success('Paiement confirmé — ton forfait est activé !');
+        window.location.reload();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de vérification du paiement');
+      }
+    })();
+  }, [tenant?.id]);
+
+  async function handleCheckout(planId: string, provider: 'payunit' | 'flutterwave') {
     if (!tenant?.id) return;
     setPickingPlanFor(null);
 
@@ -97,12 +128,12 @@ export default function Billing() {
       return;
     }
 
-    // Stripe Checkout is a hosted page by design (required for Stripe's
-    // own PCI-compliance model) -- a real redirect is unavoidable here.
+    // PayUnit checkout is a hosted page by design (like the old Stripe
+    // Checkout was) -- a real redirect is unavoidable here.
     setRedirecting(true);
     try {
       const { data: session } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/payunit-checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,12 +151,18 @@ export default function Billing() {
     }
   }
 
-  async function handleManageBilling() {
+  // PayUnit doesn't expose a self-service "manage payment method" customer
+  // portal the way Stripe did — subscription changes go through the plan
+  // cards above, and payment-method-level questions go through support.
+  function handleManageBilling() {
+    window.location.href = 'mailto:support@liafrik.com?subject=' + encodeURIComponent(`Gestion abonnement — ${tenant?.name || ''}`);
+  }
+
+  async function handleCancelAutoRenew() {
     if (!tenant?.id) return;
-    setRedirecting(true);
     try {
       const { data: session } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-portal`, {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/billing-cancel-autorenew`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,11 +172,11 @@ export default function Billing() {
         body: JSON.stringify({ tenant_id: tenant.id }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Impossible d'ouvrir la gestion de facturation");
-      window.location.href = json.url;
+      if (!res.ok) throw new Error(json.error || 'Erreur');
+      toast.success('Renouvellement automatique annulé. Ton accès reste actif jusqu\'à la fin de la période en cours.');
+      window.location.reload();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Erreur');
-      setRedirecting(false);
     }
   }
 
@@ -166,9 +203,27 @@ export default function Billing() {
               </div>
             )}
             {isActive && (
-              <p className="text-sm text-[#0057D9] mt-2 flex items-center gap-1">
-                <CheckCircle className="w-4 h-4" /> Abonnement actif
-              </p>
+              <>
+                <p className="text-sm text-[#0057D9] mt-2 flex items-center gap-1">
+                  <CheckCircle className="w-4 h-4" /> Abonnement actif
+                </p>
+                {tenant?.auto_renew ? (
+                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Renouvellement automatique
+                      {tenant?.next_billing_date && ` le ${format(new Date(tenant.next_billing_date), 'dd MMMM yyyy', { locale: fr })}`}
+                    </p>
+                    <button onClick={handleCancelAutoRenew} className="text-xs text-red-500 hover:text-red-600 underline">
+                      Annuler
+                    </button>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    Paiement manuel
+                    {tenant?.next_billing_date && ` — pense à renouveler avant le ${format(new Date(tenant.next_billing_date), 'dd MMMM yyyy', { locale: fr })}`}
+                  </p>
+                )}
+              </>
             )}
           </div>
           <div className="sm:text-right">
@@ -227,7 +282,7 @@ export default function Billing() {
             );
           })}
         </div>
-        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via carte bancaire (Stripe) ou Mobile Money (Flutterwave).</p>
+        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via carte bancaire (PayUnit) ou Mobile Money (Flutterwave).</p>
       </div>
 
       {/* Payment method */}
@@ -255,13 +310,13 @@ export default function Billing() {
             <p className="text-sm text-gray-500 mb-5">Comment veux-tu payer ton abonnement {PLANS.find(p => p.id === pickingPlanFor)?.name} ?</p>
             <div className="space-y-3">
               <button
-                onClick={() => handleCheckout(pickingPlanFor, 'stripe')}
+                onClick={() => handleCheckout(pickingPlanFor, 'payunit')}
                 className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
               >
                 <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                  <p className="text-xs text-gray-400">Visa, Mastercard — via Stripe</p>
+                  <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit</p>
                 </div>
               </button>
               <button

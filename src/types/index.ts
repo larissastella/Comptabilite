@@ -31,6 +31,8 @@ export interface Tenant {
   sector?: string;
   invoice_prefix: string;
   invoice_counter: number;
+  auto_renew?: boolean;
+  next_billing_date?: string;
   created_at: string;
   updated_at: string;
 }
