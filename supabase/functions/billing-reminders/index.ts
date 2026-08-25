@@ -104,7 +104,7 @@ Deno.serve(async (req: Request) => {
 
     // 2. Auto-renew charge coming in 3 days — transparency notice.
     const { data: renewingTenants } = await serviceClient
-      .from("tenants").select("id, name, plan, next_billing_date")
+      .from("tenants").select("id, name, plan, next_billing_date, locked_price_usd")
       .eq("auto_renew", true).eq("subscription_status", "active").eq("next_billing_date", in3Days);
 
     for (const t of renewingTenants ?? []) {
@@ -115,7 +115,7 @@ Deno.serve(async (req: Request) => {
         const email = authUser?.user?.email;
         if (!email || !resendKey) continue;
         await sendEmail(resendKey, email, "Ton abonnement LiBooks sera renouvelé dans 3 jours",
-          `<p>Bonjour,</p><p>Ta carte enregistrée sera débitée automatiquement de <strong>$${PLAN_PRICE_USD[t.plan as string] ?? '—'}</strong> dans 3 jours pour renouveler le forfait <strong>${t.plan}</strong> de ${t.name}.</p>
+          `<p>Bonjour,</p><p>Ta carte enregistrée sera débitée automatiquement de <strong>$${t.locked_price_usd ?? PLAN_PRICE_USD[t.plan as string] ?? '—'}</strong> dans 3 jours pour renouveler le forfait <strong>${t.plan}</strong> de ${t.name}.</p>
            <p>Tu peux annuler le renouvellement automatique à tout moment depuis <a href="${appUrl}/app/billing">Facturation</a>.</p>`);
       }
       await markSent(t.id, "renewal_upcoming", in3Days);

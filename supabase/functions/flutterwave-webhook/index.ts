@@ -108,7 +108,7 @@ Deno.serve(async (req: Request) => {
   await serviceClient.from("tenants").update({
     subscription_status: "active",
     flutterwave_customer_id: String(verified.data.customer?.id ?? ""),
-    ...(plan ? { plan } : {}),
+    ...(plan ? { plan, locked_price_usd: expectedPrice } : {}),
     ...(cardToken ? {
       flutterwave_card_token: cardToken,
       auto_renew: true,

@@ -211,6 +211,7 @@ export default function Billing() {
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Renouvellement automatique
+                      {tenant?.locked_price_usd && ` — $${tenant.locked_price_usd}/mois`}
                       {tenant?.next_billing_date && ` le ${format(new Date(tenant.next_billing_date), 'dd MMMM yyyy', { locale: fr })}`}
                     </p>
                     <button onClick={handleCancelAutoRenew} className="text-xs text-red-500 hover:text-red-600 underline">

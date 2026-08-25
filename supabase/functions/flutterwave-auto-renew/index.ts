@@ -15,6 +15,14 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
+// Note on locked_price_usd: this charges what the tenant actually locked
+// in when they last paid/upgraded (tenants.locked_price_usd), NOT
+// PLAN_PRICE_USD's current price for their plan. PLAN_PRICE_USD here is
+// only a fallback for older rows that predate the locked_price_usd
+// column (should be rare/none in practice, but better than charging $0
+// or crashing). If prices change later, existing auto-renew customers
+// keep paying what they signed up for — they're never silently switched
+// to a higher price without explicitly re-subscribing/upgrading.
 const PLAN_PRICE_USD: Record<string, number> = {
   starter: 14,
   pro: 29,
@@ -53,7 +61,7 @@ Deno.serve(async (req: Request) => {
 
   const { data: dueTenants, error } = await serviceClient
     .from("tenants")
-    .select("id, name, plan, flutterwave_card_token")
+    .select("id, name, plan, flutterwave_card_token, locked_price_usd")
     .eq("auto_renew", true)
     .eq("subscription_status", "active")
     .lte("next_billing_date", today)
@@ -67,7 +75,7 @@ Deno.serve(async (req: Request) => {
   const results: Record<string, unknown>[] = [];
 
   for (const tenant of dueTenants ?? []) {
-    const amount = PLAN_PRICE_USD[tenant.plan as string];
+    const amount = tenant.locked_price_usd ?? PLAN_PRICE_USD[tenant.plan as string];
     if (!amount) {
       results.push({ tenant_id: tenant.id, outcome: "skipped_unknown_plan" });
       continue;

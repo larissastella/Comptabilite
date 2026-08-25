@@ -33,6 +33,7 @@ export interface Tenant {
   invoice_counter: number;
   auto_renew?: boolean;
   next_billing_date?: string;
+  locked_price_usd?: number;
   created_at: string;
   updated_at: string;
 }
