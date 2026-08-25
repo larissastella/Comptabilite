@@ -17,6 +17,19 @@ import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
 const NOTIFY_FROM = "LiBooks <noreply@liafrik.com>";
 
+// Kept in sync with the price tables in flutterwave-auto-renew,
+// flutterwave-verify/webhook, payunit-checkout, Billing.tsx and
+// LandingPage.tsx. Shown in the renewal reminder so nobody is surprised
+// by the exact amount an auto-charge is about to take — especially
+// important if prices change after someone already set up auto-renewal
+// at an older price.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
+};
+
 async function sendEmail(resendKey: string, to: string, subject: string, html: string) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -102,7 +115,7 @@ Deno.serve(async (req: Request) => {
         const email = authUser?.user?.email;
         if (!email || !resendKey) continue;
         await sendEmail(resendKey, email, "Ton abonnement LiBooks sera renouvelé dans 3 jours",
-          `<p>Bonjour,</p><p>Ta carte enregistrée sera débitée automatiquement dans 3 jours pour renouveler le forfait <strong>${t.plan}</strong> de ${t.name}.</p>
+          `<p>Bonjour,</p><p>Ta carte enregistrée sera débitée automatiquement de <strong>$${PLAN_PRICE_USD[t.plan as string] ?? '—'}</strong> dans 3 jours pour renouveler le forfait <strong>${t.plan}</strong> de ${t.name}.</p>
            <p>Tu peux annuler le renouvellement automatique à tout moment depuis <a href="${appUrl}/app/billing">Facturation</a>.</p>`);
       }
       await markSent(t.id, "renewal_upcoming", in3Days);
