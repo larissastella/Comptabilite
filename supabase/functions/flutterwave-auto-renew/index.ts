@@ -16,10 +16,10 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
 const PLAN_PRICE_USD: Record<string, number> = {
-  starter: 9,
-  pro: 19,
-  premium: 69,
-  enterprise: 189,
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {

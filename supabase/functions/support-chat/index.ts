@@ -29,8 +29,8 @@ const FAQ: FaqEntry[] = [
   {
     keywords: { fr: ["prix", "tarif", "combien", "cout", "coûte", "abonnement", "forfait"], en: ["price", "pricing", "cost", "how much", "plan", "subscription"] },
     answer: {
-      fr: "LiBooks propose 4 forfaits : Starter (9$/mois), Pro (19$/mois), Premium (69$/mois) et Enterprise (189$/mois). Chaque forfait supérieur inclut tout l'inférieur, plus des fonctionnalités avancées. Tu peux voir le détail complet sur notre page tarifs.",
-      en: "LiBooks has 4 plans: Starter ($9/mo), Pro ($19/mo), Premium ($69/mo) and Enterprise ($189/mo). Each higher plan includes everything from the one below, plus more features. Full details are on our pricing page.",
+      fr: "LiBooks propose 4 forfaits : Starter (14$/mois), Pro (29$/mois), Premium (79$/mois) et Enterprise (199$/mois). Chaque forfait supérieur inclut tout l'inférieur, plus des fonctionnalités avancées. Tu peux voir le détail complet sur notre page tarifs.",
+      en: "LiBooks has 4 plans: Starter ($14/mo), Pro ($29/mo), Premium ($79/mo) and Enterprise ($199/mo). Each higher plan includes everything from the one below, plus more features. Full details are on our pricing page.",
     },
   },
   {

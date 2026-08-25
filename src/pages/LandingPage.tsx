@@ -31,10 +31,10 @@ const MODULES = [
 ];
 
 const PLANS = [
-  { id: 'starter', name: 'Starter', price: 9, features: ['Facturation illimitée', 'Gestion stocks', '2 utilisateurs', 'Support email'], color: 'border-gray-200 dark:border-surface-3' },
-  { id: 'pro', name: 'Pro', price: 19, features: ['Tout Starter', 'Banque & Mobile Money', 'WhatsApp', 'Multi-magasin', '5 utilisateurs'], color: `border-[${GREEN}]`, popular: true },
-  { id: 'premium', name: 'Premium', price: 69, features: ['Tout Pro', 'IA Trésorerie & FX', 'OHADA complet', 'OCR & Paie', 'Utilisateurs illimités'], color: 'border-blue-300 dark:border-blue-500/50' },
-  { id: 'enterprise', name: 'Entreprise', price: 189, features: ['Tout Premium', 'Multi-société', 'API & intégrations', 'Support dédié 24/7', 'SLA 99.9%'], color: 'border-purple-300 dark:border-purple-500/50' },
+  { id: 'starter', name: 'Starter', price: 14, features: ['Facturation illimitée', 'Gestion stocks', '2 utilisateurs', 'Support email'], color: 'border-gray-200 dark:border-surface-3' },
+  { id: 'pro', name: 'Pro', price: 29, features: ['Tout Starter', 'Banque & Mobile Money', 'WhatsApp', 'Multi-magasin', '5 utilisateurs'], color: `border-[${GREEN}]`, popular: true },
+  { id: 'premium', name: 'Premium', price: 79, features: ['Tout Pro', 'IA Trésorerie & FX', 'OHADA complet', 'OCR & Paie', 'Utilisateurs illimités'], color: 'border-blue-300 dark:border-blue-500/50' },
+  { id: 'enterprise', name: 'Entreprise', price: 199, features: ['Tout Premium', 'Multi-société', 'API & intégrations', 'Support dédié 24/7', 'SLA 99.9%'], color: 'border-purple-300 dark:border-purple-500/50' },
 ];
 
 // Libellés FR pour la matrice de comparaison. La liste des modules réellement

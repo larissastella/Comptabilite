@@ -55,10 +55,10 @@ const PLAN_ENV_BY_PLAN: Record<string, string> = {
 };
 
 const PLAN_PRICE_USD: Record<string, number> = {
-  starter: 9,
-  pro: 19,
-  premium: 69,
-  enterprise: 189,
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
 
 Deno.serve(async (req: Request) => {

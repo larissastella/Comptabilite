@@ -24,10 +24,10 @@ const corsHeaders = {
 // charged against this table before ever activating a plan. Keep in sync
 // with PLANS in src/pages/app/Billing.tsx.
 const PLAN_PRICE_USD: Record<string, number> = {
-  starter: 9,
-  pro: 19,
-  premium: 69,
-  enterprise: 189,
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {

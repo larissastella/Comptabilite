@@ -31,10 +31,10 @@ async function logFunctionError(functionName, error, context = {}) {
 
 // Kept in sync with flutterwave-verify/index.ts and Billing.tsx PLANS.
 const PLAN_PRICE_USD: Record<string, number> = {
-  starter: 9,
-  pro: 19,
-  premium: 69,
-  enterprise: 189,
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
 
 Deno.serve(async (req: Request) => {

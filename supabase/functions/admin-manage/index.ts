@@ -379,7 +379,7 @@ Deno.serve(async (req: Request) => {
       });
 
       // Revenue by plan
-      const planPrices: Record<string, number> = { enterprise: 189, premium: 69, pro: 19, starter: 9 };
+      const planPrices: Record<string, number> = { enterprise: 199, premium: 79, pro: 29, starter: 14 };
       const revenueByPlan: Record<string, number> = {};
       activeTenants.forEach((t: Record<string, unknown>) => {
         const p = t.plan as string;

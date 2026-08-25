@@ -32,10 +32,10 @@ const PAYUNIT_BASE_URL = "https://gateway.payunit.net";
 // Source of truth for plan prices, in sync with Billing.tsx PLANS and the
 // equivalent tables in flutterwave-verify/flutterwave-webhook.
 const PLAN_PRICE_USD: Record<string, number> = {
-  starter: 9,
-  pro: 19,
-  premium: 69,
-  enterprise: 189,
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
