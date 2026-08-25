@@ -9,6 +9,16 @@ import { fr } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
+// Kept in sync with PLAN_PRICE_XAF in supabase/functions/payunit-checkout —
+// shown here purely so the customer sees the real amount before choosing
+// PayUnit (they're charged in XAF, not USD, on PayUnit specifically).
+const PLAN_PRICE_XAF: Record<string, number> = {
+  starter: 8000,
+  pro: 16500,
+  premium: 45000,
+  enterprise: 113000,
+};
+
 const PLANS = [
   { id: 'starter', name: 'Starter', price: 14, features: ['Facturation illimitée', 'Gestion stocks', '2 utilisateurs', 'Support email'] },
   { id: 'pro', name: 'Pro', price: 29, features: ['Tout Starter', 'Banque & Mobile Money', 'WhatsApp', 'Multi-magasin', '5 utilisateurs'], popular: true },
@@ -18,10 +28,33 @@ const PLANS = [
 
 export default function Billing() {
   const { t } = useTranslation();
-  const { tenant } = useTenant();
+  const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const [redirecting, setRedirecting] = useState(false);
   const [pickingPlanFor, setPickingPlanFor] = useState<string | null>(null);
+  const [fxRate, setFxRate] = useState<number | null>(null);
+
+  // The platform's canonical prices (what's actually billed) are always
+  // in USD — PLAN_PRICE_USD in every payment edge function is the source
+  // of truth. This is purely a DISPLAY conversion so a tenant billing in
+  // XOF, NGN, KES, etc. sees "≈ what that costs me", never used to
+  // compute an actual charge.
+  useEffect(() => {
+    const currency = tenant?.currency;
+    if (!currency || currency === 'USD') { setFxRate(null); return; }
+    (async () => {
+      const { data } = await supabase
+        .from('fx_rates').select('rate')
+        .is('tenant_id', null).eq('currency_from', 'USD').eq('currency_to', currency)
+        .order('rate_date', { ascending: false }).limit(1).maybeSingle();
+      setFxRate(data?.rate ?? null);
+    })();
+  }, [tenant?.currency]);
+
+  function displayPrice(usdAmount: number): string {
+    if (!fxRate || !tenant?.currency || tenant.currency === 'USD') return `$${usdAmount}`;
+    return `$${usdAmount} (≈ ${formatCurrency(usdAmount * fxRate)})`;
+  }
 
   const trialDaysLeft = tenant?.trial_ends_at
     ? Math.max(0, differenceInDays(new Date(tenant.trial_ends_at), new Date()))
@@ -229,7 +262,7 @@ export default function Billing() {
           </div>
           <div className="sm:text-right">
             <p className="text-sm text-gray-400">Prix actuel</p>
-            <p className="text-xl sm:text-2xl font-medium text-gray-900">${currentPlan?.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+            <p className="text-xl sm:text-2xl font-medium text-gray-900">{displayPrice(tenant?.locked_price_usd ?? currentPlan?.price ?? 0)}<span className="text-sm font-normal text-gray-400">/mois</span></p>
           </div>
         </div>
 
@@ -260,7 +293,7 @@ export default function Billing() {
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-[#0057D9] text-white px-3 py-1 rounded-full">Actuel</span>
                 )}
                 <h3 className="text-base font-medium text-gray-900">{plan.name}</h3>
-                <p className="text-2xl font-medium text-gray-900 mt-1">${plan.price}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+                <p className="text-2xl font-medium text-gray-900 mt-1">{displayPrice(plan.price)}<span className="text-sm font-normal text-gray-400">/mois</span></p>
                 <ul className="mt-3 space-y-1.5">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
@@ -317,7 +350,7 @@ export default function Billing() {
                 <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                  <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit</p>
+                  <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {PLAN_PRICE_XAF[pickingPlanFor]?.toLocaleString('fr-FR')} FCFA</p>
                 </div>
               </button>
               <button

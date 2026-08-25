@@ -7,6 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
+  fx-rates-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Synchronise les taux de change USD -> devises locales
+        run: |
+          curl -sf -X POST "https://zaagwcunjonxxbzwzlhs.supabase.co/functions/v1/fx-rates-sync" \
+          -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"
+
   auto-renew:
     runs-on: ubuntu-latest
     steps:

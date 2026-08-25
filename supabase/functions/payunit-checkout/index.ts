@@ -29,13 +29,30 @@ const corsHeaders = {
 
 const PAYUNIT_BASE_URL = "https://gateway.payunit.net";
 
-// Source of truth for plan prices, in sync with Billing.tsx PLANS and the
-// equivalent tables in flutterwave-verify/flutterwave-webhook.
+// Source of truth for plan prices, in USD (matches Billing.tsx PLANS,
+// LandingPage.tsx, and the Flutterwave functions). PayUnit's REST API
+// (/api/gateway/initialize) only documents "currency: XAF" — the sample
+// response in their own docs shows transaction_currency: "XAF" too, no
+// USD example anywhere. Sending USD here risks every PayUnit payment
+// failing at launch, so we charge in XAF using PLAN_PRICE_XAF below.
+//
+// ⚠️ PLAN_PRICE_XAF is a manual conversion (~570 XAF/$ market rate, rounded
+// up for a safety margin against FX movement) — NOT auto-computed from
+// PLAN_PRICE_USD. Review/update it periodically; it will drift from the
+// real exchange rate over time same as any fixed-price-in-local-currency
+// approach. If PayUnit later confirms USD support for card-specific flows,
+// this can be revisited.
 const PLAN_PRICE_USD: Record<string, number> = {
   starter: 14,
   pro: 29,
   premium: 79,
   enterprise: 199,
+};
+const PLAN_PRICE_XAF: Record<string, number> = {
+  starter: 8000,
+  pro: 16500,
+  premium: 45000,
+  enterprise: 113000,
 };
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
@@ -75,8 +92,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const { plan, tenant_id } = await req.json();
-    const amount = PLAN_PRICE_USD[plan];
-    if (!amount) throw new Error(`Unknown plan: ${plan}`);
+    const amount = PLAN_PRICE_XAF[plan];
+    if (!amount || !PLAN_PRICE_USD[plan]) throw new Error(`Unknown plan: ${plan}`);
 
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -102,7 +119,7 @@ Deno.serve(async (req: Request) => {
       },
       body: JSON.stringify({
         total_amount: amount,
-        currency: "USD",
+        currency: "XAF",
         transaction_id: transactionId,
         return_url: `${appUrl}/app/billing?payunit_return=1&transaction_id=${transactionId}`,
         notify_url: `${Deno.env.get("SUPABASE_URL")}/functions/v1/payunit-webhook`,
@@ -122,7 +139,7 @@ Deno.serve(async (req: Request) => {
       tenant_id,
       plan,
       expected_amount: amount,
-      currency: "USD",
+      currency: "XAF",
       status: "pending",
     });
 
