@@ -16,7 +16,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const EXTRACTION_PROMPT = `Tu analyses un reçu ou une facture d'achat pour une PME africaine. Extrait UNIQUEMENT les champs suivants en JSON strict, sans aucun texte avant/après, sans balises markdown :
+const EXTRACTION_PROMPT = `Tu analyses un reçu ou une facture d'achat. Extrait UNIQUEMENT les champs suivants en JSON strict, sans aucun texte avant/après, sans balises markdown :
 {
   "vendor_name": string ou null,
   "invoice_number": string ou null,
@@ -58,10 +58,35 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Not a member of this tenant" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // SECURITY: document_url was previously fetched with zero validation —
+    // any authenticated tenant member could pass ANY URL (an internal
+    // cloud-metadata endpoint, an attacker-controlled server, a huge file
+    // to exhaust memory, or another tenant's private document) and this
+    // function would dutifully fetch it server-side and forward its bytes
+    // to the Anthropic API using our own key. Restrict it to exactly the
+    // shape uploadOcrDocument() produces: this tenant's own folder in the
+    // tenant-assets bucket.
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const expectedPrefix = `${supabaseUrl}/storage/v1/object/public/tenant-assets/${tenant_id}/ocr/`;
+    if (!document_url.startsWith(expectedPrefix)) {
+      return new Response(JSON.stringify({ error: "document_url must point to this tenant's own uploaded document" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Fetch the image bytes and base64-encode them for the vision API.
     const fileRes = await fetch(document_url);
     if (!fileRes.ok) throw new Error("Could not fetch the uploaded document");
-    const bytes = new Uint8Array(await fileRes.arrayBuffer());
+
+    // Belt-and-braces size cap (uploadOcrDocument() already enforces 5MB
+    // client-side, but never trust the client alone) — refuse to read an
+    // unbounded response body into memory.
+    const MAX_BYTES = 8 * 1024 * 1024;
+    const contentLength = Number(fileRes.headers.get("content-length") ?? 0);
+    if (contentLength && contentLength > MAX_BYTES) {
+      throw new Error("Document too large (max 8MB)");
+    }
+    const arrayBuffer = await fileRes.arrayBuffer();
+    if (arrayBuffer.byteLength > MAX_BYTES) throw new Error("Document too large (max 8MB)");
+    const bytes = new Uint8Array(arrayBuffer);
     let binary = "";
     for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
     const base64 = btoa(binary);
