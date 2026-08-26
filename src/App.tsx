@@ -47,6 +47,7 @@ const PlanSelectionGate = lazy(() => import('./pages/app/PlanSelectionGate'));
 const AboutPage = lazy(() => import('./pages/footer/AboutPage'));
 const ContactPage = lazy(() => import('./pages/footer/ContactPage'));
 const LegalPage = lazy(() => import('./pages/footer/LegalPage'));
+const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
 const PrivacyPage = lazy(() => import('./pages/footer/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/footer/TermsPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
@@ -150,6 +151,7 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/legal" element={<LegalPage />} />
+        <Route path="/developers" element={<ApiDocsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />

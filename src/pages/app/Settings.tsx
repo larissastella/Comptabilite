@@ -370,7 +370,7 @@ function ApiKeysPanel({ tenantId }: { tenantId: string }) {
         </button>
       </div>
       <p className="text-xs text-gray-400 mb-4">
-        Intègre LiBooks à tes propres systèmes. Documentation : <code className="bg-gray-100 px-1.5 py-0.5 rounded">GET/POST https://[ton-projet].supabase.co/functions/v1/public-api/...</code> avec <code className="bg-gray-100 px-1.5 py-0.5 rounded">Authorization: Bearer &lt;clé&gt;</code>.
+        Intègre LiBooks à tes propres systèmes. <a href="/developers" target="_blank" rel="noopener noreferrer" className="text-[#0057D9] font-medium hover:underline">Voir la documentation complète →</a>
       </p>
 
       {keys.length === 0 ? (

@@ -655,6 +655,7 @@ export default function LandingPage() {
               <h4 className="text-sm font-semibold mb-4 text-white">{t('landing.footerResources')}</h4>
               <ul className="space-y-2.5">
                 <li><Link to="/about" className="text-sm text-gray-400 hover:text-white transition-colors">À propos</Link></li>
+                <li><Link to="/developers" className="text-sm text-gray-400 hover:text-white transition-colors">Développeurs / API</Link></li>
                 <li><Link to="/contact" className="text-sm text-gray-400 hover:text-white transition-colors">Contact & Support</Link></li>
                 <li><Link to="/legal" className="text-sm text-gray-400 hover:text-white transition-colors">Mentions légales</Link></li>
                 <li><Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de confidentialité</Link></li>
