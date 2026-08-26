@@ -5,8 +5,10 @@ import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function ForgotPasswordPage() {
+  usePageMeta('Mot de passe oublié');
   const { t } = useTranslation();
   const { resetPasswordForEmail } = useAuth();
   const [email, setEmail] = useState('');

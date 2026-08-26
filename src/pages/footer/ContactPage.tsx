@@ -4,8 +4,10 @@ import { Mail, MessageCircle, MapPin, ArrowLeft, Send, Loader2 } from 'lucide-re
 import logo from '../../assets/logo.png';
 import ThemeToggle from '../../components/ui/ThemeToggle';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function ContactPage() {
+  usePageMeta('Contact & Support', "Contactez l'équipe LiBooks pour toute question sur votre compte, la facturation ou le support technique.");
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
 

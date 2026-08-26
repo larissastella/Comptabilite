@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import ThemeToggle from '../../components/ui/ThemeToggle';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function TermsPage() {
+  usePageMeta("Conditions générales d'utilisation", "Conditions générales d'utilisation de LiBooks.");
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0">
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">

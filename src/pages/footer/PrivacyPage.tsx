@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import ThemeToggle from '../../components/ui/ThemeToggle';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function PrivacyPage() {
+  usePageMeta('Politique de confidentialité', "Politique de confidentialité de LiBooks : comment nous collectons, utilisons et protégeons vos données, en conformité avec le RGPD et les législations locales.");
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0">
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">

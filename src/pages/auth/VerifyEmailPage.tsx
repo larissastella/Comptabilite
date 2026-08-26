@@ -5,8 +5,10 @@ import { Mail, ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function VerifyEmailPage() {
+  usePageMeta("Vérification de l'email");
   const { t } = useTranslation();
   const { resendConfirmation } = useAuth();
   const location = useLocation();

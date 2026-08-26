@@ -7,10 +7,12 @@ import logo from '../../assets/logo.png';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 const INVITE_STORAGE_KEY = 'pending_invite_token';
 
 export default function AcceptInvitePage() {
+  usePageMeta("Accepter l'invitation");
   const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const { user } = useAuth();

@@ -5,8 +5,10 @@ import { Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function SignupPage() {
+  usePageMeta('Créer un compte', "Démarre ton essai gratuit de 7 jours sur LiBooks — sans carte bancaire.");
   const { t } = useTranslation();
   const { signUp } = useAuth();
   const navigate = useNavigate();

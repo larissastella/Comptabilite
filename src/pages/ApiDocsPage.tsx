@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ArrowLeft, Copy, Check, Key, Zap, ShieldCheck, RotateCw } from 'lucide-react';
 import logo from '../assets/logo.png';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const BLUE = '#0057D9';
 
@@ -40,6 +41,7 @@ function Endpoint({ method, path, scope, children }: { method: string; path: str
 }
 
 export default function ApiDocsPage() {
+  usePageMeta('API Développeurs', "Documentation de l'API REST LiBooks : authentification, endpoints, limites de débit et idempotence pour intégrer LiBooks à vos propres systèmes.");
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0">
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">

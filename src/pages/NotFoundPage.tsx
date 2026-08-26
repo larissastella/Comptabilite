@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Home, ArrowLeft } from 'lucide-react';
 import logo from '../assets/logo.png';
+import { usePageMeta } from '../lib/usePageMeta';
 
 export default function NotFoundPage() {
+  usePageMeta('Page introuvable');
   const { t } = useTranslation();
 
   return (

@@ -5,8 +5,10 @@ import { Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function ResetPasswordPage() {
+  usePageMeta('Réinitialiser le mot de passe');
   const { t } = useTranslation();
   const { updatePassword } = useAuth();
   const navigate = useNavigate();

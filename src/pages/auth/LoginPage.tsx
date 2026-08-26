@@ -5,8 +5,10 @@ import { Mail, Lock, Eye, EyeOff, Globe, ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function LoginPage() {
+  usePageMeta('Connexion', "Connecte-toi à ton compte LiBooks pour gérer ta comptabilité, tes factures et tes stocks.");
   const { t, i18n } = useTranslation();
   const { signIn } = useAuth();
   const navigate = useNavigate();

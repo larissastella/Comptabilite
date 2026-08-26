@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Target, Sparkles, Globe2, Heart, ArrowLeft, CheckCircle } from 'lucide-react';
 import logo from '../../assets/logo.png';
 import ThemeToggle from '../../components/ui/ThemeToggle';
+import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function AboutPage() {
+  usePageMeta('À propos', "LiBooks est développé par LiAfrik, un groupe technologique à double présence Dubaï et Afrique. Découvrez notre histoire et notre mission.");
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0">
       {/* Nav */}
