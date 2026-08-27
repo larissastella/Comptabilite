@@ -11,7 +11,8 @@ jobs:
   ping-supabase:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase API
+      - name: Ping Supabase (vraie requête sur une table, pas juste la racine de l'API)
         run: |
-          curl -i -X GET "https://zaagwcunjonxxbzwzlhs.supabase.co/rest/v1/" \
-          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}"
+          curl -sf -X GET "https://zaagwcunjonxxbzwzlhs.supabase.co/rest/v1/super_admin_emails?select=email&limit=1" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
