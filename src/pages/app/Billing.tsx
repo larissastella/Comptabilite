@@ -56,6 +56,14 @@ export default function Billing() {
     return `$${usdAmount} (≈ ${formatCurrency(usdAmount * fxRate)})`;
   }
 
+  // Automatic payment method: Mobile Money dominates in the CEMAC/UEMOA
+  // franc zones (XAF/XOF), so those default to Flutterwave; everywhere
+  // else defaults to card via PayUnit. The customer can always override
+  // via "Choisir un autre moyen de paiement" below.
+  function autoProvider(): 'payunit' | 'flutterwave' {
+    return tenant?.currency === 'XAF' || tenant?.currency === 'XOF' ? 'flutterwave' : 'payunit';
+  }
+
   const trialDaysLeft = tenant?.trial_ends_at
     ? Math.max(0, differenceInDays(new Date(tenant.trial_ends_at), new Date()))
     : 0;
@@ -303,14 +311,23 @@ export default function Billing() {
                   ))}
                 </ul>
                 {!isCurrent && (
-                  <button
-                    onClick={() => setPickingPlanFor(plan.id)}
-                    disabled={redirecting}
-                    className="w-full mt-4 py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
-                  >
-                    {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
-                    {plan.price > (currentPlan?.price || 0) ? t('billing.upgrade') : t('billing.downgrade')}
-                  </button>
+                  <div className="mt-4 space-y-1.5">
+                    <button
+                      onClick={() => handleCheckout(plan.id, autoProvider())}
+                      disabled={redirecting}
+                      className="w-full py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
+                    >
+                      {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
+                      {plan.price > (currentPlan?.price || 0) ? t('billing.upgrade') : t('billing.downgrade')}
+                    </button>
+                    <button
+                      onClick={() => setPickingPlanFor(plan.id)}
+                      disabled={redirecting}
+                      className="w-full text-center text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-60"
+                    >
+                      Choisir un autre moyen de paiement
+                    </button>
+                  </div>
                 )}
               </div>
             );

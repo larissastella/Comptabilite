@@ -64,8 +64,8 @@ const FAQ: FaqEntry[] = [
   {
     keywords: { fr: ["paiement", "payer", "carte bancaire", "mobile money", "orange money", "momo"], en: ["payment", "pay", "credit card", "mobile money"] },
     answer: {
-      fr: "Tu peux payer ton abonnement par carte bancaire (Stripe) ou par Mobile Money / carte locale (Flutterwave) -- au choix, directement depuis la page Facturation de ton compte.",
-      en: "You can pay for your subscription by credit card (Stripe) or Mobile Money / local card (Flutterwave) -- your choice, right from your account's Billing page.",
+      fr: "Tu peux payer ton abonnement par carte bancaire (PayUnit) ou par Mobile Money / carte locale (Flutterwave) -- au choix, directement depuis la page Facturation de ton compte.",
+      en: "You can pay for your subscription by credit card (PayUnit) or Mobile Money / local card (Flutterwave) -- your choice, right from your account's Billing page.",
     },
   },
   {
