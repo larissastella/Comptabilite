@@ -92,6 +92,10 @@ Deno.serve(async (req: Request) => {
     const base64 = btoa(binary);
 
     const resolvedMediaType = media_type || fileRes.headers.get("content-type") || "image/jpeg";
+    const isPdf = resolvedMediaType === "application/pdf";
+    const contentBlock = isPdf
+      ? { type: "document", source: { type: "base64", media_type: "application/pdf", data: base64 } }
+      : { type: "image", source: { type: "base64", media_type: resolvedMediaType, data: base64 } };
 
     const claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -106,7 +110,7 @@ Deno.serve(async (req: Request) => {
         messages: [{
           role: "user",
           content: [
-            { type: "image", source: { type: "base64", media_type: resolvedMediaType, data: base64 } },
+            contentBlock,
             { type: "text", text: EXTRACTION_PROMPT },
           ],
         }],
