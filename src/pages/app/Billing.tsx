@@ -9,6 +9,17 @@ import { fr } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
+// Single source of truth for which PSP accounts are actually approved and
+// live right now. Flip a flag to true here (nowhere else) once that
+// provider's account is approved — this is what auto-selection and the
+// manual picker both check, so a not-yet-approved provider never gets
+// offered to a real customer even if its checkout code already exists.
+const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack', boolean> = {
+  payunit: true,
+  flutterwave: false, // not yet approved — do not enable until confirmed
+  paystack: false,    // not integrated yet
+};
+
 // Kept in sync with PLAN_PRICE_XAF in supabase/functions/payunit-checkout —
 // shown here purely so the customer sees the real amount before choosing
 // PayUnit (they're charged in XAF, not USD, on PayUnit specifically).
@@ -56,12 +67,16 @@ export default function Billing() {
     return `$${usdAmount} (≈ ${formatCurrency(usdAmount * fxRate)})`;
   }
 
-  // Automatic payment method: Mobile Money dominates in the CEMAC/UEMOA
-  // franc zones (XAF/XOF), so those default to Flutterwave; everywhere
-  // else defaults to card via PayUnit. The customer can always override
-  // via "Choisir un autre moyen de paiement" below.
+  // Automatic payment method: prefer Mobile Money (Flutterwave) in the
+  // CEMAC/UEMOA franc zones when it's actually available; PayUnit
+  // (card, international) otherwise. Never auto-select a provider whose
+  // account isn't approved yet — falls through to whatever IS available.
   function autoProvider(): 'payunit' | 'flutterwave' {
-    return tenant?.currency === 'XAF' || tenant?.currency === 'XOF' ? 'flutterwave' : 'payunit';
+    const preferMomo = tenant?.currency === 'XAF' || tenant?.currency === 'XOF';
+    if (preferMomo && PSP_AVAILABLE.flutterwave) return 'flutterwave';
+    if (PSP_AVAILABLE.payunit) return 'payunit';
+    if (PSP_AVAILABLE.flutterwave) return 'flutterwave';
+    return 'payunit'; // last resort — checkout will surface a clear error if truly none are configured
   }
 
   const trialDaysLeft = tenant?.trial_ends_at
@@ -192,11 +207,16 @@ export default function Billing() {
     }
   }
 
-  // PayUnit doesn't expose a self-service "manage payment method" customer
-  // portal the way Stripe did — subscription changes go through the plan
-  // cards above, and payment-method-level questions go through support.
+  // "Gérer" used to open a mailto: (a dead end — the customer wants to
+  // pay or set up their payment method, not email support). Neither
+  // PayUnit nor Flutterwave expose a self-service "update my card"
+  // portal the way Stripe did, so the real way to set/update a payment
+  // method here is the same checkout flow used to subscribe — it's what
+  // actually gets them to a page where they enter card/Mobile Money
+  // details and pay.
   function handleManageBilling() {
-    window.location.href = 'mailto:support@liafrik.com?subject=' + encodeURIComponent(`Gestion abonnement — ${tenant?.name || ''}`);
+    if (!tenant?.plan) return;
+    handleCheckout(tenant.plan, autoProvider());
   }
 
   async function handleCancelAutoRenew() {
@@ -320,20 +340,28 @@ export default function Billing() {
                       {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
                       {plan.price > (currentPlan?.price || 0) ? t('billing.upgrade') : t('billing.downgrade')}
                     </button>
-                    <button
-                      onClick={() => setPickingPlanFor(plan.id)}
-                      disabled={redirecting}
-                      className="w-full text-center text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-60"
-                    >
-                      Choisir un autre moyen de paiement
-                    </button>
+                    {Object.values(PSP_AVAILABLE).filter(Boolean).length > 1 && (
+                      <button
+                        onClick={() => setPickingPlanFor(plan.id)}
+                        disabled={redirecting}
+                        className="w-full text-center text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-60"
+                      >
+                        Choisir un autre moyen de paiement
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
             );
           })}
         </div>
-        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via carte bancaire (PayUnit) ou Mobile Money (Flutterwave).</p>
+        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-3">
+          Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via {[
+            PSP_AVAILABLE.payunit && 'carte bancaire (PayUnit)',
+            PSP_AVAILABLE.flutterwave && 'Mobile Money (Flutterwave)',
+            PSP_AVAILABLE.paystack && 'Paystack',
+          ].filter(Boolean).join(' ou ')}.
+        </p>
       </div>
 
       {/* Payment method */}
@@ -360,26 +388,30 @@ export default function Billing() {
             <h3 className="text-lg font-medium text-gray-900 mb-1">Choisis ton moyen de paiement</h3>
             <p className="text-sm text-gray-500 mb-5">Comment veux-tu payer ton abonnement {PLANS.find(p => p.id === pickingPlanFor)?.name} ?</p>
             <div className="space-y-3">
-              <button
-                onClick={() => handleCheckout(pickingPlanFor, 'payunit')}
-                className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
-              >
-                <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                  <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {PLAN_PRICE_XAF[pickingPlanFor]?.toLocaleString('fr-FR')} FCFA</p>
-                </div>
-              </button>
-              <button
-                onClick={() => handleCheckout(pickingPlanFor, 'flutterwave')}
-                className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
-              >
-                <Zap className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
-                  <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
-                </div>
-              </button>
+              {PSP_AVAILABLE.payunit && (
+                <button
+                  onClick={() => handleCheckout(pickingPlanFor, 'payunit')}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
+                >
+                  <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {PLAN_PRICE_XAF[pickingPlanFor]?.toLocaleString('fr-FR')} FCFA</p>
+                  </div>
+                </button>
+              )}
+              {PSP_AVAILABLE.flutterwave && (
+                <button
+                  onClick={() => handleCheckout(pickingPlanFor, 'flutterwave')}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
+                >
+                  <Zap className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
+                    <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
+                  </div>
+                </button>
+              )}
             </div>
             <button onClick={() => setPickingPlanFor(null)} className="w-full mt-4 px-4 py-2.5 text-sm text-gray-500 hover:text-gray-700">Annuler</button>
           </div>
