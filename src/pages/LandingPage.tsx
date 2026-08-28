@@ -273,7 +273,7 @@ export default function LandingPage() {
               {/* Mock content */}
               <div className="p-5 bg-gray-50 dark:bg-surface-0">
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  {[['Chiffre d\'affaires', '12.4M FCFA', GREEN], ['Achats', '5.1M FCFA', '#F97316'], ['Créances', '2.3M FCFA', '#3B82F6'], ['Dettes', '1.8M FCFA', '#EF4444']].map(([label, val, c]) => (
+                  {[['Chiffre d\'affaires', '$124,500', GREEN], ['Achats', '$51,200', '#F97316'], ['Créances', '$23,400', '#3B82F6'], ['Dettes', '$18,300', '#EF4444']].map(([label, val, c]) => (
                     <div key={label as string} className="bg-white dark:bg-surface-1 rounded-xl p-4 border border-gray-100 dark:border-surface-3">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{label}</p>
                       <p className="text-lg font-medium" style={{ color: c as string }}>{val}</p>
