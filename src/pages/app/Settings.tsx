@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 import ImageUploader from '../../components/ui/ImageUploader';
 import TwoFactorSettings from '../../components/ui/TwoFactorSettings';
+import { COUNTRIES } from '../../lib/countryData';
 
 type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'language' | 'api';
 
@@ -19,7 +20,7 @@ export default function Settings() {
   const [form, setForm] = useState({
     name: '', vat_rate: 0, legal_rccm: '', legal_nif: '', legal_regime: '',
     bank_iban: '', bank_name: '', bank_swift: '', bank_account: '',
-    invoice_prefix: 'FAC',
+    invoice_prefix: 'FAC', country: '',
     logo_url: '', cachet_url: '',
   });
 
@@ -37,6 +38,7 @@ export default function Settings() {
         bank_swift: bd.swift || '',
         bank_account: bd.account || '',
         invoice_prefix: tenant.invoice_prefix,
+        country: tenant.country || '',
         logo_url: tenant.logo_url || '',
         cachet_url: tenant.cachet_url || '',
       });
@@ -61,6 +63,7 @@ export default function Settings() {
         legal_nif: form.legal_nif,
         legal_regime: form.legal_regime,
         invoice_prefix: form.invoice_prefix,
+        country: form.country,
         bank_details: {
           iban: form.bank_iban,
           bank_name: form.bank_name,
@@ -149,6 +152,21 @@ export default function Settings() {
                       <input value={form.invoice_prefix} onChange={e => setForm(p => ({ ...p, invoice_prefix: e.target.value }))}
                         className="w-full max-w-32 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9]" />
                       <p className="text-xs text-gray-400 mt-1">Ex: FAC-2026-00001</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                      <select
+                        value={form.country}
+                        onChange={e => setForm(p => ({ ...p, country: e.target.value }))}
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#0057D9] bg-white"
+                      >
+                        {COUNTRIES.map(c => (
+                          <option key={c.code} value={c.code}>{c.nameFr}</option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-amber-600 mt-1">
+                        Change le taux de TVA par défaut suggéré et l'accès au module États OHADA pour les nouvelles opérations. Ne modifie jamais rétroactivement ton plan comptable ni tes factures déjà émises.
+                      </p>
                     </div>
 
                     {tenant && (
