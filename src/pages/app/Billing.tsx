@@ -17,7 +17,7 @@ import toast from 'react-hot-toast';
 const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack', boolean> = {
   payunit: true,
   flutterwave: false, // not yet approved — do not enable until confirmed
-  paystack: false,    // not integrated yet
+  paystack: false,    // integrated (paystack-checkout/verify/webhook exist) — enable once PAYSTACK_SECRET_KEY is set and the account is approved
 };
 
 // Kept in sync with PLAN_PRICE_XAF in supabase/functions/payunit-checkout —
@@ -71,11 +71,12 @@ export default function Billing() {
   // CEMAC/UEMOA franc zones when it's actually available; PayUnit
   // (card, international) otherwise. Never auto-select a provider whose
   // account isn't approved yet — falls through to whatever IS available.
-  function autoProvider(): 'payunit' | 'flutterwave' {
+  function autoProvider(): 'payunit' | 'flutterwave' | 'paystack' {
     const preferMomo = tenant?.currency === 'XAF' || tenant?.currency === 'XOF';
     if (preferMomo && PSP_AVAILABLE.flutterwave) return 'flutterwave';
     if (PSP_AVAILABLE.payunit) return 'payunit';
     if (PSP_AVAILABLE.flutterwave) return 'flutterwave';
+    if (PSP_AVAILABLE.paystack) return 'paystack';
     return 'payunit'; // last resort — checkout will surface a clear error if truly none are configured
   }
 
@@ -118,7 +119,37 @@ export default function Billing() {
     })();
   }, [tenant?.id]);
 
-  async function handleCheckout(planId: string, provider: 'payunit' | 'flutterwave') {
+  // Paystack is also a hosted redirect — its callback_url automatically
+  // gets ?reference=... appended by Paystack itself.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get('reference');
+    if (params.get('paystack_return') !== '1' || !reference || !tenant?.id) return;
+
+    window.history.replaceState({}, '', '/app/billing');
+    (async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paystack-verify`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ reference, tenant_id: tenant.id }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Le paiement n\'a pas pu être vérifié');
+        toast.success('Paiement confirmé — ton forfait est activé !');
+        window.location.reload();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de vérification du paiement');
+      }
+    })();
+  }, [tenant?.id]);
+
+  async function handleCheckout(planId: string, provider: 'payunit' | 'flutterwave' | 'paystack') {
     if (!tenant?.id) return;
     setPickingPlanFor(null);
 
@@ -177,6 +208,31 @@ export default function Billing() {
           },
           onclose: () => setRedirecting(false),
         });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
+        setRedirecting(false);
+      }
+      return;
+    }
+
+    if (provider === 'paystack') {
+      // Also a hosted page by design (authorization_url) — same redirect
+      // pattern as PayUnit, different endpoint/reference format.
+      setRedirecting(true);
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paystack-checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
+        window.location.href = json.url;
       } catch (err) {
         toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
         setRedirecting(false);
@@ -359,7 +415,7 @@ export default function Billing() {
           Facturation annuelle disponible avec 20% de réduction. Paiement sécurisé via {[
             PSP_AVAILABLE.payunit && 'carte bancaire (PayUnit)',
             PSP_AVAILABLE.flutterwave && 'Mobile Money (Flutterwave)',
-            PSP_AVAILABLE.paystack && 'Paystack',
+            PSP_AVAILABLE.paystack && 'carte bancaire (Paystack)',
           ].filter(Boolean).join(' ou ')}.
         </p>
       </div>
@@ -409,6 +465,18 @@ export default function Billing() {
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
                     <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
+                  </div>
+                </button>
+              )}
+              {PSP_AVAILABLE.paystack && (
+                <button
+                  onClick={() => handleCheckout(pickingPlanFor, 'paystack')}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#0057D9] transition-colors text-left"
+                >
+                  <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paystack — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
                   </div>
                 </button>
               )}
