@@ -20,7 +20,7 @@ export default function FlagScrollBanner() {
             srcSet={`https://flagcdn.com/w80/${code}.png 2x`}
             alt=""
             loading="lazy"
-            className="w-8 h-8 rounded-full object-cover flex-shrink-0 ring-1 ring-black/5 dark:ring-white/10"
+            className="w-11 h-11 rounded-full object-cover flex-shrink-0 ring-1 ring-black/5 dark:ring-white/10"
           />
         ))}
       </div>
