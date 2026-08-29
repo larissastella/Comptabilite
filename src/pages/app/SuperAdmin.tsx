@@ -4,7 +4,7 @@ import {
   Shield, Users, Building2, UserCheck, Plus, Trash2, AlertTriangle,
   Globe, TrendingUp, Award, UserCog, BarChart3, MapPin, CreditCard, X,
   DollarSign, Activity, Target, GitBranch, Search, RefreshCw,
-  Ticket, UserPlus, TrendingDown, Zap, Headset, Send,
+  Ticket, UserPlus, TrendingDown, Zap, Headset, Send, Megaphone,
 } from 'lucide-react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -23,7 +23,7 @@ import Badge from '../../components/ui/Badge';
 import toast from 'react-hot-toast';
 import { Navigate } from 'react-router-dom';
 
-type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs' | 'support' | 'monitoring';
+type SATab = 'overview' | 'tenants' | 'admins' | 'staff' | 'commercial' | 'performance' | 'logs' | 'support' | 'monitoring' | 'marketing';
 
 const ADMIN_MODULES = ['tenants', 'subscriptions', 'support', 'commercial', 'statistics', 'staff'];
 
@@ -390,6 +390,7 @@ export default function SuperAdmin() {
     { key: 'admins', label: 'Super Admins', icon: Shield },
     { key: 'staff', label: 'Équipe interne', icon: UserCog },
     { key: 'commercial', label: 'Commercial', icon: Target },
+    { key: 'marketing', label: 'Marketing', icon: Megaphone },
     { key: 'support', label: 'Support', icon: Headset },
     { key: 'monitoring', label: 'Monitoring', icon: AlertTriangle },
     { key: 'performance', label: 'Performance', icon: TrendingUp },
@@ -1342,6 +1343,7 @@ export default function SuperAdmin() {
 
       {tab === 'support' && <SupportPanel />}
       {tab === 'monitoring' && <MonitoringPanel />}
+      {tab === 'marketing' && <MarketingPanel />}
     </div>
   );
 }
@@ -1559,6 +1561,212 @@ function MonitoringPanel() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface MarketingRow {
+  id: string;
+  kind: 'banner' | 'popup';
+  title: string;
+  body: string | null;
+  cta_text: string | null;
+  cta_url: string | null;
+  bg_color: string;
+  is_active: boolean;
+  starts_at: string | null;
+  ends_at: string | null;
+}
+
+function MarketingPanel() {
+  const qc = useQueryClient();
+  const [editing, setEditing] = useState<Partial<MarketingRow> | null>(null);
+
+  const { data: rows = [] } = useQuery({
+    queryKey: ['sa-marketing-content'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('marketing_content').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as MarketingRow[];
+    },
+  });
+
+  const banners = rows.filter(r => r.kind === 'banner');
+  const popups = rows.filter(r => r.kind === 'popup');
+
+  const save = useMutation({
+    mutationFn: async (row: Partial<MarketingRow>) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (row.id) {
+        const { error } = await supabase.from('marketing_content').update({
+          title: row.title, body: row.body, cta_text: row.cta_text, cta_url: row.cta_url,
+          bg_color: row.bg_color, starts_at: row.starts_at || null, ends_at: row.ends_at || null,
+          updated_at: new Date().toISOString(),
+        }).eq('id', row.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from('marketing_content').insert({
+          kind: row.kind, title: row.title, body: row.body, cta_text: row.cta_text,
+          cta_url: row.cta_url, bg_color: row.bg_color || '#0057D9',
+          starts_at: row.starts_at || null, ends_at: row.ends_at || null,
+          is_active: false, created_by: user?.id,
+        });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => { toast.success('Enregistré'); setEditing(null); qc.invalidateQueries({ queryKey: ['sa-marketing-content'] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  // Activating a row deactivates every OTHER row of the same kind first —
+  // the DB's partial unique index (one active per kind) would reject a
+  // second active row otherwise, so we do it in two steps client-side.
+  const activate = useMutation({
+    mutationFn: async (row: MarketingRow) => {
+      await supabase.from('marketing_content').update({ is_active: false }).eq('kind', row.kind).eq('is_active', true);
+      const { error } = await supabase.from('marketing_content').update({ is_active: true }).eq('id', row.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success('Campagne activée'); qc.invalidateQueries({ queryKey: ['sa-marketing-content'] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const deactivate = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('marketing_content').update({ is_active: false }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['sa-marketing-content'] }); },
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('marketing_content').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success('Supprimé'); qc.invalidateQueries({ queryKey: ['sa-marketing-content'] }); },
+  });
+
+  function Section({ kind, title, items }: { kind: 'banner' | 'popup'; title: string; items: MarketingRow[] }) {
+    return (
+      <div className="bg-white dark:bg-surface-1 rounded-2xl border border-gray-100 dark:border-surface-3 p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
+          <button
+            onClick={() => setEditing({ kind, bg_color: '#0057D9' })}
+            className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg bg-[#0057D9] text-white hover:bg-[#003F9E]"
+          >
+            <Plus className="w-4 h-4" /> Nouvelle campagne
+          </button>
+        </div>
+        {items.length === 0 ? (
+          <p className="text-sm text-gray-400">Aucune campagne pour l'instant.</p>
+        ) : (
+          <div className="space-y-2">
+            {items.map(row => (
+              <div key={row.id} className={`flex items-center justify-between gap-3 p-3 rounded-xl border ${row.is_active ? 'border-green-300 bg-green-50 dark:bg-green-500/10 dark:border-green-700' : 'border-gray-100 dark:border-surface-3'}`}>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{row.title}</p>
+                  {row.body && <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{row.body}</p>}
+                  {row.is_active && <span className="text-xs text-green-600 dark:text-green-400 font-medium">● En ligne actuellement</span>}
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button onClick={() => setEditing(row)} className="text-xs text-gray-500 hover:text-gray-800 dark:hover:text-white">Modifier</button>
+                  {row.is_active ? (
+                    <button onClick={() => deactivate.mutate(row.id)} className="text-xs px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-surface-2 text-gray-600 dark:text-gray-300">Désactiver</button>
+                  ) : (
+                    <button onClick={() => activate.mutate(row)} className="text-xs px-2.5 py-1 rounded-lg bg-[#0057D9] text-white">Activer</button>
+                  )}
+                  <button onClick={() => remove.mutate(row.id)} className="text-gray-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Un seul bandeau et une seule popup peuvent être actifs à la fois. Change de campagne ici, sans jamais toucher au code —
+        ça s'affiche immédiatement sur le site public.
+      </p>
+      <Section kind="banner" title="Bandeau (haut de page)" items={banners} />
+      <Section kind="popup" title="Popup" items={popups} />
+
+      {editing && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setEditing(null)}>
+          <div className="bg-white dark:bg-surface-1 rounded-2xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
+              {editing.id ? 'Modifier' : 'Nouvelle'} {editing.kind === 'banner' ? 'bandeau' : 'popup'}
+            </h3>
+            <div className="space-y-3">
+              <input
+                placeholder="Titre"
+                value={editing.title || ''}
+                onChange={e => setEditing(p => ({ ...p, title: e.target.value }))}
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm"
+              />
+              <textarea
+                placeholder="Texte (optionnel)"
+                value={editing.body || ''}
+                onChange={e => setEditing(p => ({ ...p, body: e.target.value }))}
+                rows={2}
+                className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm"
+              />
+              <div className="flex gap-2">
+                <input
+                  placeholder="Texte du bouton (ex: Profiter -20%)"
+                  value={editing.cta_text || ''}
+                  onChange={e => setEditing(p => ({ ...p, cta_text: e.target.value }))}
+                  className="flex-1 px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm"
+                />
+                <input
+                  placeholder="Lien (ex: /app/billing)"
+                  value={editing.cta_url || ''}
+                  onChange={e => setEditing(p => ({ ...p, cta_url: e.target.value }))}
+                  className="flex-1 px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-xs text-gray-500 dark:text-gray-400">Couleur</label>
+                <input
+                  type="color"
+                  value={editing.bg_color || '#0057D9'}
+                  onChange={e => setEditing(p => ({ ...p, bg_color: e.target.value }))}
+                  className="w-10 h-8 rounded border border-gray-300 dark:border-surface-3"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">Début (optionnel)</label>
+                  <input type="datetime-local" value={editing.starts_at?.slice(0, 16) || ''}
+                    onChange={e => setEditing(p => ({ ...p, starts_at: e.target.value ? new Date(e.target.value).toISOString() : undefined }))}
+                    className="w-full px-2 py-2 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-xs" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">Fin (optionnel)</label>
+                  <input type="datetime-local" value={editing.ends_at?.slice(0, 16) || ''}
+                    onChange={e => setEditing(p => ({ ...p, ends_at: e.target.value ? new Date(e.target.value).toISOString() : undefined }))}
+                    className="w-full px-2 py-2 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-xs" />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300">Annuler</button>
+              <button
+                onClick={() => save.mutate(editing)}
+                disabled={!editing.title || save.isPending}
+                className="px-4 py-2 text-sm bg-[#0057D9] text-white rounded-lg disabled:opacity-50"
+              >
+                Enregistrer
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

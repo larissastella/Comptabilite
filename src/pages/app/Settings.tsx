@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Settings as SettingsIcon, Building2, Scale, CreditCard, Shield, Globe, ChevronRight, Save, Key, Copy, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { AuditLog } from '../../types';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
@@ -16,6 +17,7 @@ type SettingsTab = 'company' | 'legal' | 'banking' | 'taxes' | 'security' | 'lan
 export default function Settings() {
   const { t, i18n } = useTranslation();
   const { tenant, refreshTenant } = useTenant();
+  const { isSuperAdmin, staffInfo } = useAuth();
   const [activeTab, setActiveTab] = useState<SettingsTab>('company');
   const [form, setForm] = useState({
     name: '', vat_rate: 0, legal_rccm: '', legal_nif: '', legal_regime: '',
@@ -105,7 +107,7 @@ export default function Settings() {
     { key: 'taxes', label: t('settings.taxes'), icon: SettingsIcon },
     { key: 'security', label: t('settings.security'), icon: Shield },
     { key: 'language', label: t('settings.language'), icon: Globe },
-    ...(tenant?.plan === 'enterprise' ? [{ key: 'api' as const, label: 'API', icon: Key }] : []),
+    ...(tenant?.plan === 'enterprise' || isSuperAdmin || staffInfo.isStaff ? [{ key: 'api' as const, label: 'API', icon: Key }] : []),
   ];
 
   return (
