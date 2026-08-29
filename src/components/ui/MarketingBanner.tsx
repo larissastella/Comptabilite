@@ -29,6 +29,7 @@ export default function MarketingBanner() {
       if (data) {
         setBanner(data);
         setDismissed(sessionStorage.getItem('banner_dismissed') === data.id);
+        supabase.rpc('record_marketing_impression', { p_id: data.id }).then(() => {});
       }
     })();
   }, []);
@@ -38,6 +39,10 @@ export default function MarketingBanner() {
   function dismiss() {
     sessionStorage.setItem('banner_dismissed', banner!.id);
     setDismissed(true);
+  }
+
+  function trackClick() {
+    supabase.rpc('record_marketing_click', { p_id: banner!.id }).then(() => {});
   }
 
   const content = (
@@ -51,7 +56,7 @@ export default function MarketingBanner() {
   return (
     <div className="relative text-white text-sm py-2 px-4 flex items-center justify-center gap-2 text-center" style={{ background: banner.bg_color }}>
       {banner.cta_url ? (
-        <a href={banner.cta_url} className="flex items-center gap-1.5 hover:opacity-90 transition-opacity">
+        <a href={banner.cta_url} onClick={trackClick} className="flex items-center gap-1.5 hover:opacity-90 transition-opacity">
           {content}
         </a>
       ) : (

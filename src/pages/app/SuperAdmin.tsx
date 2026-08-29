@@ -1578,6 +1578,8 @@ interface MarketingRow {
   is_active: boolean;
   starts_at: string | null;
   ends_at: string | null;
+  impressions: number;
+  clicks: number;
 }
 
 function MarketingPanel() {
@@ -1670,7 +1672,13 @@ function MarketingPanel() {
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{row.title}</p>
                   {row.body && <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{row.body}</p>}
-                  {row.is_active && <span className="text-xs text-green-600 dark:text-green-400 font-medium">● En ligne actuellement</span>}
+                  <div className="flex items-center gap-3 mt-1">
+                    {row.is_active && <span className="text-xs text-green-600 dark:text-green-400 font-medium">● En ligne</span>}
+                    <span className="text-xs text-gray-400">
+                      {row.impressions} vue{row.impressions !== 1 ? 's' : ''} · {row.clicks} clic{row.clicks !== 1 ? 's' : ''}
+                      {row.impressions > 0 && ` · ${((row.clicks / row.impressions) * 100).toFixed(1)}% CTR`}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button onClick={() => setEditing(row)} className="text-xs text-gray-500 hover:text-gray-800 dark:hover:text-white">Modifier</button>
@@ -1704,6 +1712,33 @@ function MarketingPanel() {
             <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
               {editing.id ? 'Modifier' : 'Nouvelle'} {editing.kind === 'banner' ? 'bandeau' : 'popup'}
             </h3>
+
+            {editing.title && (
+              <div className="mb-4">
+                <p className="text-xs text-gray-400 mb-1.5">Aperçu</p>
+                {editing.kind === 'banner' ? (
+                  <div className="rounded-lg overflow-hidden text-white text-sm py-2 px-3 text-center" style={{ background: editing.bg_color || '#0057D9' }}>
+                    <span className="font-semibold">{editing.title}</span>
+                    {editing.body && <span className="text-white/80"> — {editing.body}</span>}
+                    {editing.cta_text && <span className="underline underline-offset-2 font-medium ml-1">{editing.cta_text}</span>}
+                  </div>
+                ) : (
+                  <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-surface-3 max-w-[220px] mx-auto">
+                    <div className="h-1.5" style={{ background: editing.bg_color || '#0057D9' }} />
+                    <div className="p-3">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{editing.title}</p>
+                      {editing.body && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{editing.body}</p>}
+                      {editing.cta_text && (
+                        <div className="mt-2 text-center text-xs font-semibold text-white py-1.5 rounded-lg" style={{ background: editing.bg_color || '#0057D9' }}>
+                          {editing.cta_text}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="space-y-3">
               <input
                 placeholder="Titre"

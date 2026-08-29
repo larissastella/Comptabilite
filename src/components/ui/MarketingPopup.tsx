@@ -32,7 +32,10 @@ export default function MarketingPopup() {
       if (Date.now() < dismissedUntil) return;
 
       setPopup(data);
-      const t = setTimeout(() => setVisible(true), 1500);
+      const t = setTimeout(() => {
+        setVisible(true);
+        supabase.rpc('record_marketing_impression', { p_id: data.id }).then(() => {});
+      }, 1500);
       return () => clearTimeout(t);
     })();
   }, []);
@@ -42,6 +45,11 @@ export default function MarketingPopup() {
   function dismiss() {
     localStorage.setItem(`popup_dismissed_${popup!.id}`, String(Date.now() + 7 * 24 * 60 * 60 * 1000));
     setVisible(false);
+  }
+
+  function trackClick() {
+    supabase.rpc('record_marketing_click', { p_id: popup!.id }).then(() => {});
+    dismiss();
   }
 
   return (
@@ -60,7 +68,7 @@ export default function MarketingPopup() {
           {popup.cta_text && popup.cta_url && (
             <a
               href={popup.cta_url}
-              onClick={dismiss}
+              onClick={trackClick}
               className="block w-full text-center py-3 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity"
               style={{ background: popup.bg_color }}
             >
