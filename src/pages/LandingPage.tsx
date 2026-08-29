@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ChatWidget from '../components/ui/ChatWidget';
 import MarketingBanner from '../components/ui/MarketingBanner';
 import MarketingPopup from '../components/ui/MarketingPopup';
+import FlagScrollBanner from '../components/ui/FlagScrollBanner';
 import logo from '../assets/logo.png';
 import {
   BarChart3, FileText, Receipt, Building2,
@@ -630,6 +631,8 @@ export default function LandingPage() {
           </Reveal>
         </div>
       </section>
+
+      <FlagScrollBanner />
 
       {/* ===== FOOTER ===== */}
       <footer className="bg-gray-900 dark:bg-surface-0 text-white pt-16 pb-8">
