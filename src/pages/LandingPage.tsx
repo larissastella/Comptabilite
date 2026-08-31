@@ -5,6 +5,7 @@ import ChatWidget from '../components/ui/ChatWidget';
 import MarketingBanner from '../components/ui/MarketingBanner';
 import MarketingPopup from '../components/ui/MarketingPopup';
 import FlagScrollBanner from '../components/ui/FlagScrollBanner';
+import PartnerLogoBanner from '../components/ui/PartnerLogoBanner';
 import logo from '../assets/logo.png';
 import {
   BarChart3, FileText, Receipt, Building2,
@@ -219,7 +220,7 @@ export default function LandingPage() {
       </nav>
 
       {/* ===== HERO ===== */}
-      <section className="relative min-h-[auto] py-28 md:min-h-screen md:py-0 flex items-center overflow-hidden bg-white dark:bg-surface-0">
+      <section className="relative min-h-[auto] pt-8 pb-16 md:min-h-screen md:py-0 flex items-center overflow-hidden bg-white dark:bg-surface-0">
         {/* Soft gradient wash */}
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/70 via-white to-white dark:from-surface-1 dark:via-surface-0 dark:to-surface-0" />
         {/* Decorative blobs — soft pastel on light, brand-colored glow on dark */}
@@ -231,7 +232,7 @@ export default function LandingPage() {
         {/* Grid overlay */}
         <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03]" style={{ backgroundImage: `linear-gradient(${NAVY} 1px, transparent 1px), linear-gradient(90deg, ${NAVY} 1px, transparent 1px)`, backgroundSize: '60px 60px' }} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-0 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6 lg:py-0 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-white/10 backdrop-blur-sm border border-blue-100 dark:border-white/10 mb-6 animate-fade-in">
               <Sparkles className="w-4 h-4" style={{ color: GREEN }} />
@@ -309,10 +310,12 @@ export default function LandingPage() {
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="w-6 h-6 text-gray-300 dark:text-white/40" />
         </div>
       </section>
+
+      <PartnerLogoBanner />
 
       {/* ===== STATS BAR ===== */}
       <section className="py-12 bg-white dark:bg-surface-0 border-b border-gray-100 dark:border-surface-3">
