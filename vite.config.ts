@@ -14,7 +14,6 @@ export default defineConfig({
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'supabase': ['@supabase/supabase-js'],
           'pdf': ['@react-pdf/renderer'],
-          'charts': ['recharts'],
           'query': ['@tanstack/react-query'],
         },
       },
