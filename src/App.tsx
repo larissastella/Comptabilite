@@ -1,5 +1,6 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import i18n from './i18n';
 import { useAuth } from './contexts/AuthContext';
 import { useTenant } from './contexts/TenantContext';
 import AppLayout from './components/layout/AppLayout';
@@ -143,6 +144,20 @@ function PremiumPlaceholder({ icon, title, desc }: { icon: string; title: string
   );
 }
 
+// Forces the page's language to match its URL, independent of whatever
+// was last stored in localStorage — a URL is only genuinely indexable in
+// a given language if visiting it deterministically renders that
+// language, every time, regardless of prior visits/preference. Only used
+// on routes that actually have full translation coverage (right now:
+// just the landing page — see the /en route below and the comment on
+// why the footer/legal pages aren't duplicated here).
+function WithLang({ lang, children }: { lang: 'fr' | 'en'; children: React.ReactNode }) {
+  useEffect(() => {
+    if (i18n.language !== lang) i18n.changeLanguage(lang);
+  }, [lang]);
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
@@ -150,7 +165,21 @@ export default function App() {
       <GlobalErrorListener />
       <Suspense fallback={<Spinner />}>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<WithLang lang="fr"><LandingPage /></WithLang>} />
+        {/*
+          Only the landing page is duplicated under /en — it's the only
+          public page with full i18next translation coverage (see
+          src/i18n/en.ts). The footer/legal pages (About, Contact, Legal,
+          Terms, Privacy, Cookies, Refund policy, Help, API docs) are
+          hardcoded French prose with no English version at all today;
+          duplicating them under an /en/... URL would serve French text
+          at an address that claims to be English — worse for SEO than
+          not having the URL (duplicate-content + wrong hreflang, and
+          misleading for anyone who lands there expecting English). Add
+          a route here once each page actually has translated content,
+          not before.
+        */}
+        <Route path="/en" element={<WithLang lang="en"><LandingPage /></WithLang>} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/legal" element={<LegalPage />} />

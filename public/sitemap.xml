@@ -14,13 +14,30 @@
   Domain: replace https://app.libooks.com below if the real production
   domain differs — this was inferred from APP_URL's fallback value in the
   Supabase Edge Functions, not confirmed against actual DNS/hosting.
+
+  hreflang: only the homepage (/) has a genuine English version (/en) —
+  see the comment on the /en route in src/App.tsx for why the other
+  pages aren't listed with an English alternate yet.
 -->
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://app.libooks.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://app.libooks.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://app.libooks.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://app.libooks.com/" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://app.libooks.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://app.libooks.com/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://app.libooks.com/en" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://app.libooks.com/" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://app.libooks.com/about</loc>

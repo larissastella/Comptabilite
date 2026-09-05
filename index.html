@@ -21,6 +21,15 @@
       a known limitation rather than silently leaving it undocumented.
     -->
     <link rel="canonical" href="https://app.libooks.com/" />
+    <!--
+      Only the landing page genuinely exists in both languages today (see
+      the comment on the /en route in src/App.tsx) — these 3 tags must
+      stay in sync with that route, not be extended to other pages until
+      they actually have translated content.
+    -->
+    <link rel="alternate" hreflang="fr" href="https://app.libooks.com/" />
+    <link rel="alternate" hreflang="en" href="https://app.libooks.com/en" />
+    <link rel="alternate" hreflang="x-default" href="https://app.libooks.com/" />
     <title>LiBooks — Gestion comptable internationale</title>
 
     <!-- Open Graph -->

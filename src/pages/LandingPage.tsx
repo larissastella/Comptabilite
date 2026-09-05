@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ChatWidget from '../components/ui/ChatWidget';
 import MarketingBanner from '../components/ui/MarketingBanner';
@@ -142,6 +142,61 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  // Keeps the URL and the rendered language in lockstep: /en must always
+  // render English and / must always render French, so switching the
+  // language here navigates instead of just calling i18n.changeLanguage
+  // in place — otherwise a reload (or a search engine crawl) would
+  // silently revert to whatever the URL says, ignoring the choice.
+  function switchLang(lang: 'fr' | 'en') {
+    navigate(lang === 'en' ? '/en' : '/');
+  }
+
+  // Landing page is the only public page genuinely available in both
+  // languages (see the comment on the /en route in App.tsx) — so it's
+  // also the only one where hreflang alternates are actually correct to
+  // publish. canonical must match whichever URL is currently active
+  // (usePageMeta's default, set once in index.html for "/", isn't
+  // enough here since this one page has two valid canonical URLs
+  // depending on language, not one fixed URL for the whole app).
+  useEffect(() => {
+    const SITE_URL = 'https://app.libooks.com';
+    const isEnglish = i18n.language === 'en';
+    const canonicalUrl = `${SITE_URL}${isEnglish ? '/en' : '/'}`;
+
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+    const previousCanonical = canonicalLink?.getAttribute('href') ?? `${SITE_URL}/`;
+    if (canonicalLink) canonicalLink.setAttribute('href', canonicalUrl);
+
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    const previousOgUrl = ogUrl?.getAttribute('content') ?? `${SITE_URL}/`;
+    if (ogUrl) ogUrl.setAttribute('content', canonicalUrl);
+
+    const previousLangAttr = document.documentElement.getAttribute('lang') ?? 'fr';
+    document.documentElement.setAttribute('lang', isEnglish ? 'en' : 'fr');
+
+    const added: HTMLLinkElement[] = [];
+    const alternates: { hreflang: string; href: string }[] = [
+      { hreflang: 'fr', href: `${SITE_URL}/` },
+      { hreflang: 'en', href: `${SITE_URL}/en` },
+      { hreflang: 'x-default', href: `${SITE_URL}/` },
+    ];
+    for (const { hreflang, href } of alternates) {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', href);
+      document.head.appendChild(link);
+      added.push(link);
+    }
+
+    return () => {
+      if (canonicalLink) canonicalLink.setAttribute('href', previousCanonical);
+      if (ogUrl) ogUrl.setAttribute('content', previousOgUrl);
+      document.documentElement.setAttribute('lang', previousLangAttr);
+      added.forEach((link) => link.remove());
+    };
+  }, [i18n.language]);
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -186,10 +241,10 @@ export default function LandingPage() {
             </button>
             {/* Language selector */}
             <div className="flex items-center rounded-lg overflow-hidden border text-xs font-semibold border-gray-200 dark:border-surface-3">
-              {['fr', 'en'].map(lang => (
+              {(['fr', 'en'] as const).map(lang => (
                 <button
                   key={lang}
-                  onClick={() => i18n.changeLanguage(lang)}
+                  onClick={() => switchLang(lang)}
                   className={`px-3 py-1.5 transition-all ${i18n.language === lang
                     ? 'bg-[#0057D9] text-white'
                     : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2'
@@ -224,8 +279,8 @@ export default function LandingPage() {
                 {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
               </button>
               <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 dark:border-surface-3 text-xs font-semibold">
-                {['fr', 'en'].map(lang => (
-                  <button key={lang} onClick={() => { i18n.changeLanguage(lang); setMobileMenu(false); }}
+                {(['fr', 'en'] as const).map(lang => (
+                  <button key={lang} onClick={() => { switchLang(lang); setMobileMenu(false); }}
                     className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 dark:text-gray-400'}`}>
                     {lang.toUpperCase()}
                   </button>
@@ -784,8 +839,8 @@ export default function LandingPage() {
               <Link to="/privacy" className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerPrivacy')}</Link>
               <Link to="/terms" className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerTerms')}</Link>
               <div className="flex items-center gap-1 rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
-                {['fr', 'en'].map(lang => (
-                  <button key={lang} onClick={() => i18n.changeLanguage(lang)}
+                {(['fr', 'en'] as const).map(lang => (
+                  <button key={lang} onClick={() => switchLang(lang)}
                     className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 hover:text-white'}`}>
                     {lang.toUpperCase()}
                   </button>
