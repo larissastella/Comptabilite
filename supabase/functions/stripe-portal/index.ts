@@ -1,13 +1,9 @@
-// ⚠️ DEAD CODE — kept only for reference, not called from anywhere.
-// LiBooks replaced Stripe with PayUnit for card payments; PayUnit has no
-// documented self-service billing-portal API, so Billing.tsx's "Gérer"
-// button now opens a support mailto: instead. Safe to delete once
-// confirmed unused in production, or repurpose if Stripe is ever
-// reintroduced.
-//
 // Opens a Stripe Billing Portal session, so a tenant admin can update
 // their card, view invoices, or cancel — without us building any of that
-// UI ourselves. Requires STRIPE_SECRET_KEY and APP_URL secrets.
+// UI ourselves. Requires STRIPE_SECRET_KEY and APP_URL secrets. Only
+// usable by tenants who actually subscribed via Stripe (have a
+// stripe_customer_id) — the other 4 PSPs have no equivalent self-service
+// portal API, so this stays Stripe-specific.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 import Stripe from "npm:stripe@17";

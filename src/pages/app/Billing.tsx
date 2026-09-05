@@ -4,6 +4,7 @@ import { useTenant } from '../../contexts/TenantContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { openFlutterwaveInline } from '../../lib/flutterwaveInline';
+import { openPaddleCheckout } from '../../lib/paddleInline';
 import { format, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
@@ -14,10 +15,23 @@ import toast from 'react-hot-toast';
 // provider's account is approved — this is what auto-selection and the
 // manual picker both check, so a not-yet-approved provider never gets
 // offered to a real customer even if its checkout code already exists.
-const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack', boolean> = {
+//
+// 5 PSPs total. All 5 are fully wired (checkout + verification code
+// exists and works) — the flags below are the only thing standing between
+// "code is ready" and "a real customer can pay with it". Flip one to true
+// once its secret key(s) are set in Supabase Edge Function secrets AND
+// the merchant account is approved:
+//   payunit:     PAYUNIT_API_USER, PAYUNIT_API_PASSWORD, PAYUNIT_API_KEY, PAYUNIT_MODE
+//   flutterwave: FLUTTERWAVE_SECRET_KEY (+ VITE_FLUTTERWAVE_PUBLIC_KEY at build time)
+//   paystack:    PAYSTACK_SECRET_KEY
+//   stripe:      STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SIGNING_SECRET, STRIPE_PRICE_*
+//   paddle:      PADDLE_WEBHOOK_SECRET (+ VITE_PADDLE_CLIENT_TOKEN and VITE_PADDLE_PRICE_* at build time)
+const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 'paddle', boolean> = {
   payunit: true,
   flutterwave: false, // not yet approved — do not enable until confirmed
-  paystack: false,    // integrated (paystack-checkout/verify/webhook exist) — enable once PAYSTACK_SECRET_KEY is set and the account is approved
+  paystack: false,    // not yet approved — do not enable until confirmed
+  stripe: false,      // not yet approved — do not enable until confirmed
+  paddle: false,      // not yet approved — do not enable until confirmed
 };
 
 // Kept in sync with PLAN_PRICE_XAF in supabase/functions/payunit-checkout —
@@ -71,7 +85,7 @@ export default function Billing() {
   // CEMAC/UEMOA franc zones when it's actually available; PayUnit
   // (card, international) otherwise. Never auto-select a provider whose
   // account isn't approved yet — falls through to whatever IS available.
-  function autoProvider(): 'payunit' | 'flutterwave' | 'paystack' {
+  function autoProvider(): 'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 'paddle' {
     const preferMomo = tenant?.currency === 'XAF' || tenant?.currency === 'XOF';
     if (preferMomo && PSP_AVAILABLE.flutterwave) return 'flutterwave';
     if (PSP_AVAILABLE.payunit) return 'payunit';
@@ -149,7 +163,25 @@ export default function Billing() {
     })();
   }, [tenant?.id]);
 
-  async function handleCheckout(planId: string, provider: 'payunit' | 'flutterwave' | 'paystack') {
+  // Stripe Checkout is a hosted redirect too — success_url only gets
+  // visited if Stripe itself confirms the payment, but the actual DB
+  // update comes from stripe-webhook (async, source of truth), not from
+  // this query param. A short delay before reload gives the webhook time
+  // to land before we re-fetch the tenant.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get('checkout');
+    if (!checkout) return;
+    window.history.replaceState({}, '', '/app/billing');
+    if (checkout === 'success') {
+      toast.success('Paiement reçu — activation en cours...');
+      setTimeout(() => window.location.reload(), 2500);
+    } else if (checkout === 'cancelled') {
+      toast('Paiement annulé.');
+    }
+  }, []);
+
+  async function handleCheckout(planId: string, provider: 'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 'paddle') {
     if (!tenant?.id) return;
     setPickingPlanFor(null);
 
@@ -240,6 +272,79 @@ export default function Billing() {
       return;
     }
 
+    if (provider === 'stripe') {
+      // Hosted redirect, like PayUnit/Paystack — Stripe Checkout Session
+      // URL is created server-side with the real price ID, nothing
+      // client-editable in the amount.
+      setRedirecting(true);
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-checkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
+        window.location.href = json.url;
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
+        setRedirecting(false);
+      }
+      return;
+    }
+
+    if (provider === 'paddle') {
+      // Inline overlay, like Flutterwave — but activation always waits
+      // for paddle-webhook (the source of truth); the checkout.completed
+      // event here is only used to give the user immediate feedback.
+      const priceEnvKey = `VITE_PADDLE_PRICE_${planId.toUpperCase()}`;
+      const priceId = (import.meta.env as Record<string, string | undefined>)[priceEnvKey];
+      if (!priceId) {
+        toast.error("Le paiement par carte via Paddle n'est pas encore configuré pour ce forfait.");
+        return;
+      }
+      setRedirecting(true);
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const initRes = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/paddle-init`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ tenant_id: tenant.id, plan: planId }),
+        });
+        const initJson = await initRes.json();
+        if (!initRes.ok) throw new Error(initJson.error || "Impossible d'initialiser le paiement");
+
+        await openPaddleCheckout(
+          {
+            items: [{ priceId, quantity: 1 }],
+            customer: user?.email ? { email: user.email } : undefined,
+            customData: { tenant_id: tenant.id, plan: planId, checkout_ref: initJson.checkout_ref },
+          },
+          (event) => {
+            if (event.name === 'checkout.completed') {
+              toast.success('Paiement reçu — activation en cours...');
+              setTimeout(() => window.location.reload(), 3000);
+            } else if (event.name === 'checkout.closed') {
+              setRedirecting(false);
+            }
+          },
+        );
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur de paiement');
+        setRedirecting(false);
+      }
+      return;
+    }
+
     // PayUnit checkout is a hosted page by design (like the old Stripe
     // Checkout was) -- a real redirect is unavoidable here.
     setRedirecting(true);
@@ -263,14 +368,34 @@ export default function Billing() {
     }
   }
 
-  // "Gérer" used to open a mailto: (a dead end — the customer wants to
-  // pay or set up their payment method, not email support). Neither
-  // PayUnit nor Flutterwave expose a self-service "update my card"
-  // portal the way Stripe did, so the real way to set/update a payment
-  // method here is the same checkout flow used to subscribe — it's what
-  // actually gets them to a page where they enter card/Mobile Money
-  // details and pay.
-  function handleManageBilling() {
+  // "Gérer" opens Stripe's self-service billing portal for tenants who
+  // subscribed via Stripe (the only one of the 5 PSPs with that API) —
+  // otherwise falls back to the same checkout flow used to subscribe,
+  // since that's what actually gets them to a page where they can
+  // update their card/Mobile Money details and pay.
+  async function handleManageBilling() {
+    if (tenant?.stripe_customer_id && PSP_AVAILABLE.stripe) {
+      setRedirecting(true);
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/stripe-portal`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${session.session?.access_token}`,
+          },
+          body: JSON.stringify({ tenant_id: tenant.id }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Impossible d\'ouvrir le portail de facturation');
+        window.location.href = json.url;
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Erreur');
+        setRedirecting(false);
+      }
+      return;
+    }
     if (!tenant?.plan) return;
     handleCheckout(tenant.plan, autoProvider());
   }
@@ -416,6 +541,8 @@ export default function Billing() {
             PSP_AVAILABLE.payunit && 'carte bancaire (PayUnit)',
             PSP_AVAILABLE.flutterwave && 'Mobile Money (Flutterwave)',
             PSP_AVAILABLE.paystack && 'carte bancaire (Paystack)',
+            PSP_AVAILABLE.stripe && 'carte bancaire (Stripe)',
+            PSP_AVAILABLE.paddle && 'carte bancaire (Paddle)',
           ].filter(Boolean).join(' ou ')}.
         </p>
       </div>
@@ -477,6 +604,34 @@ export default function Billing() {
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
                     <p className="text-xs text-gray-400">Visa, Mastercard — via Paystack — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
+                  </div>
+                </button>
+              )}
+              {PSP_AVAILABLE.stripe && (
+                <button
+                  onClick={() => handleCheckout(pickingPlanFor, 'stripe')}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-[#635BFF] transition-colors text-left"
+                >
+                  <div className="w-5 h-5 rounded flex items-center justify-center bg-[#635BFF] flex-shrink-0">
+                    <span className="text-[10px] font-bold text-white">S</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard, Amex — via Stripe — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
+                  </div>
+                </button>
+              )}
+              {PSP_AVAILABLE.paddle && (
+                <button
+                  onClick={() => handleCheckout(pickingPlanFor, 'paddle')}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 border-2 border-gray-200 rounded-xl hover:border-gray-900 transition-colors text-left"
+                >
+                  <div className="w-5 h-5 rounded flex items-center justify-center bg-gray-900 flex-shrink-0">
+                    <span className="text-[10px] font-bold text-white">P</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paddle — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
                   </div>
                 </button>
               )}

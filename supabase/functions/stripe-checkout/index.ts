@@ -1,11 +1,10 @@
-// ⚠️ DEAD CODE — kept only for reference, not called from anywhere.
-// LiBooks replaced Stripe with PayUnit for card payments (see
-// payunit-checkout/payunit-verify/payunit-webhook). Billing.tsx now calls
-// payunit-checkout instead. Safe to delete once confirmed unused in
-// production, or repurpose if Stripe is ever reintroduced.
-//
 // Creates a Stripe Checkout session so a tenant can subscribe to (or
 // upgrade) a plan. Called from Billing.tsx with { plan, tenant_id }.
+//
+// One of 5 supported PSPs (PayUnit, Flutterwave, Paystack, Stripe, Paddle).
+// See PSP_AVAILABLE in src/pages/app/Billing.tsx — a provider only appears
+// to real customers once its flag is flipped to true there (this function
+// existing/working is not sufficient by itself).
 //
 // Requires these Supabase Edge Function secrets to be set (Project
 // Settings > Edge Functions > Secrets):

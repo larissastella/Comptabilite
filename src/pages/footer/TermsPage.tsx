@@ -86,10 +86,12 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-medium text-gray-900 dark:text-white mb-2">6. Souscription et paiement</h2>
             <p>
-              Le paiement de l'abonnement s'effectue via Stripe, prestataire de paiement sécurisé. Les
-              moyens de paiement acceptés sont les cartes bancaires (Visa, Mastercard, Amex) et, selon la
-              région, le Mobile Money. Le paiement est prélevé mensuellement ou annuellement selon le cycle
-              choisi. La facture est disponible dans l'espace utilisateur.
+              Le paiement de l'abonnement s'effectue via un prestataire de paiement sécurisé tiers (parmi
+              PayUnit, Flutterwave, Paystack, Stripe ou Paddle selon la disponibilité régionale et le moyen
+              choisi) — LiBooks ne stocke jamais les données de carte bancaire. Les moyens de paiement
+              acceptés sont les cartes bancaires (Visa, Mastercard, Amex) et, selon la région, le Mobile
+              Money. Le paiement est prélevé mensuellement ou annuellement selon le cycle choisi. La facture
+              est disponible dans l'espace utilisateur.
             </p>
           </section>
 
