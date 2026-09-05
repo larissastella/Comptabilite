@@ -34,15 +34,15 @@ const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 
   paddle: false,      // not yet approved — do not enable until confirmed
 };
 
-// Kept in sync with PLAN_PRICE_XAF in supabase/functions/payunit-checkout —
-// shown here purely so the customer sees the real amount before choosing
-// PayUnit (they're charged in XAF, not USD, on PayUnit specifically).
-const PLAN_PRICE_XAF: Record<string, number> = {
-  starter: 8000,
-  pro: 16500,
-  premium: 45000,
-  enterprise: 113000,
-};
+// Live USD->XAF rate, same source (fx_rates, tenant_id IS NULL) that
+// supabase/functions/payunit-checkout now actually charges with — this
+// used to be its own hardcoded table here, kept "in sync" by hand with a
+// second hardcoded table in that function. Two manually-synced copies of
+// the same number is exactly how they drift apart; querying the one
+// real source removes that failure mode. Needed independently of the
+// tenant's own display currency (below) because PayUnit always charges
+// in XAF specifically, regardless of what currency the tenant bills in.
+const FALLBACK_XAF_PER_USD = 610; // same fallback as payunit-checkout
 
 const PLANS = [
   { id: 'starter', name: 'Starter', price: 14, features: ['Facturation illimitée', 'Gestion stocks', '2 utilisateurs', 'Support email'] },
@@ -58,6 +58,17 @@ export default function Billing() {
   const [redirecting, setRedirecting] = useState(false);
   const [pickingPlanFor, setPickingPlanFor] = useState<string | null>(null);
   const [fxRate, setFxRate] = useState<number | null>(null);
+  const [payunitXafRate, setPayunitXafRate] = useState<number>(FALLBACK_XAF_PER_USD);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('fx_rates').select('rate')
+        .is('tenant_id', null).eq('currency_from', 'USD').eq('currency_to', 'XAF')
+        .order('rate_date', { ascending: false }).limit(1).maybeSingle();
+      if (data?.rate) setPayunitXafRate(data.rate);
+    })();
+  }, []);
 
   // The platform's canonical prices (what's actually billed) are always
   // in USD — PLAN_PRICE_USD in every payment edge function is the source
@@ -579,7 +590,7 @@ export default function Billing() {
                   <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {PLAN_PRICE_XAF[pickingPlanFor]?.toLocaleString('fr-FR')} FCFA</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {Math.round((PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0) * payunitXafRate).toLocaleString('fr-FR')} FCFA</p>
                   </div>
                 </button>
               )}

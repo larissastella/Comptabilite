@@ -34,26 +34,34 @@ const PAYUNIT_BASE_URL = "https://gateway.payunit.net";
 // (/api/gateway/initialize) only documents "currency: XAF" — the sample
 // response in their own docs shows transaction_currency: "XAF" too, no
 // USD example anywhere. Sending USD here risks every PayUnit payment
-// failing at launch, so we charge in XAF using PLAN_PRICE_XAF below.
-//
-// ⚠️ PLAN_PRICE_XAF is a manual conversion (~570 XAF/$ market rate, rounded
-// up for a safety margin against FX movement) — NOT auto-computed from
-// PLAN_PRICE_USD. Review/update it periodically; it will drift from the
-// real exchange rate over time same as any fixed-price-in-local-currency
-// approach. If PayUnit later confirms USD support for card-specific flows,
-// this can be revisited.
+// failing at launch, so we charge in XAF, converted from USD using the
+// SAME daily-synced rate Billing.tsx shows customers for reference (see
+// fx-rates-sync + fx_rates, tenant_id IS NULL = platform-wide default) —
+// no separate, manually-maintained XAF price list to let drift out of
+// sync with reality. FALLBACK_XAF_PER_USD only kicks in on the very rare
+// case fx-rates-sync hasn't populated a rate yet (e.g. right after first
+// deploy, before the daily cron has run once) — review/update it
+// occasionally so a *fallback* never drifts too far either.
 const PLAN_PRICE_USD: Record<string, number> = {
   starter: 14,
   pro: 29,
   premium: 79,
   enterprise: 199,
 };
-const PLAN_PRICE_XAF: Record<string, number> = {
-  starter: 8000,
-  pro: 16500,
-  premium: 45000,
-  enterprise: 113000,
-};
+const FALLBACK_XAF_PER_USD = 610;
+
+async function getUsdToXafRate(serviceClient: ReturnType<typeof createClient>): Promise<number> {
+  const { data } = await serviceClient
+    .from("fx_rates")
+    .select("rate")
+    .is("tenant_id", null)
+    .eq("currency_from", "USD")
+    .eq("currency_to", "XAF")
+    .order("rate_date", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return data?.rate ?? FALLBACK_XAF_PER_USD;
+}
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
@@ -92,10 +100,12 @@ Deno.serve(async (req: Request) => {
     }
 
     const { plan, tenant_id } = await req.json();
-    const amount = PLAN_PRICE_XAF[plan];
-    if (!amount || !PLAN_PRICE_USD[plan]) throw new Error(`Unknown plan: ${plan}`);
+    if (!PLAN_PRICE_USD[plan]) throw new Error(`Unknown plan: ${plan}`);
 
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    const xafPerUsd = await getUsdToXafRate(serviceClient);
+    const amount = Math.round(PLAN_PRICE_USD[plan] * xafPerUsd);
 
     const { data: membership } = await serviceClient
       .from("tenant_users").select("role, is_owner").eq("tenant_id", tenant_id).eq("user_id", user.id).maybeSingle();

@@ -61,6 +61,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function checkSuperAdmin(userId: string) {
+    // Self-heals a whitelist/signup-timing gap: someone added to
+    // super_admin_emails AFTER their account already existed never gets
+    // the grant from the signup trigger alone (see migration 038). This
+    // is a no-op for anyone not on the whitelist, and for anyone already
+    // granted — safe to call on every login.
+    try {
+      await supabase.rpc('sync_own_super_admin_status');
+    } catch {
+      // Non-fatal — worst case the whitelist resync migration/backfill
+      // already covered this account, or it'll self-heal next login.
+    }
     const { data } = await supabase
       .from('super_admins')
       .select('id')
