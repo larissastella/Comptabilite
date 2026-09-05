@@ -1,0 +1,40 @@
+# Cloudflare Pages reads this file automatically and applies these headers
+# to every response. See: https://developers.cloudflare.com/pages/configuration/headers/
+#
+# Adjust the CSP's connect-src/frame-src/script-src lists if you add a new
+# external service (a new PSP, an embed, etc.) — a strict CSP breaks
+# silently (browser console only) rather than loudly, so always check
+# devtools > Console after enabling/changing a PSP in PSP_AVAILABLE.
+
+/*
+  # Prevents the whole app from ever being framed by another site
+  # (clickjacking). LiBooks itself never needs to be embedded in an iframe.
+  X-Frame-Options: DENY
+  # Stops the browser from guessing ("sniffing") a file's content-type —
+  # closes a class of stored-XSS via a mislabelled upload (e.g. logo/cachet
+  # images, OCR receipt uploads) being executed as HTML/JS instead of
+  # rendered as the declared type.
+  X-Content-Type-Options: nosniff
+  # Never leak the full LiBooks URL (which can contain tenant/plan info in
+  # query strings, e.g. ?checkout=success) to a third party via the
+  # Referer header when a link is clicked; still send the bare origin for
+  # analytics that need it.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Tell browsers to only ever connect over HTTPS for the next year,
+  # including subdomains — closes SSL-stripping on repeat visits.
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  # Nothing in LiBooks needs the camera, microphone, geolocation, USB or
+  # payment-request browser APIs directly (OCR is a file upload, not a
+  # live camera capture; card payments happen on the PSP's own hosted
+  # page/overlay, not via the Payment Request API) — deny all of them by
+  # default so a future dependency can't quietly start requesting access.
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()
+  # Content-Security-Policy: default-deny, then explicit allowances only
+  # for what LiBooks actually loads. img-src/data: covers inline SVG/QR
+  # codes and base64 previews; connect-src covers Supabase (API + Realtime
+  # websockets) and every PSP's verify/webhook call made FROM THE BROWSER;
+  # frame-src/script-src cover the two PSPs that render as an in-page
+  # overlay (Flutterwave, Paddle) rather than a redirect (PayUnit,
+  # Paystack, Stripe never need the browser to load their JS or an iframe
+  # — those are plain window.location.href redirects to a page they host).
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data: blob: https:; font-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' https://checkout.flutterwave.com https://cdn.paddle.com; frame-src https://checkout.flutterwave.com https://*.paddle.com https://buy.paddle.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.flutterwave.com https://checkout.flutterwave.com; upgrade-insecure-requests

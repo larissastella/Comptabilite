@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ShieldCheck, ShieldOff, Smartphone, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import toast from 'react-hot-toast';
+import DOMPurify from 'dompurify';
 
 interface MfaFactor {
   id: string;
@@ -138,7 +139,11 @@ export default function TwoFactorSettings() {
           {qrCode && (
             <div
               className="w-40 h-40 bg-white p-2 rounded-lg mx-auto"
-              dangerouslySetInnerHTML={{ __html: qrCode }}
+              // qrCode is an SVG string returned by Supabase's own MFA
+              // enrollment API (totp.qr_code), not user-controlled input —
+              // but sanitizing before any dangerouslySetInnerHTML is cheap
+              // defense-in-depth against a compromised/misbehaving upstream.
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(qrCode, { USE_PROFILES: { svg: true, svgFilters: true } }) }}
             />
           )}
           <p className="text-xs text-gray-400 text-center break-all">Ou saisissez la clé manuellement : {secret}</p>
