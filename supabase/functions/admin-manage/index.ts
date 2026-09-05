@@ -284,6 +284,88 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // ---- EXTEND A TENANT'S SUBSCRIPTION / TRIAL ----
+    // mode: "days" | "months" | "years" -> extends from whichever is later,
+    // the tenant's current relevant date or now (so extending an already-
+    // expired trial doesn't just add time onto a date already in the past).
+    // mode: "custom" -> sets the relevant date to an exact end date instead.
+    //
+    // Which column is updated depends on the tenant's current status:
+    // - "trialing": trial_ends_at (this is the actual field RLS checks via
+    //   is_tenant_active(), so this takes effect immediately, no other
+    //   change needed).
+    // - "active": next_billing_date (access is already unconditional while
+    //   status = 'active'; this only reschedules the next auto-renew charge
+    //   / reminder email, it does not gate access).
+    // - "canceled" / anything else lapsed: is_tenant_active() only ever
+    //   returns true for 'active' or 'trialing', so reactivating an expired
+    //   tenant requires flipping subscription_status to 'trialing' AND
+    //   setting trial_ends_at, otherwise the date alone would have no effect.
+    if (action === "extend-tenant-subscription") {
+      const { tenantId, mode, amount, customDate } = body;
+      if (!tenantId) throw new Error("tenantId required");
+      if (!["days", "months", "years", "custom"].includes(mode)) throw new Error("Invalid mode");
+      if (mode === "custom") {
+        if (!customDate || isNaN(Date.parse(customDate))) throw new Error("Valid customDate required");
+      } else {
+        if (!Number.isFinite(amount) || amount <= 0) throw new Error("amount must be a positive number");
+      }
+
+      const { data: tenant, error: fetchError } = await serviceClient
+        .from("tenants")
+        .select("id, name, subscription_status, trial_ends_at, next_billing_date")
+        .eq("id", tenantId)
+        .maybeSingle();
+      if (fetchError) throw fetchError;
+      if (!tenant) throw new Error("Tenant not found");
+
+      const now = new Date();
+      const wasLapsed = !["active", "trialing"].includes(tenant.subscription_status);
+      const currentRelevant = tenant.subscription_status === "active"
+        ? tenant.next_billing_date
+        : tenant.trial_ends_at;
+      const base = currentRelevant && new Date(currentRelevant) > now ? new Date(currentRelevant) : now;
+
+      let newDate: Date;
+      if (mode === "custom") {
+        newDate = new Date(customDate);
+        if (newDate <= now) throw new Error("customDate must be in the future");
+      } else {
+        newDate = new Date(base);
+        if (mode === "days") newDate.setUTCDate(newDate.getUTCDate() + amount);
+        if (mode === "months") newDate.setUTCMonth(newDate.getUTCMonth() + amount);
+        if (mode === "years") newDate.setUTCFullYear(newDate.getUTCFullYear() + amount);
+      }
+
+      const update: Record<string, unknown> = {};
+      if (wasLapsed) {
+        // Reactivate via trial: the only two statuses is_tenant_active()
+        // ever grants access to are 'active' and 'trialing'.
+        update.subscription_status = "trialing";
+        update.trial_ends_at = newDate.toISOString();
+      } else if (tenant.subscription_status === "active") {
+        update.next_billing_date = newDate.toISOString().slice(0, 10);
+      } else {
+        update.trial_ends_at = newDate.toISOString();
+      }
+
+      const { error: updateError } = await serviceClient.from("tenants").update(update).eq("id", tenantId);
+      if (updateError) throw updateError;
+
+      await serviceClient.from("audit_logs").insert({
+        user_id: user.id,
+        tenant_id: tenantId,
+        action: "extend_subscription",
+        module: "tenants",
+        before_data: { subscription_status: tenant.subscription_status, trial_ends_at: tenant.trial_ends_at, next_billing_date: tenant.next_billing_date },
+        after_data: { mode, amount: amount ?? null, ...update },
+      });
+
+      return new Response(JSON.stringify({ success: true, newDate: newDate.toISOString(), reactivated: wasLapsed }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // ---- ADD STAFF ROLE ----
     if (action === "add-role") {
       const { name } = body;

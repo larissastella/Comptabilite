@@ -80,6 +80,10 @@ export default function SuperAdmin() {
   const [logFilter, setLogFilter] = useState('');
   const [logModuleFilter, setLogModuleFilter] = useState('');
   const [commercialStaffFilter, setCommercialStaffFilter] = useState('');
+  const [extendingTenant, setExtendingTenant] = useState<{ id: string; name: string } | null>(null);
+  const [extendMode, setExtendMode] = useState<'days' | 'months' | 'years' | 'custom'>('months');
+  const [extendAmount, setExtendAmount] = useState(1);
+  const [extendCustomDate, setExtendCustomDate] = useState('');
 
 
 
@@ -288,6 +292,20 @@ export default function SuperAdmin() {
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['sa-tenants'] });
       toast.success(vars.suspend ? 'Compte suspendu' : 'Compte réactivé');
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const extendSubscription = useMutation({
+    mutationFn: async (vars: { tenantId: string; mode: 'days' | 'months' | 'years' | 'custom'; amount?: number; customDate?: string }) => {
+      return await callAdminFunction('extend-tenant-subscription', vars);
+    },
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['sa-tenants'] });
+      toast.success(`Abonnement étendu jusqu'au ${format(new Date(data.newDate), 'dd/MM/yyyy')}`);
+      setExtendingTenant(null);
+      setExtendAmount(1);
+      setExtendCustomDate('');
     },
     onError: (err: Error) => toast.error(err.message),
   });
@@ -678,31 +696,112 @@ export default function SuperAdmin() {
                     </td>
                     <td className="px-4 py-3.5 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{format(new Date(t.created_at), 'dd/MM/yyyy')}</td>
                     <td className="px-4 py-3.5">
-                      {t.subscription_status === 'canceled' ? (
+                      <div className="flex items-center gap-2">
                         <button
-                          onClick={() => toggleTenantStatus.mutate({ tenantId: t.id, suspend: false })}
-                          className="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100"
+                          onClick={() => { setExtendingTenant({ id: t.id, name: t.name }); setExtendMode('months'); setExtendAmount(1); setExtendCustomDate(''); }}
+                          className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100"
                         >
-                          Réactiver
+                          Étendre
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => { if (confirm(`Suspendre le compte ${t.name} ?`)) toggleTenantStatus.mutate({ tenantId: t.id, suspend: true }); }}
-                          className="text-xs px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100"
-                        >
-                          Suspendre
-                        </button>
-                      )}
+                        {t.subscription_status === 'canceled' ? (
+                          <button
+                            onClick={() => toggleTenantStatus.mutate({ tenantId: t.id, suspend: false })}
+                            className="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg font-medium hover:bg-emerald-100"
+                          >
+                            Réactiver
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => { if (confirm(`Suspendre le compte ${t.name} ?`)) toggleTenantStatus.mutate({ tenantId: t.id, suspend: true }); }}
+                            className="text-xs px-2.5 py-1 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100"
+                          >
+                            Suspendre
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {extendingTenant && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setExtendingTenant(null)}>
+              <div className="bg-white dark:bg-surface-1 rounded-2xl shadow-xl w-full max-w-md p-6" onClick={e => e.stopPropagation()}>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white">Étendre l'abonnement</h2>
+                  <button onClick={() => setExtendingTenant(null)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{extendingTenant.name}</p>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type d'extension</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {([['days', 'Jours'], ['months', 'Mois'], ['years', 'Années'], ['custom', 'Date']] as const).map(([value, label]) => (
+                      <button
+                        key={value}
+                        onClick={() => setExtendMode(value)}
+                        className={`text-xs px-2 py-2 rounded-lg font-medium border ${extendMode === value
+                          ? 'bg-emerald-600 text-white border-emerald-600'
+                          : 'bg-white dark:bg-surface-2 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-surface-3'}`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {extendMode === 'custom' ? (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nouvelle date de fin</label>
+                    <input
+                      type="date"
+                      value={extendCustomDate}
+                      onChange={e => setExtendCustomDate(e.target.value)}
+                      min={new Date().toISOString().slice(0, 10)}
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                ) : (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Ajouter {extendMode === 'days' ? 'X jours' : extendMode === 'months' ? 'X mois' : 'X années'}
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={extendAmount}
+                      onChange={e => setExtendAmount(Number(e.target.value))}
+                      className="w-full px-3 py-2.5 border border-gray-300 dark:border-surface-3 dark:bg-surface-2 dark:text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                )}
+
+                <p className="text-xs text-gray-400 mb-4">
+                  L'extension part de la date de fin actuelle si elle est dans le futur, sinon d'aujourd'hui. Effective immédiatement après confirmation.
+                </p>
+
+                <div className="flex gap-3">
+                  <button onClick={() => setExtendingTenant(null)} className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-surface-3 text-gray-700 dark:text-gray-300 rounded-xl text-sm">Annuler</button>
+                  <button
+                    onClick={() => extendSubscription.mutate({
+                      tenantId: extendingTenant.id,
+                      mode: extendMode,
+                      amount: extendMode === 'custom' ? undefined : extendAmount,
+                      customDate: extendMode === 'custom' ? extendCustomDate : undefined,
+                    })}
+                    disabled={extendSubscription.isPending || (extendMode === 'custom' ? !extendCustomDate : !extendAmount || extendAmount <= 0)}
+                    className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold disabled:opacity-60"
+                  >
+                    {extendSubscription.isPending ? '...' : 'Confirmer'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-
-      {/* ---- SUPER ADMINS ---- */}
       {tab === 'admins' && (
         <div>
           <div className="flex justify-end mb-4">
