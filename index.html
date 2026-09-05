@@ -8,14 +8,69 @@
     <meta name="theme-color" content="#0F2A3D" />
     <meta name="description" content="LiBooks — Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue. Facturation, stocks, Mobile Money, IA trésorerie." />
     <link rel="manifest" href="/manifest.json" />
+    <!--
+      Static <link rel="canonical"> for the homepage. usePageMeta.ts
+      updates this tag's href on route change for Googlebot (which
+      executes JS), but social-preview bots (Facebook/LinkedIn/X/WhatsApp
+      crawlers, iMessage link previews) generally do NOT execute
+      JavaScript — they only ever see this file's static content. Anyone
+      sharing a link to a page other than "/" will still get this
+      homepage preview in their unfurl card, not that page's own
+      title/description/image. Properly fixing that requires prerendering
+      or SSR per route, which this Vite SPA doesn't do; flagging this as
+      a known limitation rather than silently leaving it undocumented.
+    -->
+    <link rel="canonical" href="https://app.libooks.com/" />
+    <title>LiBooks — Gestion comptable internationale</title>
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="LiBooks" />
+    <meta property="og:title" content="LiBooks — Gestion comptable internationale" />
+    <meta property="og:description" content="Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue. Facturation, stocks, Mobile Money, IA trésorerie." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://app.libooks.com/" />
+    <meta property="og:image" content="https://app.libooks.com/logo-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale:alternate" content="en_US" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="LiBooks — Gestion comptable internationale" />
+    <meta name="twitter:description" content="Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue. Facturation, stocks, Mobile Money, IA trésorerie." />
+    <meta name="twitter:image" content="https://app.libooks.com/logo-512.png" />
+
+    <!-- Structured data: static (not injected via JS) so it's visible to
+         crawlers that don't execute JavaScript. Kept minimal/generic —
+         accurate for every page, since it isn't updated per-route. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "LiBooks",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue. Facturation, stocks, Mobile Money, IA trésorerie.",
+        "url": "https://app.libooks.com/",
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "USD",
+          "lowPrice": "14",
+          "highPrice": "199",
+          "offerCount": "4"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "LiAfrik",
+          "url": "https://liafrik.com"
+        }
+      }
+    </script>
+
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="LiBooks" />
-    <title>LiBooks — Gestion comptable internationale</title>
-    <meta property="og:title" content="LiBooks" />
-    <meta property="og:description" content="Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/logo-512.png" />
   </head>
   <body>
     <div id="root"></div>

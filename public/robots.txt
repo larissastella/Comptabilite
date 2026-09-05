@@ -3,3 +3,5 @@ Allow: /
 Disallow: /app/
 Disallow: /onboarding
 Disallow: /invite/
+
+Sitemap: https://app.libooks.com/sitemap.xml
