@@ -8,6 +8,9 @@ import App from './App';
 import { AuthProvider } from './contexts/AuthContext';
 import { TenantProvider } from './contexts/TenantContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { initSentry } from './lib/sentry';
+
+initSentry();
 
 const queryClient = new QueryClient({
   defaultOptions: {

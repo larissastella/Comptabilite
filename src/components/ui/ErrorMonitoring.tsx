@@ -1,13 +1,22 @@
 import { Component, ReactNode, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { AlertTriangle } from 'lucide-react';
+import * as Sentry from '@sentry/react';
 
 /**
- * Free, self-hosted error monitoring -- no external service required.
- * Reports uncaught errors to the `client_errors` table (see migration
- * 020), visible to staff in Super Admin > Monitoring.
+ * Reports uncaught errors both to Sentry (real-time alerting, stack
+ * traces, breadcrumbs) and to the self-hosted `client_errors` table (see
+ * migration 020) that already powers Super Admin > Monitoring — kept
+ * rather than replaced, since staff are already using that dashboard.
  */
 async function reportClientError(message: string, stack?: string, severity: 'error' | 'warning' = 'error') {
+  try {
+    Sentry.captureException(stack ? Object.assign(new Error(message), { stack }) : new Error(message), {
+      level: severity,
+    });
+  } catch {
+    // Never let error reporting itself crash the app -- fail silently.
+  }
   try {
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from('client_errors').insert({
