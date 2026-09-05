@@ -16,6 +16,23 @@ const corsHeaders = {
 
 const PAYUNIT_BASE_URL = "https://gateway.payunit.net";
 
+// For locked_price_usd bookkeeping only (what was actually charged, in
+// XAF, is txRow.expected_amount — this is just to record the USD
+// equivalent consistently with every other PSP's locked_price_usd).
+// Kept in sync with PLAN_PRICE_USD/ANNUAL_DISCOUNT in payunit-checkout
+// and src/pages/app/Billing.tsx.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
+};
+const ANNUAL_DISCOUNT = 0.20;
+function usdPriceForCycle(plan: string, cycle: string): number {
+  const monthly = PLAN_PRICE_USD[plan] ?? 0;
+  return cycle === "annual" ? Math.round(monthly * 12 * (1 - ANNUAL_DISCOUNT)) : monthly;
+}
+
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -100,9 +117,21 @@ Deno.serve(async (req: Request) => {
     }
 
     await serviceClient.from("payunit_transactions").update({ status: "success", confirmed_at: new Date().toISOString() }).eq("transaction_id", transaction_id);
+    // PayUnit is a one-off hosted redirect — there's no stored card token
+    // to silently recharge later (unlike Flutterwave's card path), so
+    // this is always manual renewal: billing-reminders emails the tenant
+    // before next_billing_date, same as Flutterwave's Mobile Money path.
+    // Bug fixed here: this used to never set next_billing_date at all,
+    // meaning a single PayUnit payment granted access with no expiry,
+    // ever — a real revenue leak, not just a cosmetic gap.
+    const cycleDays = txRow.cycle === "annual" ? 365 : 30;
     await serviceClient.from("tenants").update({
       plan: txRow.plan,
       subscription_status: "active",
+      billing_cycle: txRow.cycle,
+      locked_price_usd: usdPriceForCycle(txRow.plan, txRow.cycle),
+      auto_renew: false,
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     }).eq("id", tenant_id);
 
     return new Response(JSON.stringify({ success: true, plan: txRow.plan }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });

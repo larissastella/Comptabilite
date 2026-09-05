@@ -92,10 +92,21 @@ Deno.serve(async (req: Request) => {
     }
 
     await serviceClient.from("paystack_transactions").update({ status: "success", confirmed_at: new Date().toISOString() }).eq("reference", reference);
+    // Bug fixed here: this never set next_billing_date at all, so a
+    // single Paystack payment granted access with no expiry, ever — same
+    // class of revenue-leak bug as PayUnit had. No stored reusable
+    // authorization here (a future enhancement could capture
+    // data.authorization.authorization_code for silent recharging, like
+    // Flutterwave's card token path), so this is manual renewal for now:
+    // billing-reminders emails the tenant before next_billing_date.
+    const cycleDays = txRow.cycle === "annual" ? 365 : 30;
     await serviceClient.from("tenants").update({
       plan: txRow.plan,
       subscription_status: "active",
+      billing_cycle: txRow.cycle,
       locked_price_usd: txRow.expected_amount,
+      auto_renew: false,
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     }).eq("id", tenant_id);
 
     return new Response(JSON.stringify({ success: true, plan: txRow.plan }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });

@@ -32,6 +32,8 @@ const PLAN_PRICE_USD: Record<string, number> = {
   premium: 79,
   enterprise: 199,
 };
+// Kept in sync with Billing.tsx's ANNUAL_DISCOUNT (migration 039).
+const ANNUAL_DISCOUNT = 0.20;
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
@@ -63,10 +65,12 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { tenant_id, plan } = await req.json();
+    const { tenant_id, plan, cycle: rawCycle } = await req.json();
     if (!tenant_id || !plan) throw new Error("tenant_id and plan are required");
-    const expectedAmount = PLAN_PRICE_USD[plan];
-    if (!expectedAmount) throw new Error("Unknown plan");
+    const monthlyPrice = PLAN_PRICE_USD[plan];
+    if (!monthlyPrice) throw new Error("Unknown plan");
+    const cycle = rawCycle === "annual" ? "annual" : "monthly";
+    const expectedAmount = cycle === "annual" ? Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT)) : monthlyPrice;
 
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -81,6 +85,7 @@ Deno.serve(async (req: Request) => {
       checkout_ref: checkoutRef,
       tenant_id,
       plan,
+      cycle,
       expected_amount: expectedAmount,
       currency: "USD",
       status: "pending",

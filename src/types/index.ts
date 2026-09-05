@@ -35,6 +35,7 @@ export interface Tenant {
   next_billing_date?: string;
   locked_price_usd?: number;
   referred_by_staff_code?: string;
+  billing_cycle?: 'monthly' | 'annual';
   created_at: string;
   updated_at: string;
 }

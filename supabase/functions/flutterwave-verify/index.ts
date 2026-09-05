@@ -29,6 +29,13 @@ const PLAN_PRICE_USD: Record<string, number> = {
   premium: 79,
   enterprise: 199,
 };
+// Kept in sync with ANNUAL_DISCOUNT in src/pages/app/Billing.tsx — the
+// "Facturation annuelle disponible avec 20% de réduction" line shown
+// there was pure copy until this was wired up (see migration 039).
+const ANNUAL_DISCOUNT = 0.20;
+function priceForCycle(monthlyPrice: number, cycle: string): number {
+  return cycle === "annual" ? Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT)) : monthlyPrice;
+}
 
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
@@ -96,12 +103,13 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "This transaction was not initiated for this account" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const expectedPrice = PLAN_PRICE_USD[meta.plan as string];
+    const cycle = meta.cycle === "annual" ? "annual" : "monthly";
+    const expectedPrice = priceForCycle(PLAN_PRICE_USD[meta.plan as string], cycle);
     const chargedAmount = Number(verified.data.charged_amount ?? verified.data.amount);
     const chargedCurrency = String(verified.data.currency ?? "");
-    if (!expectedPrice || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
+    if (!PLAN_PRICE_USD[meta.plan as string] || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
       await logFunctionError("flutterwave-verify", new Error("Amount mismatch — refusing to activate plan"), {
-        tenant_id, transaction_id, meta_plan: meta.plan, expectedPrice, chargedAmount, chargedCurrency,
+        tenant_id, transaction_id, meta_plan: meta.plan, cycle, expectedPrice, chargedAmount, chargedCurrency,
       });
       return new Response(JSON.stringify({ error: "Le montant du paiement ne correspond pas au forfait sélectionné. Contacte le support." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -113,18 +121,20 @@ Deno.serve(async (req: Request) => {
     // email, since MoMo requires the customer's live phone authorization
     // for every charge by design — there's no silent-recharge option.
     const cardToken = verified.data.card?.token as string | undefined;
+    const cycleDays = cycle === "annual" ? 365 : 30;
 
     await serviceClient.from("tenants").update({
       subscription_status: "active",
       flutterwave_customer_id: String(verified.data.customer?.id ?? ""),
+      billing_cycle: cycle,
       ...(meta.plan ? { plan: meta.plan, locked_price_usd: expectedPrice } : {}),
       ...(cardToken ? {
         flutterwave_card_token: cardToken,
         auto_renew: true,
-        next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
       } : {
         auto_renew: false,
-        next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
       }),
     }).eq("id", tenant_id);
 

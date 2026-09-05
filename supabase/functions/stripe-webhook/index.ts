@@ -74,10 +74,12 @@ Deno.serve(async (req: Request) => {
         const session = event.data.object as Stripe.Checkout.Session;
         const tenantId = session.metadata?.tenant_id;
         const plan = session.metadata?.plan;
+        const cycle = session.metadata?.cycle === "annual" ? "annual" : "monthly";
         if (tenantId) {
           await serviceClient.from("tenants").update({
             stripe_subscription_id: session.subscription as string,
             subscription_status: "active",
+            billing_cycle: cycle,
             ...(plan ? { plan } : {}),
           }).eq("id", tenantId);
         }

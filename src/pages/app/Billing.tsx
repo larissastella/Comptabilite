@@ -51,12 +51,22 @@ const PLANS = [
   { id: 'enterprise', name: 'Entreprise', price: 199, features: ['Tout Premium', 'Multi-société', 'API & intégrations', 'Support dédié 24/7', 'SLA 99.9%'] },
 ];
 
+// The "Facturation annuelle disponible avec 20% de réduction" line below
+// used to be pure copy — no cycle toggle, no tenant column to remember
+// it, nothing on any of the 5 PSPs to charge a different amount. A
+// customer had no way to actually get what this text promised.
+const ANNUAL_DISCOUNT = 0.20;
+function priceForCycle(monthlyPrice: number, cycle: 'monthly' | 'annual') {
+  return cycle === 'annual' ? Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT)) : monthlyPrice;
+}
+
 export default function Billing() {
   const { t } = useTranslation();
   const { tenant, formatCurrency } = useTenant();
   const { user } = useAuth();
   const [redirecting, setRedirecting] = useState(false);
   const [pickingPlanFor, setPickingPlanFor] = useState<string | null>(null);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [fxRate, setFxRate] = useState<number | null>(null);
   const [payunitXafRate, setPayunitXafRate] = useState<number>(FALLBACK_XAF_PER_USD);
 
@@ -215,18 +225,18 @@ export default function Billing() {
             apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session.session?.access_token}`,
           },
-          body: JSON.stringify({ tenant_id: tenant.id, plan: planId }),
+          body: JSON.stringify({ tenant_id: tenant.id, plan: planId, cycle: billingCycle }),
         });
         const initJson = await initRes.json();
         if (!initRes.ok) throw new Error(initJson.error || "Impossible d'initialiser le paiement");
 
         await openFlutterwaveInline({
           tx_ref: initJson.tx_ref,
-          amount: plan.price,
+          amount: priceForCycle(plan.price, billingCycle),
           currency: 'USD',
           customer: { email: user?.email || '', name: tenant.name },
           customizations: { title: 'LiBooks', description: `Abonnement ${plan.name}` },
-          meta: { tenant_id: tenant.id, plan: planId },
+          meta: { tenant_id: tenant.id, plan: planId, cycle: billingCycle },
           callback: async (response) => {
             try {
               const { data: session } = await supabase.auth.getSession();
@@ -271,7 +281,7 @@ export default function Billing() {
             apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session.session?.access_token}`,
           },
-          body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+          body: JSON.stringify({ plan: planId, tenant_id: tenant.id, cycle: billingCycle }),
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
@@ -297,7 +307,7 @@ export default function Billing() {
             apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session.session?.access_token}`,
           },
-          body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+          body: JSON.stringify({ plan: planId, tenant_id: tenant.id, cycle: billingCycle }),
         });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
@@ -313,10 +323,10 @@ export default function Billing() {
       // Inline overlay, like Flutterwave — but activation always waits
       // for paddle-webhook (the source of truth); the checkout.completed
       // event here is only used to give the user immediate feedback.
-      const priceEnvKey = `VITE_PADDLE_PRICE_${planId.toUpperCase()}`;
+      const priceEnvKey = `VITE_PADDLE_PRICE_${planId.toUpperCase()}${billingCycle === 'annual' ? '_ANNUAL' : ''}`;
       const priceId = (import.meta.env as Record<string, string | undefined>)[priceEnvKey];
       if (!priceId) {
-        toast.error("Le paiement par carte via Paddle n'est pas encore configuré pour ce forfait.");
+        toast.error(`Le paiement par carte via Paddle n'est pas encore configuré pour ce forfait${billingCycle === 'annual' ? ' en facturation annuelle' : ''}.`);
         return;
       }
       setRedirecting(true);
@@ -329,7 +339,7 @@ export default function Billing() {
             apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${session.session?.access_token}`,
           },
-          body: JSON.stringify({ tenant_id: tenant.id, plan: planId }),
+          body: JSON.stringify({ tenant_id: tenant.id, plan: planId, cycle: billingCycle }),
         });
         const initJson = await initRes.json();
         if (!initRes.ok) throw new Error(initJson.error || "Impossible d'initialiser le paiement");
@@ -338,7 +348,7 @@ export default function Billing() {
           {
             items: [{ priceId, quantity: 1 }],
             customer: user?.email ? { email: user.email } : undefined,
-            customData: { tenant_id: tenant.id, plan: planId, checkout_ref: initJson.checkout_ref },
+            customData: { tenant_id: tenant.id, plan: planId, cycle: billingCycle, checkout_ref: initJson.checkout_ref },
           },
           (event) => {
             if (event.name === 'checkout.completed') {
@@ -368,7 +378,7 @@ export default function Billing() {
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
           Authorization: `Bearer ${session.session?.access_token}`,
         },
-        body: JSON.stringify({ plan: planId, tenant_id: tenant.id }),
+        body: JSON.stringify({ plan: planId, tenant_id: tenant.id, cycle: billingCycle }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Impossible de démarrer le paiement');
@@ -495,10 +505,27 @@ export default function Billing() {
 
       {/* Plans */}
       <div className="mb-8">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Choisissez votre forfait</h2>
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <h2 className="text-lg font-medium text-gray-900">Choisissez votre forfait</h2>
+          <div className="inline-flex rounded-xl border-2 border-gray-200 p-1 bg-gray-50">
+            <button
+              onClick={() => setBillingCycle('monthly')}
+              className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${billingCycle === 'monthly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            >
+              Mensuel
+            </button>
+            <button
+              onClick={() => setBillingCycle('annual')}
+              className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${billingCycle === 'annual' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'}`}
+            >
+              Annuel
+              <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">-20%</span>
+            </button>
+          </div>
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {PLANS.map(plan => {
-            const isCurrent = plan.id === tenant?.plan;
+            const isCurrent = plan.id === tenant?.plan && (tenant?.billing_cycle ?? 'monthly') === billingCycle;
             return (
               <div
                 key={plan.id}
@@ -513,7 +540,17 @@ export default function Billing() {
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs bg-[#0057D9] text-white px-3 py-1 rounded-full">Actuel</span>
                 )}
                 <h3 className="text-base font-medium text-gray-900">{plan.name}</h3>
-                <p className="text-2xl font-medium text-gray-900 mt-1">{displayPrice(plan.price)}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+                {billingCycle === 'annual' ? (
+                  <>
+                    <p className="text-2xl font-medium text-gray-900 mt-1">
+                      {displayPrice(priceForCycle(plan.price, 'annual'))}
+                      <span className="text-sm font-normal text-gray-400">/an</span>
+                    </p>
+                    <p className="text-xs text-gray-400 line-through">{displayPrice(plan.price * 12)}/an</p>
+                  </>
+                ) : (
+                  <p className="text-2xl font-medium text-gray-900 mt-1">{displayPrice(plan.price)}<span className="text-sm font-normal text-gray-400">/mois</span></p>
+                )}
                 <ul className="mt-3 space-y-1.5">
                   {plan.features.map(f => (
                     <li key={f} className="flex items-start gap-1.5 text-xs text-gray-600">
@@ -590,7 +627,7 @@ export default function Billing() {
                   <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {Math.round((PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0) * payunitXafRate).toLocaleString('fr-FR')} FCFA</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {Math.round(priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle) * payunitXafRate).toLocaleString('fr-FR')} FCFA</p>
                   </div>
                 </button>
               )}
@@ -614,7 +651,7 @@ export default function Billing() {
                   <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paystack — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paystack — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}
@@ -628,7 +665,7 @@ export default function Billing() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard, Amex — via Stripe — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard, Amex — via Stripe — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}
@@ -642,7 +679,7 @@ export default function Billing() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paddle — ${PLANS.find(p => p.id === pickingPlanFor)?.price}</p>
+                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paddle — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}

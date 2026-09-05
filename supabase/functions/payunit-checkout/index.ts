@@ -49,6 +49,8 @@ const PLAN_PRICE_USD: Record<string, number> = {
   enterprise: 199,
 };
 const FALLBACK_XAF_PER_USD = 610;
+// Kept in sync with ANNUAL_DISCOUNT in src/pages/app/Billing.tsx.
+const ANNUAL_DISCOUNT = 0.20;
 
 async function getUsdToXafRate(serviceClient: ReturnType<typeof createClient>): Promise<number> {
   const { data } = await serviceClient
@@ -99,13 +101,15 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { plan, tenant_id } = await req.json();
+    const { plan, tenant_id, cycle: rawCycle } = await req.json();
     if (!PLAN_PRICE_USD[plan]) throw new Error(`Unknown plan: ${plan}`);
+    const cycle = rawCycle === "annual" ? "annual" : "monthly";
 
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const xafPerUsd = await getUsdToXafRate(serviceClient);
-    const amount = Math.round(PLAN_PRICE_USD[plan] * xafPerUsd);
+    const usdPrice = cycle === "annual" ? Math.round(PLAN_PRICE_USD[plan] * 12 * (1 - ANNUAL_DISCOUNT)) : PLAN_PRICE_USD[plan];
+    const amount = Math.round(usdPrice * xafPerUsd);
 
     const { data: membership } = await serviceClient
       .from("tenant_users").select("role, is_owner").eq("tenant_id", tenant_id).eq("user_id", user.id).maybeSingle();
@@ -148,6 +152,7 @@ Deno.serve(async (req: Request) => {
       transaction_id: transactionId,
       tenant_id,
       plan,
+      cycle,
       expected_amount: amount,
       currency: "XAF",
       status: "pending",

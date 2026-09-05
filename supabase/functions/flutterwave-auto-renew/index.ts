@@ -61,7 +61,7 @@ Deno.serve(async (req: Request) => {
 
   const { data: dueTenants, error } = await serviceClient
     .from("tenants")
-    .select("id, name, plan, flutterwave_card_token, locked_price_usd")
+    .select("id, name, plan, flutterwave_card_token, locked_price_usd, billing_cycle")
     .eq("auto_renew", true)
     .eq("subscription_status", "active")
     .lte("next_billing_date", today)
@@ -121,7 +121,11 @@ Deno.serve(async (req: Request) => {
         continue;
       }
 
-      const nextDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      // Renewing an annual subscription for another 30 days would charge
+      // the FULL annual amount again a month later — this must track the
+      // tenant's actual cycle (see migration 039), not assume monthly.
+      const cycleDays = tenant.billing_cycle === "annual" ? 365 : 30;
+      const nextDate = new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
       await serviceClient.from("tenants").update({
         subscription_status: "active",
         next_billing_date: nextDate,

@@ -141,6 +141,13 @@ Deno.serve(async (req: Request) => {
     await serviceClient.from("tenants").update({
       plan: txRow.plan,
       subscription_status: "active",
+      // Paddle's own subscription object (tied to whichever Price ID was
+      // used — a distinct monthly vs annual Price configured in Paddle's
+      // dashboard) handles recurring renewal itself; unlike PayUnit/
+      // Flutterwave we don't compute next_billing_date ourselves here.
+      // billing_cycle is stored purely for display/reporting consistency
+      // with the other 4 PSPs.
+      billing_cycle: txRow.cycle,
       locked_price_usd: txRow.expected_amount,
       paddle_customer_id: data.customer_id ?? null,
       paddle_subscription_id: data.subscription_id ?? null,

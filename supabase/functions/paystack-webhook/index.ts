@@ -102,10 +102,14 @@ Deno.serve(async (req: Request) => {
     }
 
     await serviceClient.from("paystack_transactions").update({ status: "success", confirmed_at: new Date().toISOString() }).eq("reference", reference);
+    const cycleDays = txRow.cycle === "annual" ? 365 : 30;
     await serviceClient.from("tenants").update({
       plan: txRow.plan,
       subscription_status: "active",
+      billing_cycle: txRow.cycle,
       locked_price_usd: txRow.expected_amount,
+      auto_renew: false,
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     }).eq("id", txRow.tenant_id);
 
     return new Response(JSON.stringify({ received: true, action: "activated" }), { status: 200, headers: { "Content-Type": "application/json" } });

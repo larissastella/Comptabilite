@@ -7,6 +7,19 @@ import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
 const PAYUNIT_BASE_URL = "https://gateway.payunit.net";
 
+// Kept in sync with payunit-checkout/payunit-verify and Billing.tsx.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
+};
+const ANNUAL_DISCOUNT = 0.20;
+function usdPriceForCycle(plan: string, cycle: string): number {
+  const monthly = PLAN_PRICE_USD[plan] ?? 0;
+  return cycle === "annual" ? Math.round(monthly * 12 * (1 - ANNUAL_DISCOUNT)) : monthly;
+}
+
 async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -78,9 +91,14 @@ Deno.serve(async (req: Request) => {
     }
 
     await serviceClient.from("payunit_transactions").update({ status: "success", confirmed_at: new Date().toISOString() }).eq("transaction_id", transactionId);
+    const cycleDays = txRow.cycle === "annual" ? 365 : 30;
     await serviceClient.from("tenants").update({
       plan: txRow.plan,
       subscription_status: "active",
+      billing_cycle: txRow.cycle,
+      locked_price_usd: usdPriceForCycle(txRow.plan, txRow.cycle),
+      auto_renew: false,
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     }).eq("id", txRow.tenant_id);
 
     return new Response(JSON.stringify({ received: true, action: "activated" }), { status: 200, headers: { "Content-Type": "application/json" } });

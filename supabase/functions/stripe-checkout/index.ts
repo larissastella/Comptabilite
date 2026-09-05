@@ -8,11 +8,15 @@
 //
 // Requires these Supabase Edge Function secrets to be set (Project
 // Settings > Edge Functions > Secrets):
-//   STRIPE_SECRET_KEY        - sk_live_... / sk_test_...
-//   STRIPE_PRICE_STARTER     - price_... (monthly recurring price for Starter)
-//   STRIPE_PRICE_PRO         - price_...
-//   STRIPE_PRICE_PREMIUM     - price_...
-//   STRIPE_PRICE_ENTERPRISE  - price_...
+//   STRIPE_SECRET_KEY               - sk_live_... / sk_test_...
+//   STRIPE_PRICE_STARTER            - price_... (monthly recurring price for Starter)
+//   STRIPE_PRICE_PRO                - price_...
+//   STRIPE_PRICE_PREMIUM            - price_...
+//   STRIPE_PRICE_ENTERPRISE         - price_...
+//   STRIPE_PRICE_STARTER_ANNUAL     - price_... (yearly recurring price, ~20% off — see ANNUAL_DISCOUNT in Billing.tsx)
+//   STRIPE_PRICE_PRO_ANNUAL         - price_...
+//   STRIPE_PRICE_PREMIUM_ANNUAL     - price_...
+//   STRIPE_PRICE_ENTERPRISE_ANNUAL  - price_...
 //   APP_URL                  - e.g. https://libooks.liafrik.com (for redirect URLs)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
@@ -65,8 +69,9 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { plan, tenant_id } = await req.json();
-    const priceEnvKey = PRICE_ENV_BY_PLAN[plan];
+    const { plan, tenant_id, cycle: rawCycle } = await req.json();
+    const cycle = rawCycle === "annual" ? "annual" : "monthly";
+    const priceEnvKey = PRICE_ENV_BY_PLAN[plan] ? `${PRICE_ENV_BY_PLAN[plan]}${cycle === "annual" ? "_ANNUAL" : ""}` : undefined;
     if (!priceEnvKey) throw new Error(`Unknown plan: ${plan}`);
     const priceId = Deno.env.get(priceEnvKey);
     if (!priceId) throw new Error(`${priceEnvKey} is not configured`);
@@ -101,8 +106,8 @@ Deno.serve(async (req: Request) => {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${appUrl}/app/billing?checkout=success`,
       cancel_url: `${appUrl}/app/billing?checkout=cancelled`,
-      subscription_data: { metadata: { tenant_id, plan } },
-      metadata: { tenant_id, plan },
+      subscription_data: { metadata: { tenant_id, plan, cycle } },
+      metadata: { tenant_id, plan, cycle },
     });
 
     return new Response(JSON.stringify({ url: session.url }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
