@@ -230,7 +230,7 @@ export default function HelpCenterPage() {
             {filtered.map(cat => (
               <div key={cat.key}>
                 <div className="flex items-center gap-2 mb-2">
-                  <cat.icon className="w-4 h-4" style={{ color: BLUE }} />
+                  <cat.icon className="w-4 h-4 text-[#0057D9]" />
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{cat.label}</h2>
                 </div>
                 <div className="rounded-2xl border border-gray-100 dark:border-surface-3 px-5 bg-white dark:bg-surface-1">

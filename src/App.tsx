@@ -51,6 +51,8 @@ const ApiDocsPage = lazy(() => import('./pages/ApiDocsPage'));
 const HelpCenterPage = lazy(() => import('./pages/HelpCenterPage'));
 const PrivacyPage = lazy(() => import('./pages/footer/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/footer/TermsPage'));
+const CookiePolicyPage = lazy(() => import('./pages/footer/CookiePolicyPage'));
+const RefundPolicyPage = lazy(() => import('./pages/footer/RefundPolicyPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function Spinner() {
@@ -156,6 +158,8 @@ export default function App() {
         <Route path="/help" element={<HelpCenterPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/cookies" element={<CookiePolicyPage />} />
+        <Route path="/refund-policy" element={<RefundPolicyPage />} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

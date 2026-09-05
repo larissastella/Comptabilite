@@ -13,7 +13,8 @@ import {
   ArrowRight, Star, Quote, Menu, X, Sparkles,
   Package, Bell, Bot, ScanLine, Languages,
   Mail, MapPin,
-  Sun, Moon
+  Sun, Moon,
+  Facebook, Instagram, Linkedin, Youtube
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { PLAN_LIMITS, MODULES, ModuleKey } from '../lib/countryData';
@@ -21,7 +22,25 @@ import { PLAN_LIMITS, MODULES, ModuleKey } from '../lib/countryData';
 const NAVY = '#0F2A3D';
 const GREEN = '#0057D9';
 
-const MODULES = [
+// lucide-react n'a pas d'icône TikTok officielle : SVG dédié, même style que les autres (stroke).
+function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
+      strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
+
+const SOCIAL_LINKS = [
+  { name: 'TikTok', href: 'https://www.tiktok.com/@liyahgroup?_r=1&_t=ZS-9981XGgaxrE', Icon: TikTokIcon },
+  { name: 'Facebook', href: 'https://www.facebook.com/share/1LMAGqsy3n/?mibextid=wwXIfr', Icon: Facebook },
+  { name: 'Instagram', href: 'https://www.instagram.com/liafrik_tech?igsi=eXBjdTc5NG42Zml4&utm_source=qr', Icon: Instagram },
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/liafrik/', Icon: Linkedin },
+  { name: 'YouTube', href: 'https://youtube.com/@liyah-n?si=D-lXwovYubw3sdaf', Icon: Youtube },
+];
+
+const FEATURE_CARDS = [
   { icon: BarChart3, title: 'Tableau de bord', desc: 'KPIs en temps réel : CA, achats, créances, dettes. Graphiques mensuels.', color: 'bg-blue-500' },
   { icon: FileText, title: 'Facturation', desc: 'Factures ventes & achats avec numérotation séquentielle, TVA auto, PDF A4 & thermique 58/80mm.', color: 'bg-green-500' },
   { icon: Package, title: 'Stocks & Magasins', desc: 'Multi-magasins, mouvements, alertes rupture, valorisation au coût moyen pondéré.', color: 'bg-orange-500' },
@@ -394,7 +413,7 @@ export default function LandingPage() {
           </Reveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {MODULES.map((m, i) => (
+            {FEATURE_CARDS.map((m, i) => (
               <Reveal key={m.title} delay={(i % 3) * 100}>
                 <div className="bg-white dark:bg-surface-1 rounded-2xl p-6 border border-gray-100 dark:border-surface-3 hover:shadow-xl transition-all hover:-translate-y-1 h-full relative">
                   {m.premium && (
@@ -670,6 +689,8 @@ export default function LandingPage() {
                 <li><Link to="/legal" className="text-sm text-gray-400 hover:text-white transition-colors">Mentions légales</Link></li>
                 <li><Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de confidentialité</Link></li>
                 <li><Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">Conditions d'utilisation</Link></li>
+                <li><Link to="/cookies" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de cookies</Link></li>
+                <li><Link to="/refund-policy" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de remboursement</Link></li>
               </ul>
             </div>
 
@@ -685,14 +706,76 @@ export default function LandingPage() {
 
           {/* LiAfrik identity banner */}
           <div className="py-6 border-t border-white/10">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p className="text-sm text-gray-300 font-medium">
-                LiBooks est développé par <span className="text-white font-medium">LiAfrik</span> — Dubaï 🇦🇪 & Afrique
-              </p>
-              <p className="text-xs text-gray-500">
-                Un pont entre l'innovation internationale et l'ancrage africain.
-              </p>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-300 font-medium">
+                  LiBooks est développé par{' '}
+                  <a href="https://liafrik.com" target="_blank" rel="noopener noreferrer" className="text-white font-medium hover:text-[#0057D9] transition-colors">
+                    LiAfrik
+                  </a>{' '}
+                  — Dubaï 🇦🇪 & Afrique
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Un pont entre l'innovation internationale et l'ancrage africain.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {SOCIAL_LINKS.map(({ name, href, Icon }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={name}
+                    className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-[#0057D9] transition-colors"
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
             </div>
+          </div>
+
+          {/* Instagram feed */}
+          <div className="py-6 border-t border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
+                <Instagram className="w-4 h-4" /> Suivez-nous sur Instagram
+              </h4>
+              <a
+                href="https://www.instagram.com/liafrik_tech?igsi=eXBjdTc5NG42Zml4&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:text-white transition-colors"
+              >
+                @liafrik_tech
+              </a>
+            </div>
+            {import.meta.env.VITE_INSTAGRAM_FEED_EMBED_URL ? (
+              <iframe
+                src={import.meta.env.VITE_INSTAGRAM_FEED_EMBED_URL}
+                title="Fil Instagram LiAfrik"
+                loading="lazy"
+                className="w-full h-[280px] rounded-xl border-0"
+              />
+            ) : (
+              <a
+                href="https://www.instagram.com/liafrik_tech?igsi=eXBjdTc5NG42Zml4&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="grid grid-cols-3 sm:grid-cols-6 gap-2"
+              >
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-lg bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center"
+                  >
+                    <Instagram className="w-5 h-5 text-gray-500" />
+                  </div>
+                ))}
+              </a>
+            )}
           </div>
 
           <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">

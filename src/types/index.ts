@@ -34,6 +34,7 @@ export interface Tenant {
   auto_renew?: boolean;
   next_billing_date?: string;
   locked_price_usd?: number;
+  referred_by_staff_code?: string;
   created_at: string;
   updated_at: string;
 }
