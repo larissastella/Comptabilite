@@ -13,7 +13,7 @@
 //   STRIPE_PRICE_PRO         - price_...
 //   STRIPE_PRICE_PREMIUM     - price_...
 //   STRIPE_PRICE_ENTERPRISE  - price_...
-//   APP_URL                  - e.g. https://app.libooks.com (for redirect URLs)
+//   APP_URL                  - e.g. https://libooks.liafrik.com (for redirect URLs)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 import Stripe from "npm:stripe@17";
@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
       await serviceClient.from("tenants").update({ stripe_customer_id: customerId }).eq("id", tenant_id);
     }
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+    const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",

@@ -17,7 +17,7 @@
 //   PAYUNIT_API_PASSWORD  - from the merchant dashboard > API Credentials
 //   PAYUNIT_API_KEY        - x-api-key, from the application settings
 //   PAYUNIT_MODE            - "live" or "test"
-//   APP_URL                  - e.g. https://app.libooks.com (for redirect/notify URLs)
+//   APP_URL                  - e.g. https://libooks.liafrik.com (for redirect/notify URLs)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
@@ -106,7 +106,7 @@ Deno.serve(async (req: Request) => {
     const { data: tenant } = await serviceClient.from("tenants").select("id, name").eq("id", tenant_id).single();
     if (!tenant) throw new Error("Tenant not found");
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+    const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
     const transactionId = `libooks-${tenant_id}-${Date.now()}`;
 
     const initRes = await fetch(`${PAYUNIT_BASE_URL}/api/gateway/initialize`, {

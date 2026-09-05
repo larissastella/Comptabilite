@@ -160,7 +160,7 @@ export default function LandingPage() {
   // enough here since this one page has two valid canonical URLs
   // depending on language, not one fixed URL for the whole app).
   useEffect(() => {
-    const SITE_URL = 'https://app.libooks.com';
+    const SITE_URL = 'https://libooks.liafrik.com';
     const isEnglish = i18n.language === 'en';
     const canonicalUrl = `${SITE_URL}${isEnglish ? '/en' : '/'}`;
 
@@ -347,7 +347,7 @@ export default function LandingPage() {
                 <div className="w-3 h-3 rounded-full bg-red-400" />
                 <div className="w-3 h-3 rounded-full bg-yellow-400" />
                 <div className="w-3 h-3 rounded-full bg-green-400" />
-                <div className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-mono">app.libooks.com/dashboard</div>
+                <div className="ml-3 text-xs text-gray-400 dark:text-gray-500 font-mono">libooks.liafrik.com/dashboard</div>
               </div>
               {/* Mock content */}
               <div className="p-5 bg-gray-50 dark:bg-surface-0">

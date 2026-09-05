@@ -14,7 +14,7 @@
 //
 // Requires these Supabase Edge Function secrets:
 //   PAYSTACK_SECRET_KEY   - sk_live_... / sk_test_..., from the Paystack dashboard
-//   APP_URL                 - e.g. https://app.libooks.com (for callback_url)
+//   APP_URL                 - e.g. https://libooks.liafrik.com (for callback_url)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 
@@ -84,7 +84,7 @@ Deno.serve(async (req: Request) => {
     const { data: tenant } = await serviceClient.from("tenants").select("id, name").eq("id", tenant_id).single();
     if (!tenant) throw new Error("Tenant not found");
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+    const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
     const reference = `libooks-${tenant_id}-${Date.now()}`;
 
     const initRes = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {

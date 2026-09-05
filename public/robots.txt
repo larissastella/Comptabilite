@@ -4,4 +4,4 @@ Disallow: /app/
 Disallow: /onboarding
 Disallow: /invite/
 
-Sitemap: https://app.libooks.com/sitemap.xml
+Sitemap: https://libooks.liafrik.com/sitemap.xml

@@ -16,7 +16,7 @@
 //   FLUTTERWAVE_PLAN_PRO       - ...
 //   FLUTTERWAVE_PLAN_PREMIUM   - ...
 //   FLUTTERWAVE_PLAN_ENTERPRISE- ...
-//   APP_URL                    - e.g. https://app.libooks.com (for redirect)
+//   APP_URL                    - e.g. https://libooks.liafrik.com (for redirect)
 //
 // Setup note: a Flutterwave "Payment Plan" (recurring billing) is
 // created once per plan/price via their API or Dashboard, e.g.:
@@ -95,7 +95,7 @@ Deno.serve(async (req: Request) => {
     const { data: tenant } = await serviceClient.from("tenants").select("*").eq("id", tenant_id).single();
     if (!tenant) throw new Error("Tenant not found");
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+    const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
     const txRef = `libooks-${tenant_id}-${Date.now()}`;
 
     const payload: Record<string, unknown> = {

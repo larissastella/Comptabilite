@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'LiBooks';
-const SITE_URL = 'https://app.libooks.com';
+const SITE_URL = 'https://libooks.liafrik.com';
 const DEFAULT_TITLE = `${SITE_NAME} — Gestion comptable internationale`;
 const DEFAULT_DESCRIPTION = "LiBooks — Gestion comptable et commerciale internationale, avec une expertise OHADA reconnue. Facturation, stocks, Mobile Money, IA trésorerie.";
 

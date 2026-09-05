@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
   }
 
   const resendKey = Deno.env.get("RESEND_API_KEY");
-  const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+  const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
   const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
   const today = new Date();

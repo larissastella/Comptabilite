@@ -47,7 +47,7 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Aucun abonnement Stripe actif pour cette entreprise" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const appUrl = Deno.env.get("APP_URL") ?? "https://app.libooks.com";
+    const appUrl = Deno.env.get("APP_URL") ?? "https://libooks.liafrik.com";
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: tenant.stripe_customer_id,
       return_url: `${appUrl}/app/billing`,
