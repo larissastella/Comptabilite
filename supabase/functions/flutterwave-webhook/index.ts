@@ -36,6 +36,10 @@ const PLAN_PRICE_USD: Record<string, number> = {
   premium: 79,
   enterprise: 199,
 };
+const ANNUAL_DISCOUNT = 0.20;
+function priceForCycle(monthlyPrice: number, cycle: string): number {
+  return cycle === "annual" ? Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT)) : monthlyPrice;
+}
 
 Deno.serve(async (req: Request) => {
   try {
@@ -74,6 +78,7 @@ Deno.serve(async (req: Request) => {
   const meta = verified.data.meta || {};
   const tenantId = meta.tenant_id;
   const plan = meta.plan;
+  const cycle = meta.cycle === "annual" ? "annual" : "monthly";
   if (!tenantId) {
     return new Response(JSON.stringify({ received: true, action: "no_tenant_in_meta" }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
@@ -93,29 +98,31 @@ Deno.serve(async (req: Request) => {
   // it must be re-checked against the real plan price before activating
   // anything, same as in flutterwave-verify (this webhook is the async
   // safety-net path, must not be a bypass for that check).
-  const expectedPrice = PLAN_PRICE_USD[plan as string];
+  const expectedPrice = priceForCycle(PLAN_PRICE_USD[plan as string], cycle);
   const chargedAmount = Number(verified.data.charged_amount ?? verified.data.amount);
   const chargedCurrency = String(verified.data.currency ?? "");
-  if (!expectedPrice || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
+  if (!PLAN_PRICE_USD[plan as string] || chargedCurrency !== "USD" || chargedAmount < expectedPrice) {
     await logFunctionError("flutterwave-webhook", new Error("Amount mismatch — refusing to activate plan"), {
-      tenant_id: tenantId, transactionId, plan, expectedPrice, chargedAmount, chargedCurrency,
+      tenant_id: tenantId, transactionId, plan, cycle, expectedPrice, chargedAmount, chargedCurrency,
     });
     return new Response(JSON.stringify({ received: true, action: "amount_mismatch" }), { status: 200, headers: { "Content-Type": "application/json" } });
   }
 
   const cardToken = verified.data.card?.token as string | undefined;
+  const cycleDays = cycle === "annual" ? 365 : 30;
 
   await serviceClient.from("tenants").update({
     subscription_status: "active",
     flutterwave_customer_id: String(verified.data.customer?.id ?? ""),
+    billing_cycle: cycle,
     ...(plan ? { plan, locked_price_usd: expectedPrice } : {}),
     ...(cardToken ? {
       flutterwave_card_token: cardToken,
       auto_renew: true,
-      next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     } : {
       auto_renew: false,
-      next_billing_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      next_billing_date: new Date(Date.now() + cycleDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
     }),
   }).eq("id", tenantId);
 
