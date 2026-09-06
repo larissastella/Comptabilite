@@ -1,7 +1,8 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MessageCircle, Printer, CheckCircle, FileText } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Printer, CheckCircle, FileText, Download, Mail } from 'lucide-react';
+import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useTenant } from '../../contexts/TenantContext';
 import { SalesInvoice, SalesInvoiceItem } from '../../types';
@@ -33,6 +34,8 @@ export default function InvoiceDetail() {
     enabled: !!id,
   });
 
+  const [downloading, setDownloading] = useState(false);
+
   const markPaid = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from('sales_invoices').update({
@@ -44,12 +47,77 @@ export default function InvoiceDetail() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  // Builds the exact same PDF regardless of whether it's downloaded or
+  // emailed — one source of truth (src/lib/invoicePdf.tsx), so a
+  // downloaded copy and what a customer receives by email are never two
+  // different documents.
+  async function buildInvoicePdfBlob() {
+    if (!invoice || !tenant) throw new Error('Facture introuvable');
+    const { pdf } = await import('@react-pdf/renderer');
+    const { InvoicePdfDocument } = await import('../../lib/invoicePdf');
+    const doc = (
+      <InvoicePdfDocument
+        tenant={tenant}
+        invoice={invoice}
+        customer={invoice.customers}
+        items={(invoice.sales_invoice_items || []).map(i => ({
+          description: i.description, quantity: i.quantity, unit_price: i.unit_price,
+          discount_pct: i.discount_pct, vat_rate: i.vat_rate, subtotal: i.subtotal, total: i.total,
+        }))}
+        formatCurrency={formatCurrency}
+        formatDate={(iso) => format(new Date(iso), 'dd/MM/yyyy')}
+        statusLabel={st.label}
+      />
+    );
+    return pdf(doc).toBlob();
+  }
+
+  async function handleDownloadPdf() {
+    setDownloading(true);
+    try {
+      const blob = await buildInvoicePdfBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Facture-${invoice!.invoice_number}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Échec de la génération du PDF');
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   const sendInvoice = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('sales_invoices').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', id!);
-      if (error) throw error;
+      // Used to just flip status to 'sent' in the database — nothing was
+      // ever actually sent to the customer, not even an email. This now
+      // generates the real branded PDF and emails it for real, via a
+      // server function that independently re-fetches the recipient and
+      // refuses to proceed if the customer has no email on file (an
+      // honest failure instead of a false "sent" every time).
+      const blob = await buildInvoicePdfBlob();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = () => reject(new Error('Échec de lecture du PDF'));
+        reader.readAsDataURL(blob);
+      });
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invoice-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({ invoice_id: id, pdf_base64: base64 }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Échec de l'envoi");
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['invoice', id] }); toast.success(t('invoiceDetail.sent')); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['invoice', id] }); toast.success('Facture envoyée par email avec le PDF en pièce jointe'); },
     onError: (err: Error) => toast.error(err.message),
   });
 
@@ -104,11 +172,13 @@ export default function InvoiceDetail() {
           <ArrowLeft className="w-4 h-4" /> {t('invoiceDetail.back')}
         </button>
         <div className="flex items-center gap-2">
-          {invoice.status === 'draft' && (
-            <button onClick={() => sendInvoice.mutate()} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-xl hover:bg-blue-700">
-              {t('invoiceDetail.markSent')}
-            </button>
-          )}
+          <button
+            onClick={() => sendInvoice.mutate()}
+            disabled={sendInvoice.isPending}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm rounded-xl hover:bg-blue-700 disabled:opacity-60"
+          >
+            <Mail className="w-4 h-4" /> {sendInvoice.isPending ? 'Envoi...' : 'Envoyer par email'}
+          </button>
           {['draft','sent'].includes(invoice.status) && (
             <button onClick={() => markPaid.mutate()} className="flex items-center gap-2 px-4 py-2 bg-[#0057D9] text-white text-sm rounded-xl hover:bg-[#003F9E]">
               <CheckCircle className="w-4 h-4" /> {t('invoiceDetail.markPaid')}
@@ -116,6 +186,13 @@ export default function InvoiceDetail() {
           )}
           <button onClick={handleWhatsApp} className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm rounded-xl hover:bg-green-600">
             <MessageCircle className="w-4 h-4" /> WhatsApp
+          </button>
+          <button
+            onClick={handleDownloadPdf}
+            disabled={downloading}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50 disabled:opacity-60"
+          >
+            <Download className="w-4 h-4" /> {downloading ? '...' : 'PDF'}
           </button>
           <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-xl hover:bg-gray-50">
             <Printer className="w-4 h-4" /> {t('invoiceDetail.print')}
