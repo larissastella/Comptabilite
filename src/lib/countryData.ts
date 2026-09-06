@@ -814,6 +814,60 @@ export const COUNTRIES: CountryInfo[] = [
       'Zhejiang': ['Hangzhou', 'Ningbo'],
     },
   },
+  // ---- Additional countries beyond Africa/OHADA + the original small
+  // set of global economies above. VAT/GST rates checked against
+  // published 2026 standard rates where the country has a single
+  // national rate; a couple of notes below where that's not quite true.
+  { code: 'ES', name: 'Spain', nameFr: 'Espagne', currency: 'EUR', currencySymbol: '€', phonePrefix: '+34', timezone: 'Europe/Madrid', vatRate: 21, isOhada: false },
+  { code: 'IT', name: 'Italy', nameFr: 'Italie', currency: 'EUR', currencySymbol: '€', phonePrefix: '+39', timezone: 'Europe/Rome', vatRate: 22, isOhada: false },
+  { code: 'PT', name: 'Portugal', nameFr: 'Portugal', currency: 'EUR', currencySymbol: '€', phonePrefix: '+351', timezone: 'Europe/Lisbon', vatRate: 23, isOhada: false },
+  { code: 'BE', name: 'Belgium', nameFr: 'Belgique', currency: 'EUR', currencySymbol: '€', phonePrefix: '+32', timezone: 'Europe/Brussels', vatRate: 21, isOhada: false },
+  { code: 'NL', name: 'Netherlands', nameFr: 'Pays-Bas', currency: 'EUR', currencySymbol: '€', phonePrefix: '+31', timezone: 'Europe/Amsterdam', vatRate: 21, isOhada: false },
+  { code: 'CH', name: 'Switzerland', nameFr: 'Suisse', currency: 'CHF', currencySymbol: 'CHF', phonePrefix: '+41', timezone: 'Europe/Zurich', vatRate: 8.1, isOhada: false },
+  { code: 'IE', name: 'Ireland', nameFr: 'Irlande', currency: 'EUR', currencySymbol: '€', phonePrefix: '+353', timezone: 'Europe/Dublin', vatRate: 23, isOhada: false },
+  { code: 'PL', name: 'Poland', nameFr: 'Pologne', currency: 'PLN', currencySymbol: 'zł', phonePrefix: '+48', timezone: 'Europe/Warsaw', vatRate: 23, isOhada: false },
+  { code: 'SE', name: 'Sweden', nameFr: 'Suède', currency: 'SEK', currencySymbol: 'kr', phonePrefix: '+46', timezone: 'Europe/Stockholm', vatRate: 25, isOhada: false },
+  { code: 'AT', name: 'Austria', nameFr: 'Autriche', currency: 'EUR', currencySymbol: '€', phonePrefix: '+43', timezone: 'Europe/Vienna', vatRate: 20, isOhada: false },
+  { code: 'LU', name: 'Luxembourg', nameFr: 'Luxembourg', currency: 'EUR', currencySymbol: '€', phonePrefix: '+352', timezone: 'Europe/Luxembourg', vatRate: 17, isOhada: false },
+  { code: 'GR', name: 'Greece', nameFr: 'Grèce', currency: 'EUR', currencySymbol: '€', phonePrefix: '+30', timezone: 'Europe/Athens', vatRate: 24, isOhada: false },
+  { code: 'DK', name: 'Denmark', nameFr: 'Danemark', currency: 'DKK', currencySymbol: 'kr', phonePrefix: '+45', timezone: 'Europe/Copenhagen', vatRate: 25, isOhada: false },
+  { code: 'NO', name: 'Norway', nameFr: 'Norvège', currency: 'NOK', currencySymbol: 'kr', phonePrefix: '+47', timezone: 'Europe/Oslo', vatRate: 25, isOhada: false },
+  { code: 'FI', name: 'Finland', nameFr: 'Finlande', currency: 'EUR', currencySymbol: '€', phonePrefix: '+358', timezone: 'Europe/Helsinki', vatRate: 25.5, isOhada: false },
+  { code: 'TR', name: 'Turkey', nameFr: 'Turquie', currency: 'TRY', currencySymbol: '₺', phonePrefix: '+90', timezone: 'Europe/Istanbul', vatRate: 20, isOhada: false },
+  // Brazil's indirect tax system has no single national "VAT" — it's a
+  // stack of federal (PIS/COFINS), state (ICMS, ~17-20%) and municipal
+  // (ISS) taxes that varies by state and transaction type. 17 is a
+  // representative baseline (lower end of the state ICMS band), not a
+  // precise national rate — flagging this rather than presenting a false
+  // single figure as if Brazil worked like a normal VAT country.
+  { code: 'BR', name: 'Brazil', nameFr: 'Brésil', currency: 'BRL', currencySymbol: 'R$', phonePrefix: '+55', timezone: 'America/Sao_Paulo', vatRate: 17, isOhada: false },
+  { code: 'MX', name: 'Mexico', nameFr: 'Mexique', currency: 'MXN', currencySymbol: '$', phonePrefix: '+52', timezone: 'America/Mexico_City', vatRate: 16, isOhada: false },
+  { code: 'AR', name: 'Argentina', nameFr: 'Argentine', currency: 'ARS', currencySymbol: '$', phonePrefix: '+54', timezone: 'America/Argentina/Buenos_Aires', vatRate: 21, isOhada: false },
+  { code: 'CO', name: 'Colombia', nameFr: 'Colombie', currency: 'COP', currencySymbol: '$', phonePrefix: '+57', timezone: 'America/Bogota', vatRate: 19, isOhada: false },
+  { code: 'CL', name: 'Chile', nameFr: 'Chili', currency: 'CLP', currencySymbol: '$', phonePrefix: '+56', timezone: 'America/Santiago', vatRate: 19, isOhada: false },
+  { code: 'PE', name: 'Peru', nameFr: 'Pérou', currency: 'PEN', currencySymbol: 'S/', phonePrefix: '+51', timezone: 'America/Lima', vatRate: 18, isOhada: false },
+  // India's GST has multiple slabs (5/12/18/28%) depending on the good or
+  // service — 18% is the most common "standard" slab, used here as a
+  // sensible default, not a claim that every transaction is taxed at 18%.
+  { code: 'IN', name: 'India', nameFr: 'Inde', currency: 'INR', currencySymbol: '₹', phonePrefix: '+91', timezone: 'Asia/Kolkata', vatRate: 18, isOhada: false },
+  { code: 'JP', name: 'Japan', nameFr: 'Japon', currency: 'JPY', currencySymbol: '¥', phonePrefix: '+81', timezone: 'Asia/Tokyo', vatRate: 10, isOhada: false },
+  { code: 'SG', name: 'Singapore', nameFr: 'Singapour', currency: 'SGD', currencySymbol: 'S$', phonePrefix: '+65', timezone: 'Asia/Singapore', vatRate: 9, isOhada: false },
+  { code: 'ID', name: 'Indonesia', nameFr: 'Indonésie', currency: 'IDR', currencySymbol: 'Rp', phonePrefix: '+62', timezone: 'Asia/Jakarta', vatRate: 11, isOhada: false },
+  { code: 'PH', name: 'Philippines', nameFr: 'Philippines', currency: 'PHP', currencySymbol: '₱', phonePrefix: '+63', timezone: 'Asia/Manila', vatRate: 12, isOhada: false },
+  { code: 'VN', name: 'Vietnam', nameFr: 'Vietnam', currency: 'VND', currencySymbol: '₫', phonePrefix: '+84', timezone: 'Asia/Ho_Chi_Minh', vatRate: 10, isOhada: false },
+  { code: 'TH', name: 'Thailand', nameFr: 'Thaïlande', currency: 'THB', currencySymbol: '฿', phonePrefix: '+66', timezone: 'Asia/Bangkok', vatRate: 7, isOhada: false },
+  { code: 'MY', name: 'Malaysia', nameFr: 'Malaisie', currency: 'MYR', currencySymbol: 'RM', phonePrefix: '+60', timezone: 'Asia/Kuala_Lumpur', vatRate: 10, isOhada: false },
+  { code: 'KR', name: 'South Korea', nameFr: 'Corée du Sud', currency: 'KRW', currencySymbol: '₩', phonePrefix: '+82', timezone: 'Asia/Seoul', vatRate: 10, isOhada: false },
+  { code: 'PK', name: 'Pakistan', nameFr: 'Pakistan', currency: 'PKR', currencySymbol: '₨', phonePrefix: '+92', timezone: 'Asia/Karachi', vatRate: 18, isOhada: false },
+  { code: 'BD', name: 'Bangladesh', nameFr: 'Bangladesh', currency: 'BDT', currencySymbol: '৳', phonePrefix: '+880', timezone: 'Asia/Dhaka', vatRate: 15, isOhada: false },
+  { code: 'AU', name: 'Australia', nameFr: 'Australie', currency: 'AUD', currencySymbol: 'A$', phonePrefix: '+61', timezone: 'Australia/Sydney', vatRate: 10, isOhada: false },
+  { code: 'NZ', name: 'New Zealand', nameFr: 'Nouvelle-Zélande', currency: 'NZD', currencySymbol: 'NZ$', phonePrefix: '+64', timezone: 'Pacific/Auckland', vatRate: 15, isOhada: false },
+  // Catch-all so signup is never a hard wall for a country not
+  // individually modelled above — vatRate is deliberately 0 rather than
+  // a guessed figure; the tenant sets their real rate afterward in
+  // Settings > Taxes rather than the app silently applying a rate that
+  // means nothing for their actual jurisdiction.
+  { code: 'XX', name: 'Other country', nameFr: 'Autre pays', currency: 'USD', currencySymbol: '$', phonePrefix: '+', timezone: 'UTC', vatRate: 0, isOhada: false },
 ];
 
 export const getCountryByCode = (code: string): CountryInfo | undefined =>
@@ -880,6 +934,36 @@ export const COMMON_CURRENCIES = [
   { code: 'SSP', symbol: '£', name: 'Livre Sud-Soudanaise' },
   { code: 'LYD', symbol: 'LD', name: 'Dinar Libyen' },
   { code: 'SOS', symbol: 'So.Sh.', name: 'Shilling Somalien' },
+  // Added alongside the new non-African countries in COUNTRIES above —
+  // without these, a tenant whose country auto-fills e.g. BRL or INR as
+  // currency would have a currency the manual selector here couldn't offer.
+  { code: 'AED', symbol: 'AED', name: 'Dirham (EAU)' },
+  { code: 'CNY', symbol: '¥', name: 'Yuan Chinois' },
+  { code: 'CHF', symbol: 'CHF', name: 'Franc Suisse' },
+  { code: 'PLN', symbol: 'zł', name: 'Zloty Polonais' },
+  { code: 'SEK', symbol: 'kr', name: 'Couronne Suédoise' },
+  { code: 'DKK', symbol: 'kr', name: 'Couronne Danoise' },
+  { code: 'NOK', symbol: 'kr', name: 'Couronne Norvégienne' },
+  { code: 'TRY', symbol: '₺', name: 'Livre Turque' },
+  { code: 'BRL', symbol: 'R$', name: 'Real Brésilien' },
+  { code: 'MXN', symbol: '$', name: 'Peso Mexicain' },
+  { code: 'ARS', symbol: '$', name: 'Peso Argentin' },
+  { code: 'COP', symbol: '$', name: 'Peso Colombien' },
+  { code: 'CLP', symbol: '$', name: 'Peso Chilien' },
+  { code: 'PEN', symbol: 'S/', name: 'Sol Péruvien' },
+  { code: 'INR', symbol: '₹', name: 'Roupie Indienne' },
+  { code: 'JPY', symbol: '¥', name: 'Yen Japonais' },
+  { code: 'SGD', symbol: 'S$', name: 'Dollar Singapourien' },
+  { code: 'IDR', symbol: 'Rp', name: 'Roupie Indonésienne' },
+  { code: 'PHP', symbol: '₱', name: 'Peso Philippin' },
+  { code: 'VND', symbol: '₫', name: 'Dong Vietnamien' },
+  { code: 'THB', symbol: '฿', name: 'Baht Thaïlandais' },
+  { code: 'MYR', symbol: 'RM', name: 'Ringgit Malaisien' },
+  { code: 'KRW', symbol: '₩', name: 'Won Sud-Coréen' },
+  { code: 'PKR', symbol: '₨', name: 'Roupie Pakistanaise' },
+  { code: 'BDT', symbol: '৳', name: 'Taka Bangladais' },
+  { code: 'AUD', symbol: 'A$', name: 'Dollar Australien' },
+  { code: 'NZD', symbol: 'NZ$', name: 'Dollar Néo-Zélandais' },
 ];
 
 export const COMMON_TIMEZONES = [
@@ -899,4 +983,14 @@ export const COMMON_TIMEZONES = [
   'Europe/Paris', 'Europe/London', 'Europe/Berlin',
   'America/New_York', 'America/Toronto',
   'Asia/Dubai', 'Asia/Shanghai',
+  'Europe/Madrid', 'Europe/Rome', 'Europe/Lisbon', 'Europe/Brussels',
+  'Europe/Amsterdam', 'Europe/Zurich', 'Europe/Dublin', 'Europe/Warsaw',
+  'Europe/Stockholm', 'Europe/Vienna', 'Europe/Luxembourg', 'Europe/Athens',
+  'Europe/Copenhagen', 'Europe/Oslo', 'Europe/Helsinki', 'Europe/Istanbul',
+  'America/Sao_Paulo', 'America/Mexico_City', 'America/Argentina/Buenos_Aires',
+  'America/Bogota', 'America/Santiago', 'America/Lima',
+  'Asia/Kolkata', 'Asia/Tokyo', 'Asia/Singapore', 'Asia/Jakarta',
+  'Asia/Manila', 'Asia/Ho_Chi_Minh', 'Asia/Bangkok', 'Asia/Kuala_Lumpur',
+  'Asia/Seoul', 'Asia/Karachi', 'Asia/Dhaka',
+  'Australia/Sydney', 'Pacific/Auckland',
 ];
