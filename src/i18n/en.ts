@@ -123,7 +123,7 @@ const en = {
     ledger: 'General Ledger',
     reports: 'Reports',
     banking: 'Banking & Mobile Money',
-    whatsapp: 'WhatsApp & Client Portal',
+    whatsapp: 'WhatsApp',
     aiCashflow: 'AI Cashflow & FX',
     ohada: 'OHADA, OCR & Payroll',
     billing: 'Billing',

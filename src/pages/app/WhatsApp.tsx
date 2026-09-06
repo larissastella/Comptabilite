@@ -165,15 +165,26 @@ export default function WhatsApp() {
   const sendTest = useMutation({
     mutationFn: async () => {
       if (!phone) throw new Error('Numéro requis');
+      const cleanPhone = phone.replace(/[^\d]/g, '');
+      const message = testMessage || `Bonjour, ceci est un message test depuis ${tenant?.name || 'LiBooks'}.`;
+      const waLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
       await supabase.from('audit_logs').insert({
         tenant_id: tenant!.id,
         action: 'send_whatsapp_test',
         module: 'whatsapp',
-        after_data: { phone, message: testMessage || 'Test' },
+        after_data: { phone, message },
       });
+
+      // Actually opens WhatsApp with the message pre-filled — this used
+      // to only write an audit log line and claim "message envoyé" with
+      // nothing sent anywhere, not even a WhatsApp tab. Same honest
+      // click-to-chat approach as sendInvoice below: the message isn't
+      // sent silently by LiBooks, the user has to tap send themselves.
+      window.open(waLink, '_blank');
     },
     onSuccess: () => {
-      toast.success('Message test envoyé');
+      toast.success('WhatsApp ouvert avec le message pré-rempli — envoie-le manuellement');
       setPhone('');
       setTestMessage('');
     },
@@ -184,7 +195,7 @@ export default function WhatsApp() {
     <div className="p-4 sm:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t('nav.whatsapp')}</h1>
-        <p className="text-sm text-gray-400 mt-1">Envoi automatique des factures via WhatsApp et portail client</p>
+        <p className="text-sm text-gray-400 mt-1">Envoi de factures par WhatsApp (lien pré-rempli, sans app tierce)</p>
       </div>
 
       {/* Connection status */}
@@ -195,7 +206,7 @@ export default function WhatsApp() {
               <MessageCircle className={`w-5 h-5 ${isConnected ? 'text-white' : 'text-gray-500'}`} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-900">WhatsApp Business API</p>
+              <p className="text-sm font-semibold text-gray-900">Envoi de factures par WhatsApp</p>
               {isConnected ? (
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
@@ -319,7 +330,8 @@ export default function WhatsApp() {
           <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Connecter WhatsApp Business</h2>
             <p className="text-sm text-gray-500 mb-4">
-              Renseignez votre numéro WhatsApp Business. Vous recevrez un code de vérification via l'API WhatsApp pour confirmer la connexion.
+              Renseignez le numéro WhatsApp qui recevra les factures envoyées par vos clients (via un lien
+              WhatsApp pré-rempli, sans connexion à l'API officielle Meta pour l'instant).
             </p>
             <div className="space-y-4">
               <div>

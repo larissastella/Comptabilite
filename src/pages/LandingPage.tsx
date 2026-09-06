@@ -48,7 +48,7 @@ const FEATURE_CARDS = [
   { icon: Receipt, title: 'Transactions', desc: 'Journal des écritures avec équilibre débit/crédit, rapprochement bancaire.', color: 'bg-teal-500' },
   { icon: BarChart3, title: 'Rapports', desc: 'Compte de résultat, bilan, balance des comptes, déclaration TVA.', color: 'bg-indigo-500' },
   { icon: Smartphone, title: 'Banque & Mobile Money', desc: 'Intégration Orange Money, MTN MoMo, Wave, Moov Money. Relevé automatique.', color: 'bg-pink-500', premium: true },
-  { icon: Bell, title: 'WhatsApp & Portail Client', desc: 'Envoi factures via WhatsApp, portail client en ligne, notifications automatiques.', color: 'bg-green-600', premium: true },
+  { icon: Bell, title: 'WhatsApp', desc: 'Envoi de vos factures par WhatsApp en un clic, directement à vos clients.', color: 'bg-green-600', premium: true },
   { icon: Bot, title: 'IA Trésorerie & FX', desc: 'Prévisions de trésorerie par IA, alertes intelligentes, gestion du risque de change.', color: 'bg-violet-500', premium: true },
   { icon: ScanLine, title: 'OCR & Paie', desc: 'Numérisation factures par OCR, génération bulletins de paie, déclarations sociales.', color: 'bg-amber-500', premium: true },
 ];

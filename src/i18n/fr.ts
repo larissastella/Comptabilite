@@ -123,7 +123,7 @@ const fr = {
     ledger: 'Grand livre',
     reports: 'Rapports',
     banking: 'Banque & Mobile Money',
-    whatsapp: 'WhatsApp & Portail client',
+    whatsapp: 'WhatsApp',
     aiCashflow: 'IA Trésorerie & FX',
     ohada: 'OHADA, OCR & Paie',
     billing: 'Facturation',
