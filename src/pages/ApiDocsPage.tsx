@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Copy, Check, Key, Zap, ShieldCheck, RotateCw } from 'lucide-react';
 import logo from '../assets/logo.png';
 import ThemeToggle from '../components/ui/ThemeToggle';
@@ -16,7 +17,7 @@ function CodeBlock({ code, lang = 'bash' }: { code: string; lang?: string }) {
         <button
           onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
           className="text-gray-400 hover:text-white transition-colors"
-          aria-label="Copier"
+          aria-label="Copy"
         >
           {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
         </button>
@@ -41,21 +42,71 @@ function Endpoint({ method, path, scope, children }: { method: string; path: str
 }
 
 export default function ApiDocsPage() {
-  usePageMeta('API Développeurs', "Documentation de l'API REST LiBooks : authentification, endpoints, limites de débit et idempotence pour intégrer LiBooks à vos propres systèmes.");
+  const { i18n } = useTranslation();
+  const isEn = i18n.language === 'en';
+  usePageMeta(
+    isEn ? 'Developer API' : 'API Développeurs',
+    isEn
+      ? "LiBooks REST API documentation: authentication, endpoints, rate limits and idempotency to integrate LiBooks with your own systems."
+      : "Documentation de l'API REST LiBooks : authentification, endpoints, limites de débit et idempotence pour intégrer LiBooks à vos propres systèmes."
+  );
+  const sidebarLinks = isEn
+    ? [
+        ['#getting-started', 'Getting started'],
+        ['#authentication', 'Authentication'],
+        ['#rate-limits', 'Rate limits'],
+        ['#idempotency', 'Idempotency'],
+        ['#errors', 'Errors'],
+        ['#get-invoices', 'GET /invoices'],
+        ['#get-invoices-id', 'GET /invoices/:id'],
+        ['#get-balance', 'GET /balance'],
+        ['#post-transactions', 'POST /transactions'],
+        ['#changelog', 'Changelog'],
+      ]
+    : [
+        ['#getting-started', 'Démarrage'],
+        ['#authentication', 'Authentification'],
+        ['#rate-limits', 'Limites de débit'],
+        ['#idempotency', 'Idempotence'],
+        ['#errors', 'Erreurs'],
+        ['#get-invoices', 'GET /invoices'],
+        ['#get-invoices-id', 'GET /invoices/:id'],
+        ['#get-balance', 'GET /balance'],
+        ['#post-transactions', 'POST /transactions'],
+        ['#changelog', 'Changelog'],
+      ];
+  const errorRows = isEn
+    ? [
+        ['400', 'Invalid request (missing field, unbalanced entry...)'],
+        ['401', 'Missing, invalid, or revoked API key'],
+        ['403', 'Insufficient scope (a read key hitting a write endpoint)'],
+        ['404', 'Endpoint or resource not found'],
+        ['429', 'Rate limit exceeded (100/min)'],
+        ['500', 'Internal error — contact support'],
+      ]
+    : [
+        ['400', 'Requête invalide (champ manquant, écriture déséquilibrée...)'],
+        ['401', 'Clé API manquante, invalide ou révoquée'],
+        ['403', "Scope insuffisant (clé read sur un endpoint d'écriture)"],
+        ['404', "Endpoint ou ressource introuvable"],
+        ['429', 'Limite de débit dépassée (100/min)'],
+        ['500', 'Erreur interne — contacte le support'],
+      ];
+
   return (
     <div className="min-h-screen bg-white dark:bg-surface-0">
       <nav className="sticky top-0 z-50 bg-white/80 dark:bg-surface-1/80 backdrop-blur-md border-b border-gray-100 dark:border-surface-3">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to={isEn ? '/en' : '/'} className="flex items-center gap-2">
             <img src={logo} alt="LiBooks" className="w-7 h-7" />
             <span className="text-lg text-gray-900 dark:text-white font-bold">Li</span><span className="text-lg text-[#0057D9] font-medium">Books</span>
             <span className="hidden sm:inline text-sm text-gray-400 ml-1">/ Developers</span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle variant="subtle" />
-            <Link to="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+            <Link to={isEn ? '/en' : '/'} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">Accueil</span>
+              <span className="hidden sm:inline">{isEn ? 'Home' : 'Accueil'}</span>
             </Link>
           </div>
         </div>
@@ -65,18 +116,7 @@ export default function ApiDocsPage() {
         {/* Sidebar nav */}
         <aside className="hidden lg:block">
           <div className="sticky top-24 space-y-1 text-sm">
-            {[
-              ['#getting-started', 'Démarrage'],
-              ['#authentication', 'Authentification'],
-              ['#rate-limits', 'Limites de débit'],
-              ['#idempotency', 'Idempotence'],
-              ['#errors', 'Erreurs'],
-              ['#get-invoices', 'GET /invoices'],
-              ['#get-invoices-id', 'GET /invoices/:id'],
-              ['#get-balance', 'GET /balance'],
-              ['#post-transactions', 'POST /transactions'],
-              ['#changelog', 'Changelog'],
-            ].map(([href, label]) => (
+            {sidebarLinks.map(([href, label]) => (
               <a key={href} href={href} className="block px-3 py-1.5 rounded-lg text-gray-500 hover:text-[#0057D9] hover:bg-blue-50 dark:text-gray-400 dark:hover:bg-surface-2 transition-colors">
                 {label}
               </a>
@@ -88,90 +128,132 @@ export default function ApiDocsPage() {
         <main className="min-w-0">
           <div className="mb-10">
             <span className="inline-block px-3 py-1 rounded-full text-xs font-medium mb-3" style={{ background: `${BLUE}15`, color: BLUE }}>
-              Forfait Entreprise
+              {isEn ? 'Enterprise plan' : 'Forfait Entreprise'}
             </span>
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">API LiBooks</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">{isEn ? 'LiBooks API' : 'API LiBooks'}</h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
-              Une API REST volontairement restreinte à un petit nombre d'endpoints stables — pensée pour rester
-              compatible dans le temps plutôt que d'exposer tout le schéma interne. Lis tes factures, ton solde
-              comptable, et écris des écritures de journal depuis ton propre système.
+              {isEn
+                ? "A REST API deliberately kept to a small set of stable endpoints — built to stay compatible over time rather than exposing the whole internal schema. Read your invoices, your accounting balance, and write journal entries from your own system."
+                : "Une API REST volontairement restreinte à un petit nombre d'endpoints stables — pensée pour rester compatible dans le temps plutôt que d'exposer tout le schéma interne. Lis tes factures, ton solde comptable, et écris des écritures de journal depuis ton propre système."}
             </p>
           </div>
 
           <section id="getting-started" className="mb-12 scroll-mt-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Key className="w-5 h-5" style={{ color: BLUE }} /> Démarrage
+              <Key className="w-5 h-5" style={{ color: BLUE }} /> {isEn ? 'Getting started' : 'Démarrage'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-3">
-              Génère une clé API depuis <strong>Paramètres → API</strong> (visible uniquement sur le forfait Entreprise).
-              Chaque clé a un scope <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> ou{' '}
-              <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">write</code>, et n'est affichée
-              qu'une seule fois à sa création — conserve-la comme un mot de passe.
-            </p>
-            <p className="text-gray-600 dark:text-gray-400">
-              Base URL : <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">https://[ton-projet].supabase.co/functions/v1/public-api</code>
-            </p>
+            {isEn ? (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 mb-3">
+                  Generate an API key from <strong>Settings → API</strong> (visible only on the Enterprise plan).
+                  Each key has a <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> or{' '}
+                  <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">write</code> scope, and is shown
+                  only once, at creation — keep it like a password.
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Base URL: <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">https://[your-project].supabase.co/functions/v1/public-api</code>
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-600 dark:text-gray-400 mb-3">
+                  Génère une clé API depuis <strong>Paramètres → API</strong> (visible uniquement sur le forfait Entreprise).
+                  Chaque clé a un scope <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> ou{' '}
+                  <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">write</code>, et n'est affichée
+                  qu'une seule fois à sa création — conserve-la comme un mot de passe.
+                </p>
+                <p className="text-gray-600 dark:text-gray-400">
+                  Base URL : <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">https://[ton-projet].supabase.co/functions/v1/public-api</code>
+                </p>
+              </>
+            )}
           </section>
 
           <section id="authentication" className="mb-12 scroll-mt-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" style={{ color: BLUE }} /> Authentification
+              <ShieldCheck className="w-5 h-5" style={{ color: BLUE }} /> {isEn ? 'Authentication' : 'Authentification'}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Chaque requête doit inclure ta clé en en-tête <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">Authorization</code> :
+              {isEn ? 'Every request must include your key in the ' : 'Chaque requête doit inclure ta clé en en-tête '}
+              <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">Authorization</code>{isEn ? ' header:' : ' :'}
             </p>
             <CodeBlock code={`Authorization: Bearer lbk_xxxxxxxxxxxxxxxxxxxx`} />
-            <p className="text-gray-600 dark:text-gray-400">
-              Une clé révoquée ou invalide renvoie <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">401</code>.
-              Une clé <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> qui tente un
-              endpoint d'écriture reçoit <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">403</code>.
-            </p>
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                A revoked or invalid key returns <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">401</code>.
+                A <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> key hitting a
+                write endpoint gets <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">403</code>.
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400">
+                Une clé révoquée ou invalide renvoie <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">401</code>.
+                Une clé <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">read</code> qui tente un
+                endpoint d'écriture reçoit <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">403</code>.
+              </p>
+            )}
           </section>
 
           <section id="rate-limits" className="mb-12 scroll-mt-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <Zap className="w-5 h-5" style={{ color: BLUE }} /> Limites de débit
+              <Zap className="w-5 h-5" style={{ color: BLUE }} /> {isEn ? 'Rate limits' : 'Limites de débit'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              <strong>100 requêtes/minute</strong> par clé API (pas par tenant — chaque clé a son propre budget).
-              Au-delà, l'API renvoie <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">429</code>.
-              Réessaie après une minute.
-            </p>
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400">
+                <strong>100 requests/minute</strong> per API key (not per tenant — each key has its own budget).
+                Beyond that, the API returns <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">429</code>.
+                Retry after a minute.
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400">
+                <strong>100 requêtes/minute</strong> par clé API (pas par tenant — chaque clé a son propre budget).
+                Au-delà, l'API renvoie <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">429</code>.
+                Réessaie après une minute.
+              </p>
+            )}
           </section>
 
           <section id="idempotency" className="mb-12 scroll-mt-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <RotateCw className="w-5 h-5" style={{ color: BLUE }} /> Idempotence
+              <RotateCw className="w-5 h-5" style={{ color: BLUE }} /> {isEn ? 'Idempotency' : 'Idempotence'}
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Sur <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">POST /transactions</code>,
-              envoie un en-tête <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">Idempotency-Key</code> unique.
-              Si ta requête timeout ou échoue côté réseau, renvoie-la avec la <strong>même</strong> clé : tu recevras la
-              réponse d'origine au lieu de créer une deuxième écriture.
-            </p>
-            <CodeBlock code={`Idempotency-Key: mon-id-unique-du-cote-client-123`} />
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                On <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">POST /transactions</code>,
+                send a unique <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">Idempotency-Key</code> header.
+                If your request times out or fails on the network, resend it with the <strong>same</strong> key: you'll get
+                back the original response instead of creating a second entry.
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Sur <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">POST /transactions</code>,
+                envoie un en-tête <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">Idempotency-Key</code> unique.
+                Si ta requête timeout ou échoue côté réseau, renvoie-la avec la <strong>même</strong> clé : tu recevras la
+                réponse d'origine au lieu de créer une deuxième écriture.
+              </p>
+            )}
+            <CodeBlock code={isEn ? `Idempotency-Key: my-unique-client-side-id-123` : `Idempotency-Key: mon-id-unique-du-cote-client-123`} />
           </section>
 
           <section id="errors" className="mb-12 scroll-mt-24">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Erreurs</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-3">
-              Toutes les erreurs renvoient <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">{'{ "error": "message" }'}</code>.
-              Les erreurs serveur (500) ne renvoient jamais de détail interne — seulement un message générique ; contacte le support avec l'heure approximative si ça persiste.
-            </p>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">{isEn ? 'Errors' : 'Erreurs'}</h2>
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400 mb-3">
+                All errors return <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">{'{ "error": "message" }'}</code>.
+                Server errors (500) never return internal detail — just a generic message; contact support with the approximate time if it persists.
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 mb-3">
+                Toutes les erreurs renvoient <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">{'{ "error": "message" }'}</code>.
+                Les erreurs serveur (500) ne renvoient jamais de détail interne — seulement un message générique ; contacte le support avec l'heure approximative si ça persiste.
+              </p>
+            )}
             <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-surface-3">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 dark:bg-surface-2">
-                  <tr><th className="text-left px-4 py-2 font-medium text-gray-600 dark:text-gray-300">Code</th><th className="text-left px-4 py-2 font-medium text-gray-600 dark:text-gray-300">Signification</th></tr>
+                  <tr><th className="text-left px-4 py-2 font-medium text-gray-600 dark:text-gray-300">Code</th><th className="text-left px-4 py-2 font-medium text-gray-600 dark:text-gray-300">{isEn ? 'Meaning' : 'Signification'}</th></tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-surface-3">
-                  {[
-                    ['400', 'Requête invalide (champ manquant, écriture déséquilibrée...)'],
-                    ['401', 'Clé API manquante, invalide ou révoquée'],
-                    ['403', "Scope insuffisant (clé read sur un endpoint d'écriture)"],
-                    ['404', "Endpoint ou ressource introuvable"],
-                    ['429', 'Limite de débit dépassée (100/min)'],
-                    ['500', 'Erreur interne — contacte le support'],
-                  ].map(([code, meaning]) => (
+                  {errorRows.map(([code, meaning]) => (
                     <tr key={code}><td className="px-4 py-2 font-mono text-gray-800 dark:text-gray-200">{code}</td><td className="px-4 py-2 text-gray-600 dark:text-gray-400">{meaning}</td></tr>
                   ))}
                 </tbody>
@@ -181,15 +263,23 @@ export default function ApiDocsPage() {
 
           <hr className="border-gray-100 dark:border-surface-3 my-10" />
 
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Référence des endpoints</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{isEn ? 'Endpoint reference' : 'Référence des endpoints'}</h2>
 
           <Endpoint method="GET" path="/invoices">
-            <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Liste les factures de vente du tenant, paginée. Paramètres de requête optionnels :{' '}
-              <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">limit</code> (défaut 50, max 200) et{' '}
-              <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">offset</code>.
-            </p>
-            <CodeBlock code={`curl https://[ton-projet].supabase.co/functions/v1/public-api/invoices?limit=20 \\
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Lists the tenant's sales invoices, paginated. Optional query params:{' '}
+                <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">limit</code> (default 50, max 200) and{' '}
+                <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">offset</code>.
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Liste les factures de vente du tenant, paginée. Paramètres de requête optionnels :{' '}
+                <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">limit</code> (défaut 50, max 200) et{' '}
+                <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">offset</code>.
+              </p>
+            )}
+            <CodeBlock code={`curl https://[your-project].supabase.co/functions/v1/public-api/invoices?limit=20 \\
   -H "Authorization: Bearer lbk_xxxxxxxxxxxx"`} />
             <CodeBlock lang="json" code={`{
   "data": [
@@ -211,44 +301,51 @@ export default function ApiDocsPage() {
           </Endpoint>
 
           <Endpoint method="GET" path="/invoices/:id">
-            <p className="text-gray-600 dark:text-gray-400 mb-2">Une facture précise, avec ses lignes.</p>
-            <CodeBlock code={`curl https://[ton-projet].supabase.co/functions/v1/public-api/invoices/8f3e... \\
+            <p className="text-gray-600 dark:text-gray-400 mb-2">{isEn ? 'A specific invoice, with its line items.' : 'Une facture précise, avec ses lignes.'}</p>
+            <CodeBlock code={`curl https://[your-project].supabase.co/functions/v1/public-api/invoices/8f3e... \\
   -H "Authorization: Bearer lbk_xxxxxxxxxxxx"`} />
             <CodeBlock lang="json" code={`{
   "data": {
     "id": "8f3e...",
     "invoice_number": "FAC-2026-0142",
-    "...": "...tous les champs de la facture",
+    "...": "...${isEn ? 'all invoice fields' : 'tous les champs de la facture'}",
     "items": [
-      { "id": "...", "description": "Prestation conseil", "quantity": 1, "unit_price": 150000, "total": 150000 }
+      { "id": "...", "description": "${isEn ? 'Consulting service' : 'Prestation conseil'}", "quantity": 1, "unit_price": 150000, "total": 150000 }
     ]
   }
 }`} />
           </Endpoint>
 
           <Endpoint method="GET" path="/balance">
-            <p className="text-gray-600 dark:text-gray-400 mb-2">Solde agrégé par compte comptable (débit − crédit).</p>
-            <CodeBlock code={`curl https://[ton-projet].supabase.co/functions/v1/public-api/balance \\
+            <p className="text-gray-600 dark:text-gray-400 mb-2">{isEn ? 'Balance aggregated by account (debit − credit).' : 'Solde agrégé par compte comptable (débit − crédit).'}</p>
+            <CodeBlock code={`curl https://[your-project].supabase.co/functions/v1/public-api/balance \\
   -H "Authorization: Bearer lbk_xxxxxxxxxxxx"`} />
             <CodeBlock lang="json" code={`{
   "data": [
-    { "code": "512000", "name": "Banque", "balance": 4520000 },
-    { "code": "411000", "name": "Clients", "balance": 890000 }
+    { "code": "512000", "name": "${isEn ? 'Bank' : 'Banque'}", "balance": 4520000 },
+    { "code": "411000", "name": "${isEn ? 'Customers' : 'Clients'}", "balance": 890000 }
   ]
 }`} />
           </Endpoint>
 
           <Endpoint method="POST" path="/transactions" scope="write">
-            <p className="text-gray-600 dark:text-gray-400 mb-2">
-              Crée une écriture de journal. <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">lines</code> doit
-              contenir au moins 2 lignes, et le total des débits doit égaler le total des crédits (partie double stricte).
-            </p>
-            <CodeBlock code={`curl -X POST https://[ton-projet].supabase.co/functions/v1/public-api/transactions \\
+            {isEn ? (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Creates a journal entry. <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">lines</code> must
+                contain at least 2 lines, and total debits must equal total credits (strict double-entry).
+              </p>
+            ) : (
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Crée une écriture de journal. <code className="text-sm bg-gray-100 dark:bg-surface-2 px-1.5 py-0.5 rounded">lines</code> doit
+                contenir au moins 2 lignes, et le total des débits doit égaler le total des crédits (partie double stricte).
+              </p>
+            )}
+            <CodeBlock code={`curl -X POST https://[your-project].supabase.co/functions/v1/public-api/transactions \\
   -H "Authorization: Bearer lbk_xxxxxxxxxxxx" \\
   -H "Content-Type: application/json" \\
   -H "Idempotency-Key: sync-run-2026-08-24-001" \\
   -d '{
-    "description": "Vente au comptant",
+    "description": "${isEn ? 'Cash sale' : 'Vente au comptant'}",
     "transaction_date": "2026-08-24",
     "lines": [
       { "account_id": "acc_caisse_id", "debit": 50000 },
@@ -256,25 +353,39 @@ export default function ApiDocsPage() {
     ]
   }'`} />
             <CodeBlock lang="json" code={`{ "data": { "id": "9c1d...", "status": "created" } }`} />
-            <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
-              Les écritures créées via l'API arrivent non postées (<code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">is_posted: false</code>) —
-              elles doivent être validées dans LiBooks avant d'affecter les rapports officiels.
-            </p>
+            {isEn ? (
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                Entries created via the API arrive unposted (<code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">is_posted: false</code>) —
+                they must be validated in LiBooks before affecting official reports.
+              </p>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                Les écritures créées via l'API arrivent non postées (<code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">is_posted: false</code>) —
+                elles doivent être validées dans LiBooks avant d'affecter les rapports officiels.
+              </p>
+            )}
           </Endpoint>
 
           <hr className="border-gray-100 dark:border-surface-3 my-10" />
 
           <section id="changelog" className="scroll-mt-24">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">Changelog</h2>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <li><strong className="text-gray-900 dark:text-white">2026-08-24</strong> — Rate limiting (100/min), support de <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">Idempotency-Key</code> sur POST /transactions, préfixe <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">/v1/</code> optionnel.</li>
-              <li><strong className="text-gray-900 dark:text-white">2026-07-28</strong> — Lancement de l'API publique (Entreprise).</li>
-            </ul>
+            {isEn ? (
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <li><strong className="text-gray-900 dark:text-white">2026-08-24</strong> — Rate limiting (100/min), <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">Idempotency-Key</code> support on POST /transactions, optional <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">/v1/</code> prefix.</li>
+                <li><strong className="text-gray-900 dark:text-white">2026-07-28</strong> — Public API launch (Enterprise).</li>
+              </ul>
+            ) : (
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <li><strong className="text-gray-900 dark:text-white">2026-08-24</strong> — Rate limiting (100/min), support de <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">Idempotency-Key</code> sur POST /transactions, préfixe <code className="text-xs bg-gray-100 dark:bg-surface-2 px-1 py-0.5 rounded">/v1/</code> optionnel.</li>
+                <li><strong className="text-gray-900 dark:text-white">2026-07-28</strong> — Lancement de l'API publique (Entreprise).</li>
+              </ul>
+            )}
           </section>
 
           <div className="mt-16 p-6 rounded-2xl bg-gray-50 dark:bg-surface-1 border border-gray-100 dark:border-surface-3">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Besoin d'un endpoint qui n'existe pas encore, ou d'aide pour intégrer ?{' '}
+              {isEn ? "Need an endpoint that doesn't exist yet, or help integrating? " : "Besoin d'un endpoint qui n'existe pas encore, ou d'aide pour intégrer ? "}
               <a href="mailto:support@liafrik.com" className="font-medium" style={{ color: BLUE }}>support@liafrik.com</a>
             </p>
           </div>

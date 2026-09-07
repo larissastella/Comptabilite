@@ -56,6 +56,28 @@ export function usePageMeta(title: string, description?: string) {
     const previousTwitterDescription = twitterDescription?.getAttribute('content') ?? DEFAULT_DESCRIPTION;
     if (twitterDescription && description) twitterDescription.setAttribute('content', description);
 
+    // hreflang alternates: every public page that calls usePageMeta now
+    // has both a French URL (e.g. /about) and an English one under /en
+    // (e.g. /en/about) — see the /en/* routes in App.tsx. Toggling the
+    // prefix on the current path gives the alternate URL generically,
+    // without each page having to know its own sibling route.
+    const path = window.location.pathname;
+    const frPath = path.startsWith('/en/') ? path.slice(3) : (path === '/en' ? '/' : path);
+    const enPath = path.startsWith('/en') ? path : `/en${path === '/' ? '' : path}`;
+    const addedHreflangLinks: HTMLLinkElement[] = [];
+    for (const { hreflang, href } of [
+      { hreflang: 'fr', href: `${SITE_URL}${frPath}` },
+      { hreflang: 'en', href: `${SITE_URL}${enPath}` },
+      { hreflang: 'x-default', href: `${SITE_URL}${frPath}` },
+    ]) {
+      const link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      link.setAttribute('href', href);
+      document.head.appendChild(link);
+      addedHreflangLinks.push(link);
+    }
+
     return () => {
       document.title = previousTitle;
       if (metaDescription) metaDescription.setAttribute('content', previousDescription);
@@ -65,6 +87,7 @@ export function usePageMeta(title: string, description?: string) {
       if (ogUrl) ogUrl.setAttribute('content', previousOgUrl);
       if (twitterTitle) twitterTitle.setAttribute('content', previousTwitterTitle);
       if (twitterDescription) twitterDescription.setAttribute('content', previousTwitterDescription);
+      addedHreflangLinks.forEach((link) => link.remove());
     };
   }, [title, description]);
 }

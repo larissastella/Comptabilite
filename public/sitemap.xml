@@ -11,13 +11,10 @@
   this sitemap was generated; update them when a page's content actually
   changes.
 
-  Domain: replace https://libooks.liafrik.com below if the real production
-  domain differs — this was inferred from APP_URL's fallback value in the
-  Supabase Edge Functions, not confirmed against actual DNS/hosting.
-
-  hreflang: only the homepage (/) has a genuine English version (/en) —
-  see the comment on the /en route in src/App.tsx for why the other
-  pages aren't listed with an English alternate yet.
+  Every public page below now has a genuine French URL and a genuine
+  English URL under /en/ (see the /en/* routes in App.tsx and the
+  bilingual content in each page component) — both are listed with
+  reciprocal hreflang annotations, not just the homepage as before.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
@@ -41,27 +38,75 @@
   </url>
   <url>
     <loc>https://libooks.liafrik.com/about</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/about" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://libooks.liafrik.com/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/about" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/about" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://libooks.liafrik.com/contact</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/contact" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://libooks.liafrik.com/help</loc>
-    <lastmod>2026-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://libooks.liafrik.com/developers</loc>
+    <loc>https://libooks.liafrik.com/en/contact</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/contact" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/contact" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/contact" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/help</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/help" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/help" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/help" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/help</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/help" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/help" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/help" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/developers</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/developers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/developers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/developers" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/developers</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/developers" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/developers" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/developers" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
   </url>
   <url>
     <loc>https://libooks.liafrik.com/signup</loc>
@@ -71,32 +116,92 @@
   </url>
   <url>
     <loc>https://libooks.liafrik.com/legal</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/legal" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/legal</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/legal" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/legal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/legal" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
   </url>
   <url>
     <loc>https://libooks.liafrik.com/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/privacy" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/privacy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/privacy" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
   </url>
   <url>
     <loc>https://libooks.liafrik.com/terms</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/terms" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/terms" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/terms" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/terms" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
   </url>
   <url>
     <loc>https://libooks.liafrik.com/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/cookies" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/cookies" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://libooks.liafrik.com/en/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/cookies" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/cookies" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/cookies" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
     <loc>https://libooks.liafrik.com/refund-policy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/refund-policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/refund-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/refund-policy" />
     <lastmod>2026-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://libooks.liafrik.com/en/refund-policy</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://libooks.liafrik.com/refund-policy" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://libooks.liafrik.com/en/refund-policy" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://libooks.liafrik.com/refund-policy" />
+    <lastmod>2026-01-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
   </url>
 </urlset>
