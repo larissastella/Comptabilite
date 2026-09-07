@@ -189,6 +189,15 @@ export default function App() {
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/cookies" element={<CookiePolicyPage />} />
         <Route path="/refund-policy" element={<RefundPolicyPage />} />
+        <Route path="/en/about" element={<WithLang lang="en"><AboutPage /></WithLang>} />
+        <Route path="/en/contact" element={<WithLang lang="en"><ContactPage /></WithLang>} />
+        <Route path="/en/legal" element={<WithLang lang="en"><LegalPage /></WithLang>} />
+        <Route path="/en/developers" element={<WithLang lang="en"><ApiDocsPage /></WithLang>} />
+        <Route path="/en/help" element={<WithLang lang="en"><HelpCenterPage /></WithLang>} />
+        <Route path="/en/privacy" element={<WithLang lang="en"><PrivacyPage /></WithLang>} />
+        <Route path="/en/terms" element={<WithLang lang="en"><TermsPage /></WithLang>} />
+        <Route path="/en/cookies" element={<WithLang lang="en"><CookiePolicyPage /></WithLang>} />
+        <Route path="/en/refund-policy" element={<WithLang lang="en"><RefundPolicyPage /></WithLang>} />
         <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><SignupPage /></PublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
