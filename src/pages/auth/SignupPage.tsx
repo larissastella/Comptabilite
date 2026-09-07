@@ -9,7 +9,8 @@ import { usePageMeta } from '../../lib/usePageMeta';
 
 export default function SignupPage() {
   usePageMeta('Créer un compte', "Démarre ton essai gratuit de 7 jours sur LiBooks — sans carte bancaire.");
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEn = i18n.language === 'en';
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -59,11 +60,18 @@ export default function SignupPage() {
     }
   }
 
-  const features = [
+  const features = isEn ? [
+    'Automatic SYSCOHADA invoicing',
+    'Multi-store inventory management',
+    'Offline-first POS',
+    '97 countries supported worldwide',
+    'PDF/WhatsApp exports',
+    '7-day free trial, no card required',
+  ] : [
     'Facturation SYSCOHADA automatique',
     'Gestion de stock multi-magasin',
     'POS offline-first',
-    '62 pays supportés dans le monde',
+    '97 pays supportés dans le monde',
     'Exports PDF/WhatsApp',
     '7 jours d\'essai gratuit, sans CB',
   ];
@@ -184,10 +192,21 @@ export default function SignupPage() {
             </form>
 
             <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
-              En vous inscrivant, vous acceptez nos{' '}
-              <Link to="/terms" className="text-[#0057D9] hover:underline">CGU</Link>{' '}
-              et notre{' '}
-              <Link to="/privacy" className="text-[#0057D9] hover:underline">politique de confidentialité</Link>.
+              {isEn ? (
+                <>
+                  By signing up, you agree to our{' '}
+                  <Link to="/en/terms" className="text-[#0057D9] hover:underline">Terms of Service</Link>{' '}
+                  and{' '}
+                  <Link to="/en/privacy" className="text-[#0057D9] hover:underline">Privacy Policy</Link>.
+                </>
+              ) : (
+                <>
+                  En vous inscrivant, vous acceptez nos{' '}
+                  <Link to="/terms" className="text-[#0057D9] hover:underline">CGU</Link>{' '}
+                  et notre{' '}
+                  <Link to="/privacy" className="text-[#0057D9] hover:underline">politique de confidentialité</Link>.
+                </>
+              )}
             </p>
 
             <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">

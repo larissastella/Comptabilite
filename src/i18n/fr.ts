@@ -619,7 +619,7 @@ const fr = {
     navFaq: 'FAQ',
     navLogin: 'Connexion',
     navSignup: 'Essai gratuit',
-    heroBadge: 'Comptabilité multi-pays — expertise OHADA, 62 pays supportés',
+    heroBadge: 'Comptabilité multi-pays — expertise OHADA, 97 pays supportés',
     heroTitle: 'La gestion comptable',
     heroTitleAccent: 'sans frontières.',
     heroSub: "Facturation, stocks, comptabilité OHADA, Mobile Money, IA trésorerie. Tout ce dont votre entreprise a besoin, où que vous soyez, offline-first, dans votre langue.",

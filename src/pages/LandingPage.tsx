@@ -142,6 +142,7 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
 
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
+  const isEn = i18n.language === 'en';
   const navigate = useNavigate();
   // Keeps the URL and the rendered language in lockstep: /en must always
   // render English and / must always render French, so switching the
@@ -428,14 +429,21 @@ export default function LandingPage() {
           </Reveal>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { icon: Globe, title: '62 pays supportés', desc: 'Cameroun, Sénégal, Côte d\'Ivoire, Nigeria, Kenya, Ghana, France, Émirats Arabes Unis, et plus. Régions, villes, devises, taux de TVA — tout est pré-configuré.' },
+            {(isEn ? [
+              { icon: Globe, title: '97 countries supported', desc: 'Cameroon, Senegal, Ivory Coast, Nigeria, Kenya, Ghana, France, UAE, and more. Regions, cities, currencies, VAT rates — all pre-configured.' },
+              { icon: Wifi, title: 'Offline-first', desc: 'Unstable connection? No problem. Create invoices and transactions offline. Syncing happens automatically once the network is back.' },
+              { icon: Smartphone, title: 'Native Mobile Money', desc: 'Orange Money, MTN MoMo, Wave, Moov Money. Collect, track, reconcile — without leaving the app.' },
+              { icon: Shield, title: 'Native OHADA', desc: 'Revised SYSCOHADA chart pre-configured. Balance sheet, income statement, filings — OHADA-compliant.' },
+              { icon: Languages, title: 'Bilingual FR / EN', desc: 'The full interface, in French and English. Switch in one click, for your whole team.' },
+              { icon: Zap, title: 'Fast & lightweight', desc: 'Installable PWA, under 3MB. Works on phone, tablet, desktop. Even on a Samsung A10.' },
+            ] : [
+              { icon: Globe, title: '97 pays supportés', desc: 'Cameroun, Sénégal, Côte d\'Ivoire, Nigeria, Kenya, Ghana, France, Émirats Arabes Unis, et plus. Régions, villes, devises, taux de TVA — tout est pré-configuré.' },
               { icon: Wifi, title: 'Offline-first', desc: 'Connexion instable ? Aucun problème. Créez factures et mouvements hors ligne. La synchronisation est automatique au retour du réseau.' },
               { icon: Smartphone, title: 'Mobile Money natif', desc: 'Orange Money, MTN MoMo, Wave, Moov Money. Encaissez, suivez, rapprochez — sans quitter l\'application.' },
               { icon: Shield, title: 'OHADA natif', desc: 'Plan SYSCOHADA révisé pré-configuré. Bilan, compte de résultat, déclarations — conformes aux normes OHADA.' },
-              { icon: Languages, title: 'Bilingue FR / EN', desc: 'Interface, emails, PDFs — tout en français et en anglais. Basculez en un clic, pour toute l\'équipe.' },
+              { icon: Languages, title: 'Bilingue FR / EN', desc: 'Toute l\'interface, en français et en anglais. Basculez en un clic, pour toute l\'équipe.' },
               { icon: Zap, title: 'Rapide & léger', desc: 'PWA installable, moins de 3MB. Fonctionne sur smartphone, tablette, ordinateur. Même sur un Samsung A10.' },
-            ].map((f, i) => (
+            ]).map((f, i) => (
               <Reveal key={f.title} delay={i * 100}>
                 <div className="bg-white dark:bg-surface-1 rounded-2xl p-6 border border-gray-100 dark:border-surface-3 hover:shadow-lg transition-all hover:-translate-y-1 group h-full">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `${GREEN}15` }}>
@@ -737,15 +745,15 @@ export default function LandingPage() {
             <div>
               <h4 className="text-sm font-semibold mb-4 text-white">{t('landing.footerResources')}</h4>
               <ul className="space-y-2.5">
-                <li><Link to="/about" className="text-sm text-gray-400 hover:text-white transition-colors">À propos</Link></li>
-                <li><Link to="/help" className="text-sm text-gray-400 hover:text-white transition-colors">Centre d'aide</Link></li>
-                <li><Link to="/developers" className="text-sm text-gray-400 hover:text-white transition-colors">Développeurs / API</Link></li>
-                <li><Link to="/contact" className="text-sm text-gray-400 hover:text-white transition-colors">Contact & Support</Link></li>
-                <li><Link to="/legal" className="text-sm text-gray-400 hover:text-white transition-colors">Mentions légales</Link></li>
-                <li><Link to="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de confidentialité</Link></li>
-                <li><Link to="/terms" className="text-sm text-gray-400 hover:text-white transition-colors">Conditions d'utilisation</Link></li>
-                <li><Link to="/cookies" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de cookies</Link></li>
-                <li><Link to="/refund-policy" className="text-sm text-gray-400 hover:text-white transition-colors">Politique de remboursement</Link></li>
+                <li><Link to={isEn ? '/en/about' : '/about'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'About' : 'À propos'}</Link></li>
+                <li><Link to={isEn ? '/en/help' : '/help'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Help Center' : "Centre d'aide"}</Link></li>
+                <li><Link to={isEn ? '/en/developers' : '/developers'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Developers / API' : 'Développeurs / API'}</Link></li>
+                <li><Link to={isEn ? '/en/contact' : '/contact'} className="text-sm text-gray-400 hover:text-white transition-colors">Contact & Support</Link></li>
+                <li><Link to={isEn ? '/en/legal' : '/legal'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Legal Notice' : 'Mentions légales'}</Link></li>
+                <li><Link to={isEn ? '/en/privacy' : '/privacy'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Privacy Policy' : 'Politique de confidentialité'}</Link></li>
+                <li><Link to={isEn ? '/en/terms' : '/terms'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Terms of Service' : "Conditions d'utilisation"}</Link></li>
+                <li><Link to={isEn ? '/en/cookies' : '/cookies'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Cookie Policy' : 'Politique de cookies'}</Link></li>
+                <li><Link to={isEn ? '/en/refund-policy' : '/refund-policy'} className="text-sm text-gray-400 hover:text-white transition-colors">{isEn ? 'Refund Policy' : 'Politique de remboursement'}</Link></li>
               </ul>
             </div>
 
@@ -836,8 +844,8 @@ export default function LandingPage() {
           <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-gray-500">{t('landing.footerRights')}</p>
             <div className="flex items-center gap-6">
-              <Link to="/privacy" className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerPrivacy')}</Link>
-              <Link to="/terms" className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerTerms')}</Link>
+              <Link to={isEn ? '/en/privacy' : '/privacy'} className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerPrivacy')}</Link>
+              <Link to={isEn ? '/en/terms' : '/terms'} className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerTerms')}</Link>
               <div className="flex items-center gap-1 rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
                 {(['fr', 'en'] as const).map(lang => (
                   <button key={lang} onClick={() => switchLang(lang)}

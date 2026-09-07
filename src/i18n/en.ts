@@ -619,7 +619,7 @@ const en = {
     navFaq: 'FAQ',
     navLogin: 'Sign In',
     navSignup: 'Free Trial',
-    heroBadge: 'Multi-country accounting — OHADA expertise, 62 countries supported',
+    heroBadge: 'Multi-country accounting — OHADA expertise, 97 countries supported',
     heroTitle: 'Accounting management',
     heroTitleAccent: 'without borders.',
     heroSub: 'Invoicing, inventory, OHADA accounting, Mobile Money, AI cashflow. Everything your business needs, wherever you are, offline-first, in your language.',
