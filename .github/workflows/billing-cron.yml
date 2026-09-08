@@ -37,3 +37,12 @@ jobs:
           curl -sf -X POST "https://zaagwcunjonxxbzwzlhs.supabase.co/functions/v1/billing-reminders" \
           -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
           -H "Content-Type: application/json"
+
+  recurring-invoices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Génère les factures récurrentes dues (modèles clients)
+        run: |
+          curl -sf -X POST "https://zaagwcunjonxxbzwzlhs.supabase.co/functions/v1/generate-recurring-invoices" \
+          -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+          -H "Content-Type: application/json"

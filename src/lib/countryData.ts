@@ -879,6 +879,7 @@ export const MODULES = [
   'banking', 'whatsapp', 'ai_cashflow', 'ohada', 'billing', 'settings',
   'users', 'roles', 'customers', 'suppliers',
   'credit_notes', 'bank_reconciliation', 'fixed_assets', 'api_access',
+  'recurring_invoices',
 ] as const;
 
 export type ModuleKey = typeof MODULES[number];
@@ -886,8 +887,8 @@ export type ModuleKey = typeof MODULES[number];
 export const PLAN_LIMITS: Record<string, ModuleKey[]> = {
   starter: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes'],
   pro: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'banking', 'whatsapp', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes', 'bank_reconciliation'],
-  premium: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'banking', 'whatsapp', 'ai_cashflow', 'ohada', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes', 'bank_reconciliation', 'fixed_assets'],
-  enterprise: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'banking', 'whatsapp', 'ai_cashflow', 'ohada', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes', 'bank_reconciliation', 'fixed_assets', 'api_access'],
+  premium: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'banking', 'whatsapp', 'ai_cashflow', 'ohada', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes', 'bank_reconciliation', 'fixed_assets', 'recurring_invoices'],
+  enterprise: ['dashboard', 'chart_of_accounts', 'inventory', 'warehouses', 'sales_invoices', 'purchase_invoices', 'customers', 'suppliers', 'transactions', 'ledger', 'reports', 'banking', 'whatsapp', 'ai_cashflow', 'ohada', 'settings', 'users', 'roles', 'billing', 'companies', 'credit_notes', 'bank_reconciliation', 'fixed_assets', 'api_access', 'recurring_invoices'],
 };
 
 export const COMMON_CURRENCIES = [

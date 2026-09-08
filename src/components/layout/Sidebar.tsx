@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Building2, BookOpen, Package, Warehouse, FileText,
   ShoppingCart, ArrowLeftRight, BookMarked, BarChart3, CreditCard,
   Smartphone, Bot, FileSpreadsheet, Settings, Users, Shield,
-  LogOut, X, ChevronDown, ChevronRight, Globe, Lock, Landmark, Boxes, Receipt, Plus, Truck,
+  LogOut, X, ChevronDown, ChevronRight, Globe, Lock, Landmark, Boxes, Receipt, Plus, Truck, Repeat,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -86,6 +86,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           label: t('nav.premium'),
           items: [
             { key: 'banking', label: t('nav.banking'), icon: CreditCard, to: '/app/banking', module: 'banking' },
+            { key: 'recurring-invoices', label: 'Factures récurrentes', icon: Repeat, to: '/app/recurring-invoices', module: 'recurring_invoices' },
             { key: 'bank-reconciliation', label: 'Rapprochement bancaire', icon: Landmark, to: '/app/bank-reconciliation', module: 'bank_reconciliation' },
             { key: 'fixed-assets', label: 'Immobilisations', icon: Boxes, to: '/app/fixed-assets', module: 'fixed_assets' },
             { key: 'whatsapp', label: t('nav.whatsapp'), icon: Smartphone, to: '/app/whatsapp', module: 'whatsapp' },

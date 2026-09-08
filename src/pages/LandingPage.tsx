@@ -69,12 +69,12 @@ const MODULE_LABELS: Record<ModuleKey, string> = {
   dashboard: 'Tableau de bord', companies: 'Multi-société', chart_of_accounts: 'Plan comptable',
   inventory: 'Stocks', warehouses: 'Multi-magasins', sales_invoices: 'Factures de vente',
   purchase_invoices: 'Factures d\'achat', transactions: 'Transactions', ledger: 'Grand livre',
-  reports: 'Rapports', banking: 'Banque & Mobile Money', whatsapp: 'WhatsApp & Portail client',
+  reports: 'Rapports', banking: 'Banque & Mobile Money', whatsapp: 'WhatsApp',
   ai_cashflow: 'IA Trésorerie & FX', ohada: 'OHADA complet (bilan, résultat)', billing: 'Facturation abonnement',
   settings: 'Paramètres', users: 'Gestion utilisateurs', roles: 'Rôles & permissions',
   customers: 'Clients', suppliers: 'Fournisseurs', credit_notes: 'Avoirs',
   bank_reconciliation: 'Rapprochement bancaire', fixed_assets: 'Immobilisations & amortissements',
-  api_access: 'Accès API',
+  api_access: 'Accès API', recurring_invoices: 'Factures récurrentes',
 };
 
 const PLAN_ORDER = ['starter', 'pro', 'premium', 'enterprise'] as const;
