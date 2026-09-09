@@ -316,10 +316,16 @@ export default function Settings() {
             {activeTab === 'language' && (
               <div className="space-y-4">
                 <h2 className="text-base font-semibold text-gray-900 mb-4">{t('settings.language')}</h2>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   {[
                     { code: 'fr', label: 'Français', flag: '🇫🇷' },
                     { code: 'en', label: 'English', flag: '🇬🇧' },
+                    { code: 'ar', label: 'العربية', flag: '🇦🇪' },
+                    { code: 'pt', label: 'Português', flag: '🇵🇹' },
+                    { code: 'es', label: 'Español', flag: '🇪🇸' },
+                    { code: 'sw', label: 'Kiswahili', flag: '🇰🇪' },
+                    { code: 'zh', label: '中文', flag: '🇨🇳' },
+                    { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
                   ].map(lang => (
                     <button
                       key={lang.code}
@@ -331,7 +337,11 @@ export default function Settings() {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-gray-400">La langue s'applique à toute l'interface, aux emails et aux PDF générés.</p>
+                <p className="text-xs text-gray-400">
+                  La langue s'applique à toute l'interface. Arabe, Portugais, Espagnol, Kiswahili, Chinois et
+                  Allemand sont en cours de traduction (affichés en français en attendant) — l'anglais et le
+                  français sont eux entièrement disponibles.
+                </p>
               </div>
             )}
             {activeTab === 'api' && <ApiKeysPanel tenantId={tenant!.id} />}
