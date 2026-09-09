@@ -1,3 +1,3 @@
 # Comptabilite
 
-[![Open in Bolt](https://bolt.new/static/open-in-bolt.svg)](https://bolt.new/~/sb1-louigkjb)
+Dev by Vincent Nogue Ceo Of Liafrik www.liafrik.com
