@@ -562,22 +562,19 @@ export default function Billing() {
                 {!isCurrent && (
                   <div className="mt-4 space-y-1.5">
                     <button
-                      onClick={() => handleCheckout(plan.id, autoProvider())}
+                      onClick={() => {
+                        if (Object.values(PSP_AVAILABLE).filter(Boolean).length > 1) {
+                          setPickingPlanFor(plan.id);
+                        } else {
+                          handleCheckout(plan.id, autoProvider());
+                        }
+                      }}
                       disabled={redirecting}
                       className="w-full py-2 bg-[#0057D9] hover:bg-[#003F9E] text-white text-sm font-semibold rounded-xl flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
                     >
                       {redirecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUpRight className="w-4 h-4" />}
                       {plan.price > (currentPlan?.price || 0) ? t('billing.upgrade') : t('billing.downgrade')}
                     </button>
-                    {Object.values(PSP_AVAILABLE).filter(Boolean).length > 1 && (
-                      <button
-                        onClick={() => setPickingPlanFor(plan.id)}
-                        disabled={redirecting}
-                        className="w-full text-center text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-60"
-                      >
-                        Choisir un autre moyen de paiement
-                      </button>
-                    )}
                   </div>
                 )}
               </div>

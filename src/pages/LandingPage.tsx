@@ -140,6 +140,65 @@ function Reveal({ children, delay = 0, className = '' }: { children: React.React
   );
 }
 
+const ALL_LANGUAGES = [
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'English', flag: '🇬🇧' },
+  { code: 'ar', label: 'العربية', flag: '🇦🇪' },
+  { code: 'pt', label: 'Português', flag: '🇵🇹' },
+  { code: 'es', label: 'Español', flag: '🇪🇸' },
+  { code: 'sw', label: 'Kiswahili', flag: '🇰🇪' },
+  { code: 'zh', label: '中文', flag: '🇨🇳' },
+  { code: 'de', label: 'Deutsch', flag: '🇩🇪' },
+] as const;
+
+function LanguageDropdown({
+  dark, onPick,
+}: {
+  dark?: boolean;
+  onPick: (lang: typeof ALL_LANGUAGES[number]['code']) => void;
+}) {
+  const { i18n } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const current = ALL_LANGUAGES.find(l => l.code === i18n.language) ?? ALL_LANGUAGES[0];
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors ${
+          dark
+            ? 'border-white/10 text-gray-300 hover:text-white hover:bg-white/5'
+            : 'border-gray-200 dark:border-surface-3 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-surface-2'
+        }`}
+      >
+        <span>{current.flag}</span>
+        <span>{current.code.toUpperCase()}</span>
+        <ChevronDown className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 mt-2 w-48 rounded-xl shadow-lg border border-gray-100 dark:border-surface-3 bg-white dark:bg-surface-1 py-1.5 z-50 max-h-72 overflow-y-auto">
+            {ALL_LANGUAGES.map(l => (
+              <button
+                key={l.code}
+                onClick={() => { onPick(l.code); setOpen(false); }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm text-left transition-colors ${
+                  l.code === current.code
+                    ? 'text-[#0057D9] font-semibold bg-blue-50 dark:bg-[#0057D9]/10'
+                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-surface-2'
+                }`}
+              >
+                <span>{l.flag}</span>
+                <span>{l.label}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function LandingPage() {
   const { t, i18n } = useTranslation();
   const isEn = i18n.language === 'en';
@@ -149,8 +208,16 @@ export default function LandingPage() {
   // language here navigates instead of just calling i18n.changeLanguage
   // in place — otherwise a reload (or a search engine crawl) would
   // silently revert to whatever the URL says, ignoring the choice.
-  function switchLang(lang: 'fr' | 'en') {
-    navigate(lang === 'en' ? '/en' : '/');
+  // fr and en have dedicated routed URLs (/ and /en) for SEO — switching
+  // to either navigates, keeping URL and language in lockstep (see
+  // WithLang in App.tsx). The other 6 languages don't have their own
+  // indexable URL yet (translating the whole public site 6 more times is
+  // a separate project) — for those, this just switches i18n.language in
+  // place, same mechanism as the Settings picker in-app.
+  function switchLang(lang: 'fr' | 'en' | 'ar' | 'pt' | 'es' | 'sw' | 'zh' | 'de') {
+    if (lang === 'en') { navigate('/en'); return; }
+    if (lang === 'fr') { navigate('/'); return; }
+    i18n.changeLanguage(lang);
   }
 
   // Landing page is the only public page genuinely available in both
@@ -241,20 +308,7 @@ export default function LandingPage() {
               {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
             {/* Language selector */}
-            <div className="flex items-center rounded-lg overflow-hidden border text-xs font-semibold border-gray-200 dark:border-surface-3">
-              {(['fr', 'en'] as const).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => switchLang(lang)}
-                  className={`px-3 py-1.5 transition-all ${i18n.language === lang
-                    ? 'bg-[#0057D9] text-white'
-                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-surface-2'
-                  }`}
-                >
-                  {lang.toUpperCase()}
-                </button>
-              ))}
-            </div>
+            <LanguageDropdown onPick={switchLang} />
             <Link to="/login" className="text-sm font-medium px-4 py-2 rounded-lg transition-colors text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-surface-2">
               {t('landing.navLogin')}
             </Link>
@@ -279,14 +333,7 @@ export default function LandingPage() {
                 {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                 {theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
               </button>
-              <div className="flex items-center rounded-lg overflow-hidden border border-gray-200 dark:border-surface-3 text-xs font-semibold">
-                {(['fr', 'en'] as const).map(lang => (
-                  <button key={lang} onClick={() => { switchLang(lang); setMobileMenu(false); }}
-                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 dark:text-gray-400'}`}>
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
+              <LanguageDropdown onPick={(lang) => { switchLang(lang); setMobileMenu(false); }} />
             </div>
             <Link to="/login" className="block text-sm font-medium text-gray-700 dark:text-gray-200 py-2">{t('landing.navLogin')}</Link>
             <Link to="/signup" className="block text-center text-sm font-semibold px-5 py-2.5 rounded-xl text-white" style={{ background: GREEN }}>{t('landing.navSignup')}</Link>
@@ -846,14 +893,7 @@ export default function LandingPage() {
             <div className="flex items-center gap-6">
               <Link to={isEn ? '/en/privacy' : '/privacy'} className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerPrivacy')}</Link>
               <Link to={isEn ? '/en/terms' : '/terms'} className="text-sm text-gray-500 hover:text-white transition-colors">{t('landing.footerTerms')}</Link>
-              <div className="flex items-center gap-1 rounded-lg overflow-hidden border border-white/10 text-xs font-semibold">
-                {(['fr', 'en'] as const).map(lang => (
-                  <button key={lang} onClick={() => switchLang(lang)}
-                    className={`px-3 py-1.5 transition-all ${i18n.language === lang ? 'bg-[#0057D9] text-white' : 'text-gray-500 hover:text-white'}`}>
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
+              <LanguageDropdown dark onPick={switchLang} />
             </div>
           </div>
         </div>
