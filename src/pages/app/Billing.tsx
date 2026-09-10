@@ -31,7 +31,7 @@ const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 
   flutterwave: false, // not yet approved — do not enable until confirmed
   paystack: false,    // not yet approved — do not enable until confirmed
   stripe: false,      // not yet approved — do not enable until confirmed
-  paddle: false,      // not yet approved — do not enable until confirmed
+  paddle: true,       // enabled — VITE_PADDLE_CLIENT_TOKEN, VITE_PADDLE_PRICE_*, PADDLE_WEBHOOK_SECRET, domain all confirmed set
 };
 
 // Live USD->XAF rate, same source (fx_rates, tenant_id IS NULL) that
