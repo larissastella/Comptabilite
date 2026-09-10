@@ -418,7 +418,11 @@ export default function Billing() {
       return;
     }
     if (!tenant?.plan) return;
-    handleCheckout(tenant.plan, autoProvider());
+    if (Object.values(PSP_AVAILABLE).filter(Boolean).length > 1) {
+      setPickingPlanFor(tenant.plan);
+    } else {
+      handleCheckout(tenant.plan, autoProvider());
+    }
   }
 
   async function handleCancelAutoRenew() {
