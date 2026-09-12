@@ -10,6 +10,9 @@
 //
 // Requires these Edge Function secrets:
 //   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SIGNING_SECRET
+// No STRIPE_PRICE_* secrets needed — prices are created inline per
+// checkout (see stripe-checkout), there's no fixed Price catalog to
+// configure in the Stripe Dashboard for this integration.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 import Stripe from "npm:stripe@17";
@@ -27,20 +30,6 @@ async function logFunctionError(functionName, error, context = {}) {
   } catch {
     // Never let error logging itself throw.
   }
-}
-
-const PLAN_BY_PRICE_ENV: Record<string, string> = {
-  STRIPE_PRICE_STARTER: "starter",
-  STRIPE_PRICE_PRO: "pro",
-  STRIPE_PRICE_PREMIUM: "premium",
-  STRIPE_PRICE_ENTERPRISE: "enterprise",
-};
-
-function resolvePlanFromPriceId(priceId: string): string | null {
-  for (const [envKey, plan] of Object.entries(PLAN_BY_PRICE_ENV)) {
-    if (Deno.env.get(envKey) === priceId) return plan;
-  }
-  return null;
 }
 
 Deno.serve(async (req: Request) => {
@@ -101,8 +90,12 @@ Deno.serve(async (req: Request) => {
       }
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
-        const priceId = sub.items.data[0]?.price?.id;
-        const plan = priceId ? resolvePlanFromPriceId(priceId) : null;
+        // Plan comes from the subscription's own metadata (set once at
+        // checkout, in subscription_data.metadata — see stripe-checkout),
+        // not from matching a Price ID: prices are created inline per
+        // checkout (Stripe Checkout's price_data), so there's no fixed
+        // catalog of Price IDs to match against here.
+        const plan = sub.metadata?.plan || null;
         const status = sub.status === "active" ? "active" : sub.status === "past_due" ? "past_due" : sub.status === "canceled" ? "canceled" : "active";
         await setTenantByCustomer(sub.customer as string, {
           subscription_status: status,

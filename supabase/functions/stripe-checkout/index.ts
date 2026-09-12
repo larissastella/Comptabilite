@@ -1,34 +1,34 @@
 // Creates a Stripe Checkout session so a tenant can subscribe to (or
-// upgrade) a plan. Called from Billing.tsx with { plan, tenant_id }.
+// upgrade) a plan. Called from Billing.tsx with { plan, tenant_id, cycle }.
 //
 // One of 5 supported PSPs (PayUnit, Flutterwave, Paystack, Stripe, Paddle).
 // See PSP_AVAILABLE in src/pages/app/Billing.tsx — a provider only appears
 // to real customers once its flag is flipped to true there (this function
 // existing/working is not sufficient by itself).
 //
+// Price is computed inline (Stripe Checkout's price_data, no pre-created
+// Price object needed) from PLAN_PRICE_USD below — same source of truth
+// and same pattern already used by payunit-checkout/paystack-checkout, so
+// there's nothing to keep in sync in the Stripe Dashboard when a price
+// changes here. The Stripe Dashboard's Products/Prices catalog is simply
+// not used by this integration.
+//
 // Requires these Supabase Edge Function secrets to be set (Project
 // Settings > Edge Functions > Secrets):
 //   STRIPE_SECRET_KEY               - sk_live_... / sk_test_...
-//   STRIPE_PRICE_STARTER            - price_... (monthly recurring price for Starter)
-//   STRIPE_PRICE_PRO                - price_...
-//   STRIPE_PRICE_PREMIUM            - price_...
-//   STRIPE_PRICE_ENTERPRISE         - price_...
-//   STRIPE_PRICE_STARTER_ANNUAL     - price_... (yearly recurring price, ~20% off — see ANNUAL_DISCOUNT in Billing.tsx)
-//   STRIPE_PRICE_PRO_ANNUAL         - price_...
-//   STRIPE_PRICE_PREMIUM_ANNUAL     - price_...
-//   STRIPE_PRICE_ENTERPRISE_ANNUAL  - price_...
-//   APP_URL                  - e.g. https://libooks.liafrik.com (for redirect URLs)
+//   STRIPE_WEBHOOK_SIGNING_SECRET   - whsec_... (set on stripe-webhook, see that function)
+//   APP_URL                         - e.g. https://libooks.liafrik.com (for redirect URLs)
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.110.7";
 import Stripe from "npm:stripe@17";
 
-async function logFunctionError(functionName, error, context = {}) {
+async function logFunctionError(functionName: string, error: unknown, context: Record<string, unknown> = {}) {
   try {
-    const serviceClient = createClient(Deno.env.get("SUPABASE_URL"), Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
+    const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
     const message = error instanceof Error ? error.message : String(error);
     await serviceClient.from("function_errors").insert({
       function_name: functionName,
-      tenant_id: context.tenant_id ?? null,
+      tenant_id: (context.tenant_id as string) ?? null,
       message: message.slice(0, 2000),
       context,
     });
@@ -43,12 +43,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const PRICE_ENV_BY_PLAN: Record<string, string> = {
-  starter: "STRIPE_PRICE_STARTER",
-  pro: "STRIPE_PRICE_PRO",
-  premium: "STRIPE_PRICE_PREMIUM",
-  enterprise: "STRIPE_PRICE_ENTERPRISE",
+// Kept in sync with PLAN_PRICE_USD in every other PSP function and
+// Billing.tsx's PLANS/ANNUAL_DISCOUNT.
+const PLAN_PRICE_USD: Record<string, number> = {
+  starter: 14,
+  pro: 29,
+  premium: 79,
+  enterprise: 199,
 };
+const PLAN_NAMES: Record<string, string> = {
+  starter: "LiBooks Starter",
+  pro: "LiBooks Pro",
+  premium: "LiBooks Premium",
+  enterprise: "LiBooks Enterprise",
+};
+const ANNUAL_DISCOUNT = 0.20;
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response(null, { status: 200, headers: corsHeaders });
@@ -70,11 +79,10 @@ Deno.serve(async (req: Request) => {
     }
 
     const { plan, tenant_id, cycle: rawCycle } = await req.json();
+    const monthlyPrice = PLAN_PRICE_USD[plan];
+    if (!monthlyPrice) throw new Error(`Unknown plan: ${plan}`);
     const cycle = rawCycle === "annual" ? "annual" : "monthly";
-    const priceEnvKey = PRICE_ENV_BY_PLAN[plan] ? `${PRICE_ENV_BY_PLAN[plan]}${cycle === "annual" ? "_ANNUAL" : ""}` : undefined;
-    if (!priceEnvKey) throw new Error(`Unknown plan: ${plan}`);
-    const priceId = Deno.env.get(priceEnvKey);
-    if (!priceId) throw new Error(`${priceEnvKey} is not configured`);
+    const amount = cycle === "annual" ? Math.round(monthlyPrice * 12 * (1 - ANNUAL_DISCOUNT)) : monthlyPrice;
 
     // Service role to bypass RLS for the admin-membership check + tenant read/write.
     const serviceClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
@@ -103,7 +111,15 @@ Deno.serve(async (req: Request) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
+      line_items: [{
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(amount * 100),
+          recurring: { interval: cycle === "annual" ? "year" : "month" },
+          product_data: { name: PLAN_NAMES[plan] ?? plan },
+        },
+        quantity: 1,
+      }],
       success_url: `${appUrl}/app/billing?checkout=success`,
       cancel_url: `${appUrl}/app/billing?checkout=cancelled`,
       subscription_data: { metadata: { tenant_id, plan, cycle } },

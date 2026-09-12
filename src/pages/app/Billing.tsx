@@ -24,13 +24,13 @@ import toast from 'react-hot-toast';
 //   payunit:     PAYUNIT_API_USER, PAYUNIT_API_PASSWORD, PAYUNIT_API_KEY, PAYUNIT_MODE
 //   flutterwave: FLUTTERWAVE_SECRET_KEY (+ VITE_FLUTTERWAVE_PUBLIC_KEY at build time)
 //   paystack:    PAYSTACK_SECRET_KEY
-//   stripe:      STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SIGNING_SECRET, STRIPE_PRICE_*
+//   stripe:      STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SIGNING_SECRET (price computed inline, no STRIPE_PRICE_* needed)
 //   paddle:      PADDLE_WEBHOOK_SECRET (+ VITE_PADDLE_CLIENT_TOKEN and VITE_PADDLE_PRICE_* at build time)
 const PSP_AVAILABLE: Record<'payunit' | 'flutterwave' | 'paystack' | 'stripe' | 'paddle', boolean> = {
   payunit: true,
   flutterwave: false, // not yet approved — do not enable until confirmed
   paystack: false,    // not yet approved — do not enable until confirmed
-  stripe: false,      // not yet approved — do not enable until confirmed
+  stripe: true,       // enabled — STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SIGNING_SECRET confirmed set, no Price ID catalog needed (price computed inline)
   paddle: true,       // enabled — VITE_PADDLE_CLIENT_TOKEN, VITE_PADDLE_PRICE_*, PADDLE_WEBHOOK_SECRET, domain all confirmed set
 };
 
