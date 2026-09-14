@@ -395,7 +395,17 @@ export default function Billing() {
   // since that's what actually gets them to a page where they can
   // update their card/Mobile Money details and pay.
   async function handleManageBilling() {
-    if (tenant?.stripe_customer_id && PSP_AVAILABLE.stripe) {
+    // Only shortcut straight to Stripe's self-service portal when the
+    // tenant's active subscription genuinely came from Stripe —
+    // stripe_subscription_id is only ever set once a checkout actually
+    // completes (see stripe-webhook). stripe_customer_id alone is set
+    // much earlier, the moment a Stripe checkout is merely attempted —
+    // so checking that instead meant anyone who'd ever even opened the
+    // Stripe option once got permanently routed straight to Stripe on
+    // every future "Gérer" click, skipping the picker entirely even
+    // with several PSPs active and even if they ended up paying through
+    // a different one.
+    if (tenant?.stripe_subscription_id && PSP_AVAILABLE.stripe) {
       setRedirecting(true);
       try {
         const { data: session } = await supabase.auth.getSession();
@@ -627,8 +637,8 @@ export default function Billing() {
                 >
                   <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via PayUnit — {Math.round(priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle) * payunitXafRate).toLocaleString('fr-FR')} FCFA</p>
+                    <p className="text-sm font-semibold text-gray-900">PayUnit</p>
+                    <p className="text-xs text-gray-400">Carte bancaire — Visa, Mastercard — {Math.round(priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle) * payunitXafRate).toLocaleString('fr-FR')} FCFA</p>
                   </div>
                 </button>
               )}
@@ -639,8 +649,8 @@ export default function Billing() {
                 >
                   <Zap className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Mobile Money / Carte locale</p>
-                    <p className="text-xs text-gray-400">Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
+                    <p className="text-sm font-semibold text-gray-900">Flutterwave</p>
+                    <p className="text-xs text-gray-400">Mobile Money / Carte locale — Orange Money, MTN MoMo, Airtel... — reste sur LiBooks</p>
                   </div>
                 </button>
               )}
@@ -651,8 +661,8 @@ export default function Billing() {
                 >
                   <CreditCard className="w-5 h-5 text-[#0057D9] flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paystack — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
+                    <p className="text-sm font-semibold text-gray-900">Paystack</p>
+                    <p className="text-xs text-gray-400">Carte bancaire — Visa, Mastercard — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}
@@ -665,8 +675,8 @@ export default function Billing() {
                     <span className="text-[10px] font-bold text-white">S</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard, Amex — via Stripe — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
+                    <p className="text-sm font-semibold text-gray-900">Stripe</p>
+                    <p className="text-xs text-gray-400">Carte bancaire — Visa, Mastercard, Amex — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}
@@ -679,8 +689,8 @@ export default function Billing() {
                     <span className="text-[10px] font-bold text-white">P</span>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Carte bancaire</p>
-                    <p className="text-xs text-gray-400">Visa, Mastercard — via Paddle — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
+                    <p className="text-sm font-semibold text-gray-900">Paddle</p>
+                    <p className="text-xs text-gray-400">Carte bancaire — Visa, Mastercard — ${priceForCycle(PLANS.find(p => p.id === pickingPlanFor)?.price ?? 0, billingCycle)}</p>
                   </div>
                 </button>
               )}
