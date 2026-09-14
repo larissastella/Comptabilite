@@ -111,7 +111,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signUp(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    // Without emailRedirectTo, Supabase falls back to the project's Auth
+    // "Site URL" setting to build the confirmation link — which is
+    // localhost:3000 by default and, apparently, was never changed. This
+    // is exactly why confirmation emails sent real users landed on
+    // localhost instead of the live site. Passing it explicitly here
+    // means it's always correct regardless of that dashboard setting.
+    const { data, error } = await supabase.auth.signUp({
+      email, password,
+      options: { emailRedirectTo: `${window.location.origin}/verify-email` },
+    });
     if (error) {
       if (error.message.toLowerCase().includes('already been registered') || error.message.toLowerCase().includes('already registered')) {
         throw new Error('EMAIL_EXISTS');
@@ -139,7 +148,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function resendConfirmation(email: string) {
-    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    const { error } = await supabase.auth.resend({
+      type: 'signup', email,
+      options: { emailRedirectTo: `${window.location.origin}/verify-email` },
+    });
     if (error) throw error;
   }
 

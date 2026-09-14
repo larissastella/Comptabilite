@@ -58,6 +58,29 @@ export default function UsersRoles() {
     enabled: !!tenant?.id,
   });
 
+  const { data: pendingInvites = [] } = useQuery({
+    queryKey: ['tenant-invitations', tenant?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('tenant_invitations')
+        .select('id, email, role, expires_at')
+        .eq('tenant_id', tenant!.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+      return (data || []) as { id: string; email: string; role: string; expires_at: string }[];
+    },
+    enabled: !!tenant?.id,
+  });
+
+  const revokeInvite = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('tenant_invitations').update({ status: 'revoked' }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['tenant-invitations'] }); toast.success('Invitation annulée'); },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
   const createRole = useMutation({
     mutationFn: async () => {
       const { data: role, error } = await supabase.from('roles').insert({ tenant_id: tenant!.id, name: newRoleName }).select().single();
@@ -98,20 +121,46 @@ export default function UsersRoles() {
   const inviteMember = useMutation({
     mutationFn: async () => {
       if (!inviteEmail) throw new Error('Email requis');
-      await supabase.from('audit_logs').insert({
-        tenant_id: tenant!.id,
-        action: 'invite_user',
-        module: 'users',
-        after_data: { email: inviteEmail, role: inviteRole, status: 'pending' },
+      // This used to only write an audit_log row saying an invite was
+      // "sent" — no invitation record was ever created, so nobody could
+      // actually join. create_tenant_invitation (migration 009) already
+      // existed and did this correctly (real token, seat-limit
+      // enforcement, 7-day expiry); this UI just never called it. Also
+      // sends the actual email, which nothing did before either.
+      const { data: token, error } = await supabase.rpc('create_tenant_invitation', {
+        p_tenant_id: tenant!.id,
+        p_email: inviteEmail,
+        p_role: inviteRole,
       });
+      if (error) throw error;
+
+      const { data: session } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-invite-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
+        body: JSON.stringify({ tenant_id: tenant!.id, token }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "L'invitation a été créée mais l'email n'a pas pu être envoyé");
     },
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['tenant-invitations'] });
       toast.success(`Invitation envoyée à ${inviteEmail}. L'utilisateur rejoindra l'organisation après inscription.`);
       setShowInviteForm(false);
       setInviteEmail('');
       setInviteRole('accountant');
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => {
+      const map: Record<string, string> = {
+        SEAT_LIMIT_REACHED: 'Le nombre maximum d\'utilisateurs de votre forfait est atteint.',
+      };
+      const key = Object.keys(map).find(k => err.message.includes(k));
+      toast.error(key ? map[key] : err.message);
+    },
   });
 
   function togglePerm(module: string, perm: string) {
@@ -227,6 +276,30 @@ export default function UsersRoles() {
                 ))}
               </div>
             </>
+          )}
+
+          {pendingInvites.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Invitations en attente</h3>
+              <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50">
+                {pendingInvites.map(inv => (
+                  <div key={inv.id} className="flex items-center justify-between px-5 py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center">
+                        <Mail className="w-4 h-4 text-amber-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-700">{inv.email}</p>
+                        <p className="text-xs text-gray-400">{inv.role} · expire le {new Date(inv.expires_at).toLocaleDateString('fr-FR')}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => revokeInvite.mutate(inv.id)} className="text-xs text-gray-400 hover:text-red-500 font-medium">
+                      Annuler
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {showInviteForm && (
